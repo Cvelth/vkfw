@@ -286,23 +286,23 @@ namespace VKFW_HPP_NAMESPACE {
 		eF23 = GLFW_KEY_F23,
 		eF24 = GLFW_KEY_F24,
 		eF25 = GLFW_KEY_F25,
-		eKeyPad0 = GLFW_KEY_KP_0,
-		eKeyPad1 = GLFW_KEY_KP_1,
-		eKeyPad2 = GLFW_KEY_KP_2,
-		eKeyPad3 = GLFW_KEY_KP_3,
-		eKeyPad4 = GLFW_KEY_KP_4,
-		eKeyPad5 = GLFW_KEY_KP_5,
-		eKeyPad6 = GLFW_KEY_KP_6,
-		eKeyPad7 = GLFW_KEY_KP_7,
-		eKeyPad8 = GLFW_KEY_KP_8,
-		eKeyPad9 = GLFW_KEY_KP_9,
-		eDecimal = GLFW_KEY_KP_DECIMAL,
-		eDivide = GLFW_KEY_KP_DIVIDE,
-		eMultiply = GLFW_KEY_KP_MULTIPLY,
-		eSubtract = GLFW_KEY_KP_SUBTRACT,
-		eAdd = GLFW_KEY_KP_ADD,
-		eEnter = GLFW_KEY_KP_ENTER,
-		eEqual = GLFW_KEY_KP_EQUAL,
+		eKeyPad_0 = GLFW_KEY_KP_0,
+		eKeyPad_1 = GLFW_KEY_KP_1,
+		eKeyPad_2 = GLFW_KEY_KP_2,
+		eKeyPad_3 = GLFW_KEY_KP_3,
+		eKeyPad_4 = GLFW_KEY_KP_4,
+		eKeyPad_5 = GLFW_KEY_KP_5,
+		eKeyPad_6 = GLFW_KEY_KP_6,
+		eKeyPad_7 = GLFW_KEY_KP_7,
+		eKeyPad_8 = GLFW_KEY_KP_8,
+		eKeyPad_9 = GLFW_KEY_KP_9,
+		eKeyPad_Decimal = GLFW_KEY_KP_DECIMAL,
+		eKeyPad_Divide = GLFW_KEY_KP_DIVIDE,
+		eKeyPad_Multiply = GLFW_KEY_KP_MULTIPLY,
+		eKeyPad_Subtract = GLFW_KEY_KP_SUBTRACT,
+		eKeyPad_Add = GLFW_KEY_KP_ADD,
+		eKeyPad_Enter = GLFW_KEY_KP_ENTER,
+		eKeyPad_Equal = GLFW_KEY_KP_EQUAL,
 		eLeftShift = GLFW_KEY_LEFT_SHIFT,
 		eLeftControl = GLFW_KEY_LEFT_CONTROL,
 		eLeftAlt = GLFW_KEY_LEFT_ALT,
@@ -453,23 +453,23 @@ namespace VKFW_HPP_NAMESPACE {
 			case Key::eF23: return VKFW_HPP_CHAR_LITERAL"F23";
 			case Key::eF24: return VKFW_HPP_CHAR_LITERAL"F24";
 			case Key::eF25: return VKFW_HPP_CHAR_LITERAL"F25";
-			case Key::eKeyPad0: return VKFW_HPP_CHAR_LITERAL"KeyPad0";
-			case Key::eKeyPad1: return VKFW_HPP_CHAR_LITERAL"KeyPad1";
-			case Key::eKeyPad2: return VKFW_HPP_CHAR_LITERAL"KeyPad2";
-			case Key::eKeyPad3: return VKFW_HPP_CHAR_LITERAL"KeyPad3";
-			case Key::eKeyPad4: return VKFW_HPP_CHAR_LITERAL"KeyPad4";
-			case Key::eKeyPad5: return VKFW_HPP_CHAR_LITERAL"KeyPad5";
-			case Key::eKeyPad6: return VKFW_HPP_CHAR_LITERAL"KeyPad6";
-			case Key::eKeyPad7: return VKFW_HPP_CHAR_LITERAL"KeyPad7";
-			case Key::eKeyPad8: return VKFW_HPP_CHAR_LITERAL"KeyPad8";
-			case Key::eKeyPad9: return VKFW_HPP_CHAR_LITERAL"KeyPad9";
-			case Key::eDecimal: return VKFW_HPP_CHAR_LITERAL"Decimal";
-			case Key::eDivide: return VKFW_HPP_CHAR_LITERAL"Divide";
-			case Key::eMultiply: return VKFW_HPP_CHAR_LITERAL"Multiply";
-			case Key::eSubtract: return VKFW_HPP_CHAR_LITERAL"Subtract";
-			case Key::eAdd: return VKFW_HPP_CHAR_LITERAL"Add";
-			case Key::eEnter: return VKFW_HPP_CHAR_LITERAL"Enter";
-			case Key::eEqual: return VKFW_HPP_CHAR_LITERAL"Equal";
+			case Key::eKeyPad_0: return VKFW_HPP_CHAR_LITERAL"KeyPad 0";
+			case Key::eKeyPad_1: return VKFW_HPP_CHAR_LITERAL"KeyPad 1";
+			case Key::eKeyPad_2: return VKFW_HPP_CHAR_LITERAL"KeyPad 2";
+			case Key::eKeyPad_3: return VKFW_HPP_CHAR_LITERAL"KeyPad 3";
+			case Key::eKeyPad_4: return VKFW_HPP_CHAR_LITERAL"KeyPad 4";
+			case Key::eKeyPad_5: return VKFW_HPP_CHAR_LITERAL"KeyPad 5";
+			case Key::eKeyPad_6: return VKFW_HPP_CHAR_LITERAL"KeyPad 6";
+			case Key::eKeyPad_7: return VKFW_HPP_CHAR_LITERAL"KeyPad 7";
+			case Key::eKeyPad_8: return VKFW_HPP_CHAR_LITERAL"KeyPad 8";
+			case Key::eKeyPad_9: return VKFW_HPP_CHAR_LITERAL"KeyPad 9";
+			case Key::eKeyPad_Decimal: return VKFW_HPP_CHAR_LITERAL"KeyPad Decimal";
+			case Key::eKeyPad_Divide: return VKFW_HPP_CHAR_LITERAL"KeyPad Divide";
+			case Key::eKeyPad_Multiply: return VKFW_HPP_CHAR_LITERAL"KeyPad Multiply";
+			case Key::eKeyPad_Subtract: return VKFW_HPP_CHAR_LITERAL"KeyPad Subtract";
+			case Key::eKeyPad_Add: return VKFW_HPP_CHAR_LITERAL"KeyPad Add";
+			case Key::eKeyPad_Enter: return VKFW_HPP_CHAR_LITERAL"KeyPad Enter";
+			case Key::eKeyPad_Equal: return VKFW_HPP_CHAR_LITERAL"KeyPad Equal";
 			case Key::eLeftShift: return VKFW_HPP_CHAR_LITERAL"LeftShift";
 			case Key::eLeftControl: return VKFW_HPP_CHAR_LITERAL"LeftControl";
 			case Key::eLeftAlt: return VKFW_HPP_CHAR_LITERAL"LeftAlt";
