@@ -82,7 +82,7 @@ When a `vkfw` function returns an error value code, an exception is thrown unles
 With C++17, all `vkfw`-functions returning something are declared with the attribute `[[nodiscard]]`. This can be removed by defining `VKFW_HPP_NO_NODISCARD_WARNINGS` before including `vkfw.hpp`.
 
 ### `VKFW_HPP_NO_SMART_HANDLE`
-With C++17, all `vkfw`-functions returning something are declared with the attribute `[[nodiscard]]`. This can be removed by defining `VKFW_HPP_NO_NODISCARD_WARNINGS` before including `vkfw.hpp`.
+By defining `VKFW_HPP_NO_SMART_HANDLE` before including `vkfw.hpp`, the helper class `UniqueHandle` and all the unique handle types are not available.
 
 [comment]: # (`VKFW_HPP_NO_SPACESHIP_OPERATOR`)
 [comment]: # (`VKFW_HPP_TYPESAFE_CONVERSION`)
