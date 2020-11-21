@@ -159,326 +159,334 @@ static_assert(GLFW_VERSION_MAJOR == 3
 #  define VKFW_HPP_STRING_VIEW_T std::basic_string_view<VKFW_HPP_CHAR_T>
 #endif
 
+#if defined(VKFW_HPP_NO_LEADING_e_IN_ENUMS)
+#  define VKFW_HPP_ENUMERATOR(name) name
+#  define VKFW_HPP_ENUMERATOR2(name_1, name_2) name_2
+#else
+#  define VKFW_HPP_ENUMERATOR(name) e ## name
+#  define VKFW_HPP_ENUMERATOR2(name_1, name_2) e ## name_1
+#endif
+
 namespace VKFW_HPP_NAMESPACE {
 	enum class Boolean {
-		eTrue = GLFW_TRUE,
-		eFalse = GLFW_FALSE
+		VKFW_HPP_ENUMERATOR(True) = GLFW_TRUE,
+		VKFW_HPP_ENUMERATOR(False) = GLFW_FALSE
 	};
 	enum class KeyAction {
-		eRelease = GLFW_RELEASE,
-		ePress = GLFW_PRESS,
-		eRepeat = GLFW_REPEAT
+		VKFW_HPP_ENUMERATOR(Release) = GLFW_RELEASE,
+		VKFW_HPP_ENUMERATOR(Press) = GLFW_PRESS,
+		VKFW_HPP_ENUMERATOR(Repeat) = GLFW_REPEAT
 	};
 	enum class MouseButtonAction {
-		eRelease = GLFW_RELEASE,
-		ePress = GLFW_PRESS
+		VKFW_HPP_ENUMERATOR(Release) = GLFW_RELEASE,
+		VKFW_HPP_ENUMERATOR(Press) = GLFW_PRESS
 	};
 	enum class JoystickHatState {
-		eCentered = GLFW_HAT_CENTERED,
-		eUp = GLFW_HAT_UP,
-		eRight = GLFW_HAT_RIGHT,
-		eDown = GLFW_HAT_DOWN,
-		eLeft = GLFW_HAT_LEFT,
-		eRight_Up = GLFW_HAT_RIGHT_UP,
-		eRight_Down = GLFW_HAT_RIGHT_DOWN,
-		eLeft_Up = GLFW_HAT_LEFT_UP,
-		eLeft_Down = GLFW_HAT_LEFT_DOWN
+		VKFW_HPP_ENUMERATOR(Centered) = GLFW_HAT_CENTERED,
+		VKFW_HPP_ENUMERATOR(Up) = GLFW_HAT_UP,
+		VKFW_HPP_ENUMERATOR(Right) = GLFW_HAT_RIGHT,
+		VKFW_HPP_ENUMERATOR(Down) = GLFW_HAT_DOWN,
+		VKFW_HPP_ENUMERATOR(Left) = GLFW_HAT_LEFT,
+		VKFW_HPP_ENUMERATOR(Right_Up) = GLFW_HAT_RIGHT_UP,
+		VKFW_HPP_ENUMERATOR(Right_Down) = GLFW_HAT_RIGHT_DOWN,
+		VKFW_HPP_ENUMERATOR(Left_Up) = GLFW_HAT_LEFT_UP,
+		VKFW_HPP_ENUMERATOR(Left_Down) = GLFW_HAT_LEFT_DOWN
 	};
 
 	enum class Key {
 		/* The unknown Key */
-		eUnknown = GLFW_KEY_UNKNOWN,
+		VKFW_HPP_ENUMERATOR(Unknown) = GLFW_KEY_UNKNOWN,
 
 		/* Printable Keys */
-		eSpace = GLFW_KEY_SPACE,
-		eApostrophe = GLFW_KEY_APOSTROPHE,		/* ' */
-		eComma = GLFW_KEY_COMMA,				/* , */
-		eMinus = GLFW_KEY_MINUS,				/* - */
-		ePeriod = GLFW_KEY_PERIOD,				/* . */
-		eSlash = GLFW_KEY_SLASH,				/* / */
-		e0 = GLFW_KEY_0,
-		e1 = GLFW_KEY_1,
-		e2 = GLFW_KEY_2,
-		e3 = GLFW_KEY_3,
-		e4 = GLFW_KEY_4,
-		e5 = GLFW_KEY_5,
-		e6 = GLFW_KEY_6,
-		e7 = GLFW_KEY_7,
-		e8 = GLFW_KEY_8,
-		e9 = GLFW_KEY_9,
-		eSemicolon = GLFW_KEY_SEMICOLON,		/* ; */
-		eEqual = GLFW_KEY_EQUAL,				/* = */
-		eA = GLFW_KEY_A,
-		eB = GLFW_KEY_B,
-		eC = GLFW_KEY_C,
-		eD = GLFW_KEY_D,
-		eE = GLFW_KEY_E,
-		eF = GLFW_KEY_F,
-		eG = GLFW_KEY_G,
-		eH = GLFW_KEY_H,
-		eI = GLFW_KEY_I,
-		eJ = GLFW_KEY_J,
-		eK = GLFW_KEY_K,
-		eL = GLFW_KEY_L,
-		eM = GLFW_KEY_M,
-		eN = GLFW_KEY_N,
-		eO = GLFW_KEY_O,
-		eP = GLFW_KEY_P,
-		eQ = GLFW_KEY_Q,
-		eR = GLFW_KEY_R,
-		eS = GLFW_KEY_S,
-		eT = GLFW_KEY_T,
-		eU = GLFW_KEY_U,
-		eV = GLFW_KEY_V,
-		eW = GLFW_KEY_W,
-		eX = GLFW_KEY_X,
-		eY = GLFW_KEY_Y,
-		eZ = GLFW_KEY_Z,
-		eLeftBracket = GLFW_KEY_LEFT_BRACKET,	/* [ */
-		eBackslash = GLFW_KEY_BACKSLASH,		/* \ */
-		eRightBracket = GLFW_KEY_RIGHT_BRACKET,	/* ] */
-		eGraveAccent = GLFW_KEY_GRAVE_ACCENT,	/* ` */
-		eWorld1 = GLFW_KEY_WORLD_1,				/* non-US #1 */
-		eWorld2 = GLFW_KEY_WORLD_2,				/* non-US #2 */
+		VKFW_HPP_ENUMERATOR(Space) = GLFW_KEY_SPACE,
+		VKFW_HPP_ENUMERATOR(Apostrophe) = GLFW_KEY_APOSTROPHE,		/* ' */
+		VKFW_HPP_ENUMERATOR(Comma) = GLFW_KEY_COMMA,				/* , */
+		VKFW_HPP_ENUMERATOR(Minus) = GLFW_KEY_MINUS,				/* - */
+		VKFW_HPP_ENUMERATOR(Period) = GLFW_KEY_PERIOD,				/* . */
+		VKFW_HPP_ENUMERATOR(Slash) = GLFW_KEY_SLASH,				/* / */
+		VKFW_HPP_ENUMERATOR2(0, _0) = GLFW_KEY_0,
+		VKFW_HPP_ENUMERATOR2(1, _1) = GLFW_KEY_1,
+		VKFW_HPP_ENUMERATOR2(2, _2) = GLFW_KEY_2,
+		VKFW_HPP_ENUMERATOR2(3, _3) = GLFW_KEY_3,
+		VKFW_HPP_ENUMERATOR2(4, _4) = GLFW_KEY_4,
+		VKFW_HPP_ENUMERATOR2(5, _5) = GLFW_KEY_5,
+		VKFW_HPP_ENUMERATOR2(6, _6) = GLFW_KEY_6,
+		VKFW_HPP_ENUMERATOR2(7, _7) = GLFW_KEY_7,
+		VKFW_HPP_ENUMERATOR2(8, _8) = GLFW_KEY_8,
+		VKFW_HPP_ENUMERATOR2(9, _9) = GLFW_KEY_9,
+		VKFW_HPP_ENUMERATOR(Semicolon) = GLFW_KEY_SEMICOLON,		/* ; */
+		VKFW_HPP_ENUMERATOR(Equal) = GLFW_KEY_EQUAL,				/* = */
+		VKFW_HPP_ENUMERATOR(A) = GLFW_KEY_A,
+		VKFW_HPP_ENUMERATOR(B) = GLFW_KEY_B,
+		VKFW_HPP_ENUMERATOR(C) = GLFW_KEY_C,
+		VKFW_HPP_ENUMERATOR(D) = GLFW_KEY_D,
+		VKFW_HPP_ENUMERATOR(E) = GLFW_KEY_E,
+		VKFW_HPP_ENUMERATOR(F) = GLFW_KEY_F,
+		VKFW_HPP_ENUMERATOR(G) = GLFW_KEY_G,
+		VKFW_HPP_ENUMERATOR(H) = GLFW_KEY_H,
+		VKFW_HPP_ENUMERATOR(I) = GLFW_KEY_I,
+		VKFW_HPP_ENUMERATOR(J) = GLFW_KEY_J,
+		VKFW_HPP_ENUMERATOR(K) = GLFW_KEY_K,
+		VKFW_HPP_ENUMERATOR(L) = GLFW_KEY_L,
+		VKFW_HPP_ENUMERATOR(M) = GLFW_KEY_M,
+		VKFW_HPP_ENUMERATOR(N) = GLFW_KEY_N,
+		VKFW_HPP_ENUMERATOR(O) = GLFW_KEY_O,
+		VKFW_HPP_ENUMERATOR(P) = GLFW_KEY_P,
+		VKFW_HPP_ENUMERATOR(Q) = GLFW_KEY_Q,
+		VKFW_HPP_ENUMERATOR(R) = GLFW_KEY_R,
+		VKFW_HPP_ENUMERATOR(S) = GLFW_KEY_S,
+		VKFW_HPP_ENUMERATOR(T) = GLFW_KEY_T,
+		VKFW_HPP_ENUMERATOR(U) = GLFW_KEY_U,
+		VKFW_HPP_ENUMERATOR(V) = GLFW_KEY_V,
+		VKFW_HPP_ENUMERATOR(W) = GLFW_KEY_W,
+		VKFW_HPP_ENUMERATOR(X) = GLFW_KEY_X,
+		VKFW_HPP_ENUMERATOR(Y) = GLFW_KEY_Y,
+		VKFW_HPP_ENUMERATOR(Z) = GLFW_KEY_Z,
+		VKFW_HPP_ENUMERATOR(LeftBracket) = GLFW_KEY_LEFT_BRACKET,	/* [ */
+		VKFW_HPP_ENUMERATOR(Backslash) = GLFW_KEY_BACKSLASH,		/* \ */
+		VKFW_HPP_ENUMERATOR(RightBracket) = GLFW_KEY_RIGHT_BRACKET,	/* ] */
+		VKFW_HPP_ENUMERATOR(GraveAccent) = GLFW_KEY_GRAVE_ACCENT,	/* ` */
+		VKFW_HPP_ENUMERATOR(World1) = GLFW_KEY_WORLD_1,				/* non-US #1 */
+		VKFW_HPP_ENUMERATOR(World2) = GLFW_KEY_WORLD_2,				/* non-US #2 */
 
 		/* Function Keys */
-		eEscape = GLFW_KEY_ESCAPE,
-		eEnter = GLFW_KEY_ENTER,
-		eTab = GLFW_KEY_TAB,
-		eBackspace = GLFW_KEY_BACKSPACE,
-		eInsert = GLFW_KEY_INSERT,
-		eDelete = GLFW_KEY_DELETE,
-		eRight = GLFW_KEY_RIGHT,
-		eLeft = GLFW_KEY_LEFT,
-		eDown = GLFW_KEY_DOWN,
-		eUp = GLFW_KEY_UP,
-		ePageUp = GLFW_KEY_PAGE_UP,
-		ePageDown = GLFW_KEY_PAGE_DOWN,
-		eHome = GLFW_KEY_HOME,
-		eEnd = GLFW_KEY_END,
-		eCapsLock = GLFW_KEY_CAPS_LOCK,
-		eScrollLock = GLFW_KEY_SCROLL_LOCK,
-		eNumLock = GLFW_KEY_NUM_LOCK,
-		ePrintScreen = GLFW_KEY_PRINT_SCREEN,
-		ePause = GLFW_KEY_PAUSE,
-		eF1 = GLFW_KEY_F1,
-		eF2 = GLFW_KEY_F2,
-		eF3 = GLFW_KEY_F3,
-		eF4 = GLFW_KEY_F4,
-		eF5 = GLFW_KEY_F5,
-		eF6 = GLFW_KEY_F6,
-		eF7 = GLFW_KEY_F7,
-		eF8 = GLFW_KEY_F8,
-		eF9 = GLFW_KEY_F9,
-		eF10 = GLFW_KEY_F10,
-		eF11 = GLFW_KEY_F11,
-		eF12 = GLFW_KEY_F12,
-		eF13 = GLFW_KEY_F13,
-		eF14 = GLFW_KEY_F14,
-		eF15 = GLFW_KEY_F15,
-		eF16 = GLFW_KEY_F16,
-		eF17 = GLFW_KEY_F17,
-		eF18 = GLFW_KEY_F18,
-		eF19 = GLFW_KEY_F19,
-		eF20 = GLFW_KEY_F20,
-		eF21 = GLFW_KEY_F21,
-		eF22 = GLFW_KEY_F22,
-		eF23 = GLFW_KEY_F23,
-		eF24 = GLFW_KEY_F24,
-		eF25 = GLFW_KEY_F25,
-		eKeyPad_0 = GLFW_KEY_KP_0,
-		eKeyPad_1 = GLFW_KEY_KP_1,
-		eKeyPad_2 = GLFW_KEY_KP_2,
-		eKeyPad_3 = GLFW_KEY_KP_3,
-		eKeyPad_4 = GLFW_KEY_KP_4,
-		eKeyPad_5 = GLFW_KEY_KP_5,
-		eKeyPad_6 = GLFW_KEY_KP_6,
-		eKeyPad_7 = GLFW_KEY_KP_7,
-		eKeyPad_8 = GLFW_KEY_KP_8,
-		eKeyPad_9 = GLFW_KEY_KP_9,
-		eKeyPad_Decimal = GLFW_KEY_KP_DECIMAL,
-		eKeyPad_Divide = GLFW_KEY_KP_DIVIDE,
-		eKeyPad_Multiply = GLFW_KEY_KP_MULTIPLY,
-		eKeyPad_Subtract = GLFW_KEY_KP_SUBTRACT,
-		eKeyPad_Add = GLFW_KEY_KP_ADD,
-		eKeyPad_Enter = GLFW_KEY_KP_ENTER,
-		eKeyPad_Equal = GLFW_KEY_KP_EQUAL,
-		eLeftShift = GLFW_KEY_LEFT_SHIFT,
-		eLeftControl = GLFW_KEY_LEFT_CONTROL,
-		eLeftAlt = GLFW_KEY_LEFT_ALT,
-		eLeftSuper = GLFW_KEY_LEFT_SUPER,
-		eRightShift = GLFW_KEY_RIGHT_SHIFT,
-		eRightControl = GLFW_KEY_RIGHT_CONTROL,
-		eRightAlt = GLFW_KEY_RIGHT_ALT,
-		eRightSuper = GLFW_KEY_RIGHT_SUPER,
-		eMenu = GLFW_KEY_MENU,
+		VKFW_HPP_ENUMERATOR(Escape) = GLFW_KEY_ESCAPE,
+		VKFW_HPP_ENUMERATOR(Enter) = GLFW_KEY_ENTER,
+		VKFW_HPP_ENUMERATOR(Tab) = GLFW_KEY_TAB,
+		VKFW_HPP_ENUMERATOR(Backspace) = GLFW_KEY_BACKSPACE,
+		VKFW_HPP_ENUMERATOR(Insert) = GLFW_KEY_INSERT,
+		VKFW_HPP_ENUMERATOR(Delete) = GLFW_KEY_DELETE,
+		VKFW_HPP_ENUMERATOR(Right) = GLFW_KEY_RIGHT,
+		VKFW_HPP_ENUMERATOR(Left) = GLFW_KEY_LEFT,
+		VKFW_HPP_ENUMERATOR(Down) = GLFW_KEY_DOWN,
+		VKFW_HPP_ENUMERATOR(Up) = GLFW_KEY_UP,
+		VKFW_HPP_ENUMERATOR(PageUp) = GLFW_KEY_PAGE_UP,
+		VKFW_HPP_ENUMERATOR(PageDown) = GLFW_KEY_PAGE_DOWN,
+		VKFW_HPP_ENUMERATOR(Home) = GLFW_KEY_HOME,
+		VKFW_HPP_ENUMERATOR(End) = GLFW_KEY_END,
+		VKFW_HPP_ENUMERATOR(CapsLock) = GLFW_KEY_CAPS_LOCK,
+		VKFW_HPP_ENUMERATOR(ScrollLock) = GLFW_KEY_SCROLL_LOCK,
+		VKFW_HPP_ENUMERATOR(NumLock) = GLFW_KEY_NUM_LOCK,
+		VKFW_HPP_ENUMERATOR(PrintScreen) = GLFW_KEY_PRINT_SCREEN,
+		VKFW_HPP_ENUMERATOR(Pause) = GLFW_KEY_PAUSE,
+		VKFW_HPP_ENUMERATOR(F1) = GLFW_KEY_F1,
+		VKFW_HPP_ENUMERATOR(F2) = GLFW_KEY_F2,
+		VKFW_HPP_ENUMERATOR(F3) = GLFW_KEY_F3,
+		VKFW_HPP_ENUMERATOR(F4) = GLFW_KEY_F4,
+		VKFW_HPP_ENUMERATOR(F5) = GLFW_KEY_F5,
+		VKFW_HPP_ENUMERATOR(F6) = GLFW_KEY_F6,
+		VKFW_HPP_ENUMERATOR(F7) = GLFW_KEY_F7,
+		VKFW_HPP_ENUMERATOR(F8) = GLFW_KEY_F8,
+		VKFW_HPP_ENUMERATOR(F9) = GLFW_KEY_F9,
+		VKFW_HPP_ENUMERATOR(F10) = GLFW_KEY_F10,
+		VKFW_HPP_ENUMERATOR(F11) = GLFW_KEY_F11,
+		VKFW_HPP_ENUMERATOR(F12) = GLFW_KEY_F12,
+		VKFW_HPP_ENUMERATOR(F13) = GLFW_KEY_F13,
+		VKFW_HPP_ENUMERATOR(F14) = GLFW_KEY_F14,
+		VKFW_HPP_ENUMERATOR(F15) = GLFW_KEY_F15,
+		VKFW_HPP_ENUMERATOR(F16) = GLFW_KEY_F16,
+		VKFW_HPP_ENUMERATOR(F17) = GLFW_KEY_F17,
+		VKFW_HPP_ENUMERATOR(F18) = GLFW_KEY_F18,
+		VKFW_HPP_ENUMERATOR(F19) = GLFW_KEY_F19,
+		VKFW_HPP_ENUMERATOR(F20) = GLFW_KEY_F20,
+		VKFW_HPP_ENUMERATOR(F21) = GLFW_KEY_F21,
+		VKFW_HPP_ENUMERATOR(F22) = GLFW_KEY_F22,
+		VKFW_HPP_ENUMERATOR(F23) = GLFW_KEY_F23,
+		VKFW_HPP_ENUMERATOR(F24) = GLFW_KEY_F24,
+		VKFW_HPP_ENUMERATOR(F25) = GLFW_KEY_F25,
+		VKFW_HPP_ENUMERATOR(KeyPad_0) = GLFW_KEY_KP_0,
+		VKFW_HPP_ENUMERATOR(KeyPad_1) = GLFW_KEY_KP_1,
+		VKFW_HPP_ENUMERATOR(KeyPad_2) = GLFW_KEY_KP_2,
+		VKFW_HPP_ENUMERATOR(KeyPad_3) = GLFW_KEY_KP_3,
+		VKFW_HPP_ENUMERATOR(KeyPad_4) = GLFW_KEY_KP_4,
+		VKFW_HPP_ENUMERATOR(KeyPad_5) = GLFW_KEY_KP_5,
+		VKFW_HPP_ENUMERATOR(KeyPad_6) = GLFW_KEY_KP_6,
+		VKFW_HPP_ENUMERATOR(KeyPad_7) = GLFW_KEY_KP_7,
+		VKFW_HPP_ENUMERATOR(KeyPad_8) = GLFW_KEY_KP_8,
+		VKFW_HPP_ENUMERATOR(KeyPad_9) = GLFW_KEY_KP_9,
+		VKFW_HPP_ENUMERATOR(KeyPad_Decimal) = GLFW_KEY_KP_DECIMAL,
+		VKFW_HPP_ENUMERATOR(KeyPad_Divide) = GLFW_KEY_KP_DIVIDE,
+		VKFW_HPP_ENUMERATOR(KeyPad_Multiply) = GLFW_KEY_KP_MULTIPLY,
+		VKFW_HPP_ENUMERATOR(KeyPad_Subtract) = GLFW_KEY_KP_SUBTRACT,
+		VKFW_HPP_ENUMERATOR(KeyPad_Add) = GLFW_KEY_KP_ADD,
+		VKFW_HPP_ENUMERATOR(KeyPad_Enter) = GLFW_KEY_KP_ENTER,
+		VKFW_HPP_ENUMERATOR(KeyPad_Equal) = GLFW_KEY_KP_EQUAL,
+		VKFW_HPP_ENUMERATOR(LeftShift) = GLFW_KEY_LEFT_SHIFT,
+		VKFW_HPP_ENUMERATOR(LeftControl) = GLFW_KEY_LEFT_CONTROL,
+		VKFW_HPP_ENUMERATOR(LeftAlt) = GLFW_KEY_LEFT_ALT,
+		VKFW_HPP_ENUMERATOR(LeftSuper) = GLFW_KEY_LEFT_SUPER,
+		VKFW_HPP_ENUMERATOR(RightShift) = GLFW_KEY_RIGHT_SHIFT,
+		VKFW_HPP_ENUMERATOR(RightControl) = GLFW_KEY_RIGHT_CONTROL,
+		VKFW_HPP_ENUMERATOR(RightAlt) = GLFW_KEY_RIGHT_ALT,
+		VKFW_HPP_ENUMERATOR(RightSuper) = GLFW_KEY_RIGHT_SUPER,
+		VKFW_HPP_ENUMERATOR(Menu) = GLFW_KEY_MENU,
 
-		eLAST = GLFW_KEY_LAST
+		VKFW_HPP_ENUMERATOR(LAST) = GLFW_KEY_LAST
 	};
 
 	VKFW_HPP_INLINE VKFW_HPP_STRING_T to_string(Boolean value) {
 		switch (value) {
-			case Boolean::eTrue: return VKFW_HPP_CHAR_LITERAL"True";
-			case Boolean::eFalse: return VKFW_HPP_CHAR_LITERAL"False";
+			case Boolean::VKFW_HPP_ENUMERATOR(True): return VKFW_HPP_CHAR_LITERAL"True";
+			case Boolean::VKFW_HPP_ENUMERATOR(False): return VKFW_HPP_CHAR_LITERAL"False";
 			default: return VKFW_HPP_CHAR_LITERAL"invalid";
 		}
 	}
 	VKFW_HPP_INLINE VKFW_HPP_STRING_T to_string(KeyAction value) {
 		switch (value) {
-			case KeyAction::eRelease: return VKFW_HPP_CHAR_LITERAL"Release";
-			case KeyAction::ePress: return VKFW_HPP_CHAR_LITERAL"Press";
-			case KeyAction::eRepeat: return VKFW_HPP_CHAR_LITERAL"Repeat";
+			case KeyAction::VKFW_HPP_ENUMERATOR(Release): return VKFW_HPP_CHAR_LITERAL"Release";
+			case KeyAction::VKFW_HPP_ENUMERATOR(Press): return VKFW_HPP_CHAR_LITERAL"Press";
+			case KeyAction::VKFW_HPP_ENUMERATOR(Repeat): return VKFW_HPP_CHAR_LITERAL"Repeat";
 			default: return VKFW_HPP_CHAR_LITERAL"invalid";
 		}
 	}
 	VKFW_HPP_INLINE VKFW_HPP_STRING_T to_string(MouseButtonAction value) {
 		switch (value) {
-			case MouseButtonAction::eRelease: return VKFW_HPP_CHAR_LITERAL"Release";
-			case MouseButtonAction::ePress: return VKFW_HPP_CHAR_LITERAL"Press";
+			case MouseButtonAction::VKFW_HPP_ENUMERATOR(Release): return VKFW_HPP_CHAR_LITERAL"Release";
+			case MouseButtonAction::VKFW_HPP_ENUMERATOR(Press): return VKFW_HPP_CHAR_LITERAL"Press";
 			default: return VKFW_HPP_CHAR_LITERAL"invalid";
 		}
 	}
 	VKFW_HPP_INLINE VKFW_HPP_STRING_T to_string(JoystickHatState value) {
 		switch (value) {
-			case JoystickHatState::eCentered: return VKFW_HPP_CHAR_LITERAL"Centered";
-			case JoystickHatState::eUp: return VKFW_HPP_CHAR_LITERAL"Up";
-			case JoystickHatState::eRight: return VKFW_HPP_CHAR_LITERAL"Right";
-			case JoystickHatState::eDown: return VKFW_HPP_CHAR_LITERAL"Down";
-			case JoystickHatState::eLeft: return VKFW_HPP_CHAR_LITERAL"Left";
-			case JoystickHatState::eRight_Up: return VKFW_HPP_CHAR_LITERAL"Right Up";
-			case JoystickHatState::eRight_Down: return VKFW_HPP_CHAR_LITERAL"Right Down";
-			case JoystickHatState::eLeft_Up: return VKFW_HPP_CHAR_LITERAL"Left Up";
-			case JoystickHatState::eLeft_Down: return VKFW_HPP_CHAR_LITERAL"Left Down";
+			case JoystickHatState::VKFW_HPP_ENUMERATOR(Centered): return VKFW_HPP_CHAR_LITERAL"Centered";
+			case JoystickHatState::VKFW_HPP_ENUMERATOR(Up): return VKFW_HPP_CHAR_LITERAL"Up";
+			case JoystickHatState::VKFW_HPP_ENUMERATOR(Right): return VKFW_HPP_CHAR_LITERAL"Right";
+			case JoystickHatState::VKFW_HPP_ENUMERATOR(Down): return VKFW_HPP_CHAR_LITERAL"Down";
+			case JoystickHatState::VKFW_HPP_ENUMERATOR(Left): return VKFW_HPP_CHAR_LITERAL"Left";
+			case JoystickHatState::VKFW_HPP_ENUMERATOR(Right_Up): return VKFW_HPP_CHAR_LITERAL"Right Up";
+			case JoystickHatState::VKFW_HPP_ENUMERATOR(Right_Down): return VKFW_HPP_CHAR_LITERAL"Right Down";
+			case JoystickHatState::VKFW_HPP_ENUMERATOR(Left_Up): return VKFW_HPP_CHAR_LITERAL"Left Up";
+			case JoystickHatState::VKFW_HPP_ENUMERATOR(Left_Down): return VKFW_HPP_CHAR_LITERAL"Left Down";
 			default: return VKFW_HPP_CHAR_LITERAL"invalid";
 		}
 	}
 	VKFW_HPP_INLINE VKFW_HPP_STRING_T to_string(Key value) {
 		switch (value) {
-			case Key::eUnknown: return VKFW_HPP_CHAR_LITERAL"Unknown";
+			case Key::VKFW_HPP_ENUMERATOR(Unknown): return VKFW_HPP_CHAR_LITERAL"Unknown";
 
-			/* Printable Keys */
-			case Key::eSpace: return VKFW_HPP_CHAR_LITERAL"Space";
-			case Key::eApostrophe: return VKFW_HPP_CHAR_LITERAL"Apostrophe";	
-			case Key::eComma: return VKFW_HPP_CHAR_LITERAL"Comma";			
-			case Key::eMinus: return VKFW_HPP_CHAR_LITERAL"Minus";			
-			case Key::ePeriod: return VKFW_HPP_CHAR_LITERAL"Period";			
-			case Key::eSlash: return VKFW_HPP_CHAR_LITERAL"Slash";			
-			case Key::e0: return VKFW_HPP_CHAR_LITERAL"0";
-			case Key::e1: return VKFW_HPP_CHAR_LITERAL"1";
-			case Key::e2: return VKFW_HPP_CHAR_LITERAL"2";
-			case Key::e3: return VKFW_HPP_CHAR_LITERAL"3";
-			case Key::e4: return VKFW_HPP_CHAR_LITERAL"4";
-			case Key::e5: return VKFW_HPP_CHAR_LITERAL"5";
-			case Key::e6: return VKFW_HPP_CHAR_LITERAL"6";
-			case Key::e7: return VKFW_HPP_CHAR_LITERAL"7";
-			case Key::e8: return VKFW_HPP_CHAR_LITERAL"8";
-			case Key::e9: return VKFW_HPP_CHAR_LITERAL"9";
-			case Key::eSemicolon: return VKFW_HPP_CHAR_LITERAL"Semicolon";	
-			case Key::eEqual: return VKFW_HPP_CHAR_LITERAL"Equal";			
-			case Key::eA: return VKFW_HPP_CHAR_LITERAL"A";
-			case Key::eB: return VKFW_HPP_CHAR_LITERAL"B";
-			case Key::eC: return VKFW_HPP_CHAR_LITERAL"C";
-			case Key::eD: return VKFW_HPP_CHAR_LITERAL"D";
-			case Key::eE: return VKFW_HPP_CHAR_LITERAL"E";
-			case Key::eF: return VKFW_HPP_CHAR_LITERAL"F";
-			case Key::eG: return VKFW_HPP_CHAR_LITERAL"G";
-			case Key::eH: return VKFW_HPP_CHAR_LITERAL"H";
-			case Key::eI: return VKFW_HPP_CHAR_LITERAL"I";
-			case Key::eJ: return VKFW_HPP_CHAR_LITERAL"J";
-			case Key::eK: return VKFW_HPP_CHAR_LITERAL"K";
-			case Key::eL: return VKFW_HPP_CHAR_LITERAL"L";
-			case Key::eM: return VKFW_HPP_CHAR_LITERAL"M";
-			case Key::eN: return VKFW_HPP_CHAR_LITERAL"N";
-			case Key::eO: return VKFW_HPP_CHAR_LITERAL"O";
-			case Key::eP: return VKFW_HPP_CHAR_LITERAL"P";
-			case Key::eQ: return VKFW_HPP_CHAR_LITERAL"Q";
-			case Key::eR: return VKFW_HPP_CHAR_LITERAL"R";
-			case Key::eS: return VKFW_HPP_CHAR_LITERAL"S";
-			case Key::eT: return VKFW_HPP_CHAR_LITERAL"T";
-			case Key::eU: return VKFW_HPP_CHAR_LITERAL"U";
-			case Key::eV: return VKFW_HPP_CHAR_LITERAL"V";
-			case Key::eW: return VKFW_HPP_CHAR_LITERAL"W";
-			case Key::eX: return VKFW_HPP_CHAR_LITERAL"X";
-			case Key::eY: return VKFW_HPP_CHAR_LITERAL"Y";
-			case Key::eZ: return VKFW_HPP_CHAR_LITERAL"Z";
-			case Key::eLeftBracket: return VKFW_HPP_CHAR_LITERAL"LeftBracket";	
-			case Key::eBackslash: return VKFW_HPP_CHAR_LITERAL"Backslash";		
-			case Key::eRightBracket: return VKFW_HPP_CHAR_LITERAL"RightBracket";
-			case Key::eGraveAccent: return VKFW_HPP_CHAR_LITERAL"GraveAccent";	
-			case Key::eWorld1: return VKFW_HPP_CHAR_LITERAL"World1";			
-			case Key::eWorld2: return VKFW_HPP_CHAR_LITERAL"World2";
+				/* Printable Keys */
+			case Key::VKFW_HPP_ENUMERATOR(Space): return VKFW_HPP_CHAR_LITERAL"Space";
+			case Key::VKFW_HPP_ENUMERATOR(Apostrophe): return VKFW_HPP_CHAR_LITERAL"Apostrophe";
+			case Key::VKFW_HPP_ENUMERATOR(Comma): return VKFW_HPP_CHAR_LITERAL"Comma";
+			case Key::VKFW_HPP_ENUMERATOR(Minus): return VKFW_HPP_CHAR_LITERAL"Minus";
+			case Key::VKFW_HPP_ENUMERATOR(Period): return VKFW_HPP_CHAR_LITERAL"Period";
+			case Key::VKFW_HPP_ENUMERATOR(Slash): return VKFW_HPP_CHAR_LITERAL"Slash";
+			case Key::VKFW_HPP_ENUMERATOR2(0, _0): return VKFW_HPP_CHAR_LITERAL"0";
+			case Key::VKFW_HPP_ENUMERATOR2(1, _1): return VKFW_HPP_CHAR_LITERAL"1";
+			case Key::VKFW_HPP_ENUMERATOR2(2, _2): return VKFW_HPP_CHAR_LITERAL"2";
+			case Key::VKFW_HPP_ENUMERATOR2(3, _3): return VKFW_HPP_CHAR_LITERAL"3";
+			case Key::VKFW_HPP_ENUMERATOR2(4, _4): return VKFW_HPP_CHAR_LITERAL"4";
+			case Key::VKFW_HPP_ENUMERATOR2(5, _5): return VKFW_HPP_CHAR_LITERAL"5";
+			case Key::VKFW_HPP_ENUMERATOR2(6, _6): return VKFW_HPP_CHAR_LITERAL"6";
+			case Key::VKFW_HPP_ENUMERATOR2(7, _7): return VKFW_HPP_CHAR_LITERAL"7";
+			case Key::VKFW_HPP_ENUMERATOR2(8, _8): return VKFW_HPP_CHAR_LITERAL"8";
+			case Key::VKFW_HPP_ENUMERATOR2(9, _9): return VKFW_HPP_CHAR_LITERAL"9";
+			case Key::VKFW_HPP_ENUMERATOR(Semicolon): return VKFW_HPP_CHAR_LITERAL"Semicolon";
+			case Key::VKFW_HPP_ENUMERATOR(Equal): return VKFW_HPP_CHAR_LITERAL"Equal";
+			case Key::VKFW_HPP_ENUMERATOR(A): return VKFW_HPP_CHAR_LITERAL"A";
+			case Key::VKFW_HPP_ENUMERATOR(B): return VKFW_HPP_CHAR_LITERAL"B";
+			case Key::VKFW_HPP_ENUMERATOR(C): return VKFW_HPP_CHAR_LITERAL"C";
+			case Key::VKFW_HPP_ENUMERATOR(D): return VKFW_HPP_CHAR_LITERAL"D";
+			case Key::VKFW_HPP_ENUMERATOR(E): return VKFW_HPP_CHAR_LITERAL"E";
+			case Key::VKFW_HPP_ENUMERATOR(F): return VKFW_HPP_CHAR_LITERAL"F";
+			case Key::VKFW_HPP_ENUMERATOR(G): return VKFW_HPP_CHAR_LITERAL"G";
+			case Key::VKFW_HPP_ENUMERATOR(H): return VKFW_HPP_CHAR_LITERAL"H";
+			case Key::VKFW_HPP_ENUMERATOR(I): return VKFW_HPP_CHAR_LITERAL"I";
+			case Key::VKFW_HPP_ENUMERATOR(J): return VKFW_HPP_CHAR_LITERAL"J";
+			case Key::VKFW_HPP_ENUMERATOR(K): return VKFW_HPP_CHAR_LITERAL"K";
+			case Key::VKFW_HPP_ENUMERATOR(L): return VKFW_HPP_CHAR_LITERAL"L";
+			case Key::VKFW_HPP_ENUMERATOR(M): return VKFW_HPP_CHAR_LITERAL"M";
+			case Key::VKFW_HPP_ENUMERATOR(N): return VKFW_HPP_CHAR_LITERAL"N";
+			case Key::VKFW_HPP_ENUMERATOR(O): return VKFW_HPP_CHAR_LITERAL"O";
+			case Key::VKFW_HPP_ENUMERATOR(P): return VKFW_HPP_CHAR_LITERAL"P";
+			case Key::VKFW_HPP_ENUMERATOR(Q): return VKFW_HPP_CHAR_LITERAL"Q";
+			case Key::VKFW_HPP_ENUMERATOR(R): return VKFW_HPP_CHAR_LITERAL"R";
+			case Key::VKFW_HPP_ENUMERATOR(S): return VKFW_HPP_CHAR_LITERAL"S";
+			case Key::VKFW_HPP_ENUMERATOR(T): return VKFW_HPP_CHAR_LITERAL"T";
+			case Key::VKFW_HPP_ENUMERATOR(U): return VKFW_HPP_CHAR_LITERAL"U";
+			case Key::VKFW_HPP_ENUMERATOR(V): return VKFW_HPP_CHAR_LITERAL"V";
+			case Key::VKFW_HPP_ENUMERATOR(W): return VKFW_HPP_CHAR_LITERAL"W";
+			case Key::VKFW_HPP_ENUMERATOR(X): return VKFW_HPP_CHAR_LITERAL"X";
+			case Key::VKFW_HPP_ENUMERATOR(Y): return VKFW_HPP_CHAR_LITERAL"Y";
+			case Key::VKFW_HPP_ENUMERATOR(Z): return VKFW_HPP_CHAR_LITERAL"Z";
+			case Key::VKFW_HPP_ENUMERATOR(LeftBracket): return VKFW_HPP_CHAR_LITERAL"LeftBracket";
+			case Key::VKFW_HPP_ENUMERATOR(Backslash): return VKFW_HPP_CHAR_LITERAL"Backslash";
+			case Key::VKFW_HPP_ENUMERATOR(RightBracket): return VKFW_HPP_CHAR_LITERAL"RightBracket";
+			case Key::VKFW_HPP_ENUMERATOR(GraveAccent): return VKFW_HPP_CHAR_LITERAL"GraveAccent";
+			case Key::VKFW_HPP_ENUMERATOR(World1): return VKFW_HPP_CHAR_LITERAL"World1";
+			case Key::VKFW_HPP_ENUMERATOR(World2): return VKFW_HPP_CHAR_LITERAL"World2";
 
-			/* Function Keys */
-			case Key::eEscape: return VKFW_HPP_CHAR_LITERAL"Escape";
-			case Key::eEnter: return VKFW_HPP_CHAR_LITERAL"Enter";
-			case Key::eTab: return VKFW_HPP_CHAR_LITERAL"Tab";
-			case Key::eBackspace: return VKFW_HPP_CHAR_LITERAL"Backspace";
-			case Key::eInsert: return VKFW_HPP_CHAR_LITERAL"Insert";
-			case Key::eDelete: return VKFW_HPP_CHAR_LITERAL"Delete";
-			case Key::eRight: return VKFW_HPP_CHAR_LITERAL"Right";
-			case Key::eLeft: return VKFW_HPP_CHAR_LITERAL"Left";
-			case Key::eDown: return VKFW_HPP_CHAR_LITERAL"Down";
-			case Key::eUp: return VKFW_HPP_CHAR_LITERAL"Up";
-			case Key::ePageUp: return VKFW_HPP_CHAR_LITERAL"PageUp";
-			case Key::ePageDown: return VKFW_HPP_CHAR_LITERAL"PageDown";
-			case Key::eHome: return VKFW_HPP_CHAR_LITERAL"Home";
-			case Key::eEnd: return VKFW_HPP_CHAR_LITERAL"End";
-			case Key::eCapsLock: return VKFW_HPP_CHAR_LITERAL"CapsLock";
-			case Key::eScrollLock: return VKFW_HPP_CHAR_LITERAL"ScrollLock";
-			case Key::eNumLock: return VKFW_HPP_CHAR_LITERAL"NumLock";
-			case Key::ePrintScreen: return VKFW_HPP_CHAR_LITERAL"PrintScreen";
-			case Key::ePause: return VKFW_HPP_CHAR_LITERAL"Pause";
-			case Key::eF1: return VKFW_HPP_CHAR_LITERAL"F1";
-			case Key::eF2: return VKFW_HPP_CHAR_LITERAL"F2";
-			case Key::eF3: return VKFW_HPP_CHAR_LITERAL"F3";
-			case Key::eF4: return VKFW_HPP_CHAR_LITERAL"F4";
-			case Key::eF5: return VKFW_HPP_CHAR_LITERAL"F5";
-			case Key::eF6: return VKFW_HPP_CHAR_LITERAL"F6";
-			case Key::eF7: return VKFW_HPP_CHAR_LITERAL"F7";
-			case Key::eF8: return VKFW_HPP_CHAR_LITERAL"F8";
-			case Key::eF9: return VKFW_HPP_CHAR_LITERAL"F9";
-			case Key::eF10: return VKFW_HPP_CHAR_LITERAL"F10";
-			case Key::eF11: return VKFW_HPP_CHAR_LITERAL"F11";
-			case Key::eF12: return VKFW_HPP_CHAR_LITERAL"F12";
-			case Key::eF13: return VKFW_HPP_CHAR_LITERAL"F13";
-			case Key::eF14: return VKFW_HPP_CHAR_LITERAL"F14";
-			case Key::eF15: return VKFW_HPP_CHAR_LITERAL"F15";
-			case Key::eF16: return VKFW_HPP_CHAR_LITERAL"F16";
-			case Key::eF17: return VKFW_HPP_CHAR_LITERAL"F17";
-			case Key::eF18: return VKFW_HPP_CHAR_LITERAL"F18";
-			case Key::eF19: return VKFW_HPP_CHAR_LITERAL"F19";
-			case Key::eF20: return VKFW_HPP_CHAR_LITERAL"F20";
-			case Key::eF21: return VKFW_HPP_CHAR_LITERAL"F21";
-			case Key::eF22: return VKFW_HPP_CHAR_LITERAL"F22";
-			case Key::eF23: return VKFW_HPP_CHAR_LITERAL"F23";
-			case Key::eF24: return VKFW_HPP_CHAR_LITERAL"F24";
-			case Key::eF25: return VKFW_HPP_CHAR_LITERAL"F25";
-			case Key::eKeyPad_0: return VKFW_HPP_CHAR_LITERAL"KeyPad 0";
-			case Key::eKeyPad_1: return VKFW_HPP_CHAR_LITERAL"KeyPad 1";
-			case Key::eKeyPad_2: return VKFW_HPP_CHAR_LITERAL"KeyPad 2";
-			case Key::eKeyPad_3: return VKFW_HPP_CHAR_LITERAL"KeyPad 3";
-			case Key::eKeyPad_4: return VKFW_HPP_CHAR_LITERAL"KeyPad 4";
-			case Key::eKeyPad_5: return VKFW_HPP_CHAR_LITERAL"KeyPad 5";
-			case Key::eKeyPad_6: return VKFW_HPP_CHAR_LITERAL"KeyPad 6";
-			case Key::eKeyPad_7: return VKFW_HPP_CHAR_LITERAL"KeyPad 7";
-			case Key::eKeyPad_8: return VKFW_HPP_CHAR_LITERAL"KeyPad 8";
-			case Key::eKeyPad_9: return VKFW_HPP_CHAR_LITERAL"KeyPad 9";
-			case Key::eKeyPad_Decimal: return VKFW_HPP_CHAR_LITERAL"KeyPad Decimal";
-			case Key::eKeyPad_Divide: return VKFW_HPP_CHAR_LITERAL"KeyPad Divide";
-			case Key::eKeyPad_Multiply: return VKFW_HPP_CHAR_LITERAL"KeyPad Multiply";
-			case Key::eKeyPad_Subtract: return VKFW_HPP_CHAR_LITERAL"KeyPad Subtract";
-			case Key::eKeyPad_Add: return VKFW_HPP_CHAR_LITERAL"KeyPad Add";
-			case Key::eKeyPad_Enter: return VKFW_HPP_CHAR_LITERAL"KeyPad Enter";
-			case Key::eKeyPad_Equal: return VKFW_HPP_CHAR_LITERAL"KeyPad Equal";
-			case Key::eLeftShift: return VKFW_HPP_CHAR_LITERAL"LeftShift";
-			case Key::eLeftControl: return VKFW_HPP_CHAR_LITERAL"LeftControl";
-			case Key::eLeftAlt: return VKFW_HPP_CHAR_LITERAL"LeftAlt";
-			case Key::eLeftSuper: return VKFW_HPP_CHAR_LITERAL"LeftSuper";
-			case Key::eRightShift: return VKFW_HPP_CHAR_LITERAL"RightShift";
-			case Key::eRightControl: return VKFW_HPP_CHAR_LITERAL"RightControl";
-			case Key::eRightAlt: return VKFW_HPP_CHAR_LITERAL"RightAlt";
-			case Key::eRightSuper: return VKFW_HPP_CHAR_LITERAL"RightSuper";
-			case Key::eMenu: return VKFW_HPP_CHAR_LITERAL"Menu";
+				/* Function Keys */
+			case Key::VKFW_HPP_ENUMERATOR(Escape): return VKFW_HPP_CHAR_LITERAL"Escape";
+			case Key::VKFW_HPP_ENUMERATOR(Enter): return VKFW_HPP_CHAR_LITERAL"Enter";
+			case Key::VKFW_HPP_ENUMERATOR(Tab): return VKFW_HPP_CHAR_LITERAL"Tab";
+			case Key::VKFW_HPP_ENUMERATOR(Backspace): return VKFW_HPP_CHAR_LITERAL"Backspace";
+			case Key::VKFW_HPP_ENUMERATOR(Insert): return VKFW_HPP_CHAR_LITERAL"Insert";
+			case Key::VKFW_HPP_ENUMERATOR(Delete): return VKFW_HPP_CHAR_LITERAL"Delete";
+			case Key::VKFW_HPP_ENUMERATOR(Right): return VKFW_HPP_CHAR_LITERAL"Right";
+			case Key::VKFW_HPP_ENUMERATOR(Left): return VKFW_HPP_CHAR_LITERAL"Left";
+			case Key::VKFW_HPP_ENUMERATOR(Down): return VKFW_HPP_CHAR_LITERAL"Down";
+			case Key::VKFW_HPP_ENUMERATOR(Up): return VKFW_HPP_CHAR_LITERAL"Up";
+			case Key::VKFW_HPP_ENUMERATOR(PageUp): return VKFW_HPP_CHAR_LITERAL"PageUp";
+			case Key::VKFW_HPP_ENUMERATOR(PageDown): return VKFW_HPP_CHAR_LITERAL"PageDown";
+			case Key::VKFW_HPP_ENUMERATOR(Home): return VKFW_HPP_CHAR_LITERAL"Home";
+			case Key::VKFW_HPP_ENUMERATOR(End): return VKFW_HPP_CHAR_LITERAL"End";
+			case Key::VKFW_HPP_ENUMERATOR(CapsLock): return VKFW_HPP_CHAR_LITERAL"CapsLock";
+			case Key::VKFW_HPP_ENUMERATOR(ScrollLock): return VKFW_HPP_CHAR_LITERAL"ScrollLock";
+			case Key::VKFW_HPP_ENUMERATOR(NumLock): return VKFW_HPP_CHAR_LITERAL"NumLock";
+			case Key::VKFW_HPP_ENUMERATOR(PrintScreen): return VKFW_HPP_CHAR_LITERAL"PrintScreen";
+			case Key::VKFW_HPP_ENUMERATOR(Pause): return VKFW_HPP_CHAR_LITERAL"Pause";
+			case Key::VKFW_HPP_ENUMERATOR(F1): return VKFW_HPP_CHAR_LITERAL"F1";
+			case Key::VKFW_HPP_ENUMERATOR(F2): return VKFW_HPP_CHAR_LITERAL"F2";
+			case Key::VKFW_HPP_ENUMERATOR(F3): return VKFW_HPP_CHAR_LITERAL"F3";
+			case Key::VKFW_HPP_ENUMERATOR(F4): return VKFW_HPP_CHAR_LITERAL"F4";
+			case Key::VKFW_HPP_ENUMERATOR(F5): return VKFW_HPP_CHAR_LITERAL"F5";
+			case Key::VKFW_HPP_ENUMERATOR(F6): return VKFW_HPP_CHAR_LITERAL"F6";
+			case Key::VKFW_HPP_ENUMERATOR(F7): return VKFW_HPP_CHAR_LITERAL"F7";
+			case Key::VKFW_HPP_ENUMERATOR(F8): return VKFW_HPP_CHAR_LITERAL"F8";
+			case Key::VKFW_HPP_ENUMERATOR(F9): return VKFW_HPP_CHAR_LITERAL"F9";
+			case Key::VKFW_HPP_ENUMERATOR(F10): return VKFW_HPP_CHAR_LITERAL"F10";
+			case Key::VKFW_HPP_ENUMERATOR(F11): return VKFW_HPP_CHAR_LITERAL"F11";
+			case Key::VKFW_HPP_ENUMERATOR(F12): return VKFW_HPP_CHAR_LITERAL"F12";
+			case Key::VKFW_HPP_ENUMERATOR(F13): return VKFW_HPP_CHAR_LITERAL"F13";
+			case Key::VKFW_HPP_ENUMERATOR(F14): return VKFW_HPP_CHAR_LITERAL"F14";
+			case Key::VKFW_HPP_ENUMERATOR(F15): return VKFW_HPP_CHAR_LITERAL"F15";
+			case Key::VKFW_HPP_ENUMERATOR(F16): return VKFW_HPP_CHAR_LITERAL"F16";
+			case Key::VKFW_HPP_ENUMERATOR(F17): return VKFW_HPP_CHAR_LITERAL"F17";
+			case Key::VKFW_HPP_ENUMERATOR(F18): return VKFW_HPP_CHAR_LITERAL"F18";
+			case Key::VKFW_HPP_ENUMERATOR(F19): return VKFW_HPP_CHAR_LITERAL"F19";
+			case Key::VKFW_HPP_ENUMERATOR(F20): return VKFW_HPP_CHAR_LITERAL"F20";
+			case Key::VKFW_HPP_ENUMERATOR(F21): return VKFW_HPP_CHAR_LITERAL"F21";
+			case Key::VKFW_HPP_ENUMERATOR(F22): return VKFW_HPP_CHAR_LITERAL"F22";
+			case Key::VKFW_HPP_ENUMERATOR(F23): return VKFW_HPP_CHAR_LITERAL"F23";
+			case Key::VKFW_HPP_ENUMERATOR(F24): return VKFW_HPP_CHAR_LITERAL"F24";
+			case Key::VKFW_HPP_ENUMERATOR(F25): return VKFW_HPP_CHAR_LITERAL"F25";
+			case Key::VKFW_HPP_ENUMERATOR(KeyPad_0): return VKFW_HPP_CHAR_LITERAL"KeyPad 0";
+			case Key::VKFW_HPP_ENUMERATOR(KeyPad_1): return VKFW_HPP_CHAR_LITERAL"KeyPad 1";
+			case Key::VKFW_HPP_ENUMERATOR(KeyPad_2): return VKFW_HPP_CHAR_LITERAL"KeyPad 2";
+			case Key::VKFW_HPP_ENUMERATOR(KeyPad_3): return VKFW_HPP_CHAR_LITERAL"KeyPad 3";
+			case Key::VKFW_HPP_ENUMERATOR(KeyPad_4): return VKFW_HPP_CHAR_LITERAL"KeyPad 4";
+			case Key::VKFW_HPP_ENUMERATOR(KeyPad_5): return VKFW_HPP_CHAR_LITERAL"KeyPad 5";
+			case Key::VKFW_HPP_ENUMERATOR(KeyPad_6): return VKFW_HPP_CHAR_LITERAL"KeyPad 6";
+			case Key::VKFW_HPP_ENUMERATOR(KeyPad_7): return VKFW_HPP_CHAR_LITERAL"KeyPad 7";
+			case Key::VKFW_HPP_ENUMERATOR(KeyPad_8): return VKFW_HPP_CHAR_LITERAL"KeyPad 8";
+			case Key::VKFW_HPP_ENUMERATOR(KeyPad_9): return VKFW_HPP_CHAR_LITERAL"KeyPad 9";
+			case Key::VKFW_HPP_ENUMERATOR(KeyPad_Decimal): return VKFW_HPP_CHAR_LITERAL"KeyPad Decimal";
+			case Key::VKFW_HPP_ENUMERATOR(KeyPad_Divide): return VKFW_HPP_CHAR_LITERAL"KeyPad Divide";
+			case Key::VKFW_HPP_ENUMERATOR(KeyPad_Multiply): return VKFW_HPP_CHAR_LITERAL"KeyPad Multiply";
+			case Key::VKFW_HPP_ENUMERATOR(KeyPad_Subtract): return VKFW_HPP_CHAR_LITERAL"KeyPad Subtract";
+			case Key::VKFW_HPP_ENUMERATOR(KeyPad_Add): return VKFW_HPP_CHAR_LITERAL"KeyPad Add";
+			case Key::VKFW_HPP_ENUMERATOR(KeyPad_Enter): return VKFW_HPP_CHAR_LITERAL"KeyPad Enter";
+			case Key::VKFW_HPP_ENUMERATOR(KeyPad_Equal): return VKFW_HPP_CHAR_LITERAL"KeyPad Equal";
+			case Key::VKFW_HPP_ENUMERATOR(LeftShift): return VKFW_HPP_CHAR_LITERAL"LeftShift";
+			case Key::VKFW_HPP_ENUMERATOR(LeftControl): return VKFW_HPP_CHAR_LITERAL"LeftControl";
+			case Key::VKFW_HPP_ENUMERATOR(LeftAlt): return VKFW_HPP_CHAR_LITERAL"LeftAlt";
+			case Key::VKFW_HPP_ENUMERATOR(LeftSuper): return VKFW_HPP_CHAR_LITERAL"LeftSuper";
+			case Key::VKFW_HPP_ENUMERATOR(RightShift): return VKFW_HPP_CHAR_LITERAL"RightShift";
+			case Key::VKFW_HPP_ENUMERATOR(RightControl): return VKFW_HPP_CHAR_LITERAL"RightControl";
+			case Key::VKFW_HPP_ENUMERATOR(RightAlt): return VKFW_HPP_CHAR_LITERAL"RightAlt";
+			case Key::VKFW_HPP_ENUMERATOR(RightSuper): return VKFW_HPP_CHAR_LITERAL"RightSuper";
+			case Key::VKFW_HPP_ENUMERATOR(Menu): return VKFW_HPP_CHAR_LITERAL"Menu";
 			default: return VKFW_HPP_CHAR_LITERAL"invalid";
 		}
 	}
