@@ -409,6 +409,19 @@ namespace VKFW_NAMESPACE {
 
 		VKFW_ENUMERATOR(LAST) = GLFW_GAMEPAD_AXIS_LAST
 	};
+	enum class Error {
+		VKFW_ENUMERATOR(None) = GLFW_NO_ERROR,
+		VKFW_ENUMERATOR(NotInitialized) = GLFW_NOT_INITIALIZED,
+		VKFW_ENUMERATOR(NoCurrentContext) = GLFW_NO_CURRENT_CONTEXT,
+		VKFW_ENUMERATOR(InvalidEnum) = GLFW_INVALID_ENUM,
+		VKFW_ENUMERATOR(InvalidValue) = GLFW_INVALID_VALUE,
+		VKFW_ENUMERATOR(OutOfMemory) = GLFW_OUT_OF_MEMORY,
+		VKFW_ENUMERATOR(ApiUnavailable) = GLFW_API_UNAVAILABLE,
+		VKFW_ENUMERATOR(VersionUnavailable) = GLFW_VERSION_UNAVAILABLE,
+		VKFW_ENUMERATOR(PlatformError) = GLFW_PLATFORM_ERROR,
+		VKFW_ENUMERATOR(FormatUnavailable) = GLFW_FORMAT_UNAVAILABLE,
+		VKFW_ENUMERATOR(NoWindowContext) = GLFW_NO_WINDOW_CONTEXT
+	};
 
 	enum class ModifierKeyBits {
 		VKFW_ENUMERATOR(Shift) = GLFW_MOD_SHIFT,
@@ -660,6 +673,22 @@ namespace VKFW_NAMESPACE {
 			case GamepadAxis::VKFW_ENUMERATOR(RightY): return VKFW_CHAR_LITERAL"Right Y";
 			case GamepadAxis::VKFW_ENUMERATOR(LeftTrigger): return VKFW_CHAR_LITERAL"Left Trigger";
 			case GamepadAxis::VKFW_ENUMERATOR(RightTrigger): return VKFW_CHAR_LITERAL"Right Trigger";
+			default: return VKFW_CHAR_LITERAL"invalid";
+		}
+	}
+	VKFW_INLINE VKFW_STRING_T to_string(Error value) {
+		switch (value) {
+			case Error::VKFW_ENUMERATOR(None): return VKFW_CHAR_LITERAL"No error has occurred";
+			case Error::VKFW_ENUMERATOR(NotInitialized): return VKFW_CHAR_LITERAL"GLFW has not been initialized";
+			case Error::VKFW_ENUMERATOR(NoCurrentContext): return VKFW_CHAR_LITERAL"No context is current for this thread";
+			case Error::VKFW_ENUMERATOR(InvalidEnum): return VKFW_CHAR_LITERAL"One of the arguments to the function was an invalid enum value";
+			case Error::VKFW_ENUMERATOR(InvalidValue): return VKFW_CHAR_LITERAL"One of the arguments to the function was an invalid value";
+			case Error::VKFW_ENUMERATOR(OutOfMemory): return VKFW_CHAR_LITERAL"A memory allocation failed";
+			case Error::VKFW_ENUMERATOR(ApiUnavailable): return VKFW_CHAR_LITERAL"GLFW could not find support for the requested API on the system";
+			case Error::VKFW_ENUMERATOR(VersionUnavailable): return VKFW_CHAR_LITERAL"The requested OpenGL or OpenGL ES version is not available";
+			case Error::VKFW_ENUMERATOR(PlatformError): return VKFW_CHAR_LITERAL"A platform-specific error occurred that does not match any of the more specific categories";
+			case Error::VKFW_ENUMERATOR(FormatUnavailable): return VKFW_CHAR_LITERAL"The requested format is not supported or available";
+			case Error::VKFW_ENUMERATOR(NoWindowContext): return VKFW_CHAR_LITERAL"The specified window does not have an OpenGL or OpenGL ES context";
 			default: return VKFW_CHAR_LITERAL"invalid";
 		}
 	}
