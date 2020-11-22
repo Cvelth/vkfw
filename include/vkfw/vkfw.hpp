@@ -209,7 +209,6 @@ namespace VKFW_NAMESPACE {
 		VKFW_ENUMERATOR(Left_Up) = GLFW_HAT_LEFT_UP,
 		VKFW_ENUMERATOR(Left_Down) = GLFW_HAT_LEFT_DOWN
 	};
-
 	enum class Key {
 		/* The unknown Key */
 		VKFW_ENUMERATOR(Unknown) = GLFW_KEY_UNKNOWN,
@@ -339,6 +338,76 @@ namespace VKFW_NAMESPACE {
 		VKFW_ENUMERATOR(Menu) = GLFW_KEY_MENU,
 
 		VKFW_ENUMERATOR(LAST) = GLFW_KEY_LAST
+	};
+	enum class MouseButton {
+		VKFW_ENUMERATOR2(1, _1) = GLFW_MOUSE_BUTTON_1,
+		VKFW_ENUMERATOR2(2, _2) = GLFW_MOUSE_BUTTON_2,
+		VKFW_ENUMERATOR2(3, _3) = GLFW_MOUSE_BUTTON_3,
+		VKFW_ENUMERATOR2(4, _4) = GLFW_MOUSE_BUTTON_4,
+		VKFW_ENUMERATOR2(5, _5) = GLFW_MOUSE_BUTTON_5,
+		VKFW_ENUMERATOR2(6, _6) = GLFW_MOUSE_BUTTON_6,
+		VKFW_ENUMERATOR2(7, _7) = GLFW_MOUSE_BUTTON_7,
+		VKFW_ENUMERATOR2(8, _8) = GLFW_MOUSE_BUTTON_8,
+
+		VKFW_ENUMERATOR(Left) = GLFW_MOUSE_BUTTON_LEFT,
+		VKFW_ENUMERATOR(Right) = GLFW_MOUSE_BUTTON_RIGHT,
+		VKFW_ENUMERATOR(Middle) = GLFW_MOUSE_BUTTON_MIDDLE,
+
+		VKFW_ENUMERATOR(LAST) = GLFW_MOUSE_BUTTON_LAST
+	};
+	enum class Joystick {
+		VKFW_ENUMERATOR2(1, _1) = GLFW_JOYSTICK_1,
+		VKFW_ENUMERATOR2(2, _2) = GLFW_JOYSTICK_2,
+		VKFW_ENUMERATOR2(3, _3) = GLFW_JOYSTICK_3,
+		VKFW_ENUMERATOR2(4, _4) = GLFW_JOYSTICK_4,
+		VKFW_ENUMERATOR2(5, _5) = GLFW_JOYSTICK_5,
+		VKFW_ENUMERATOR2(6, _6) = GLFW_JOYSTICK_6,
+		VKFW_ENUMERATOR2(7, _7) = GLFW_JOYSTICK_7,
+		VKFW_ENUMERATOR2(8, _8) = GLFW_JOYSTICK_8,
+		VKFW_ENUMERATOR2(9, _9) = GLFW_JOYSTICK_9,
+		VKFW_ENUMERATOR2(10, _10) = GLFW_JOYSTICK_10,
+		VKFW_ENUMERATOR2(11, _11) = GLFW_JOYSTICK_11,
+		VKFW_ENUMERATOR2(12, _12) = GLFW_JOYSTICK_12,
+		VKFW_ENUMERATOR2(13, _13) = GLFW_JOYSTICK_13,
+		VKFW_ENUMERATOR2(14, _14) = GLFW_JOYSTICK_14,
+		VKFW_ENUMERATOR2(15, _15) = GLFW_JOYSTICK_15,
+		VKFW_ENUMERATOR2(16, _16) = GLFW_JOYSTICK_16,
+
+		VKFW_ENUMERATOR(LAST) = GLFW_JOYSTICK_LAST
+	};
+	enum class GamepadButton {
+		VKFW_ENUMERATOR(A) = GLFW_GAMEPAD_BUTTON_A,
+		VKFW_ENUMERATOR(B) = GLFW_GAMEPAD_BUTTON_B,
+		VKFW_ENUMERATOR(X) = GLFW_GAMEPAD_BUTTON_X,
+		VKFW_ENUMERATOR(Y) = GLFW_GAMEPAD_BUTTON_Y,
+		VKFW_ENUMERATOR(LeftBumper) = GLFW_GAMEPAD_BUTTON_LEFT_BUMPER,
+		VKFW_ENUMERATOR(RightBumper) = GLFW_GAMEPAD_BUTTON_RIGHT_BUMPER,
+		VKFW_ENUMERATOR(Back) = GLFW_GAMEPAD_BUTTON_BACK,
+		VKFW_ENUMERATOR(Start) = GLFW_GAMEPAD_BUTTON_START,
+		VKFW_ENUMERATOR(Guide) = GLFW_GAMEPAD_BUTTON_GUIDE,
+		VKFW_ENUMERATOR(LeftThumb) = GLFW_GAMEPAD_BUTTON_LEFT_THUMB,
+		VKFW_ENUMERATOR(RightThumb) = GLFW_GAMEPAD_BUTTON_RIGHT_THUMB,
+		VKFW_ENUMERATOR(DpadUp) = GLFW_GAMEPAD_BUTTON_DPAD_UP,
+		VKFW_ENUMERATOR(DpadRight) = GLFW_GAMEPAD_BUTTON_DPAD_RIGHT,
+		VKFW_ENUMERATOR(DpadDown) = GLFW_GAMEPAD_BUTTON_DPAD_DOWN,
+		VKFW_ENUMERATOR(DpadLeft) = GLFW_GAMEPAD_BUTTON_DPAD_LEFT,
+
+		VKFW_ENUMERATOR(Cross) = GLFW_GAMEPAD_BUTTON_CROSS,
+		VKFW_ENUMERATOR(Circle) = GLFW_GAMEPAD_BUTTON_CIRCLE,
+		VKFW_ENUMERATOR(Square) = GLFW_GAMEPAD_BUTTON_SQUARE,
+		VKFW_ENUMERATOR(Triangle) = GLFW_GAMEPAD_BUTTON_TRIANGLE,
+
+		VKFW_ENUMERATOR(LAST) = GLFW_GAMEPAD_BUTTON_LAST
+	};
+	enum class GamepadAxis {
+		VKFW_ENUMERATOR(LeftX) = GLFW_GAMEPAD_AXIS_LEFT_X,
+		VKFW_ENUMERATOR(LeftY) = GLFW_GAMEPAD_AXIS_LEFT_Y,
+		VKFW_ENUMERATOR(RightX) = GLFW_GAMEPAD_AXIS_RIGHT_X,
+		VKFW_ENUMERATOR(RightY) = GLFW_GAMEPAD_AXIS_RIGHT_Y,
+		VKFW_ENUMERATOR(LeftTrigger) = GLFW_GAMEPAD_AXIS_LEFT_TRIGGER,
+		VKFW_ENUMERATOR(RightTrigger) = GLFW_GAMEPAD_AXIS_RIGHT_TRIGGER,
+
+		VKFW_ENUMERATOR(LAST) = GLFW_GAMEPAD_AXIS_LAST
 	};
 
 	enum class ModifierKeyBits {
@@ -529,12 +598,78 @@ namespace VKFW_NAMESPACE {
 			default: return VKFW_CHAR_LITERAL"invalid";
 		}
 	}
+	VKFW_INLINE VKFW_STRING_T to_string(MouseButton value) {
+		switch (value) {
+			case MouseButton::VKFW_ENUMERATOR2(1, _1):	return VKFW_CHAR_LITERAL"1 (left)";
+			case MouseButton::VKFW_ENUMERATOR2(2, _2):return VKFW_CHAR_LITERAL"2 (right)";
+			case MouseButton::VKFW_ENUMERATOR2(3, _3):return VKFW_CHAR_LITERAL"3 (middle)";
+			case MouseButton::VKFW_ENUMERATOR2(4, _4):return VKFW_CHAR_LITERAL"4";
+			case MouseButton::VKFW_ENUMERATOR2(5, _5):return VKFW_CHAR_LITERAL"5";
+			case MouseButton::VKFW_ENUMERATOR2(6, _6):	return VKFW_CHAR_LITERAL"6";
+			case MouseButton::VKFW_ENUMERATOR2(7, _7):	return VKFW_CHAR_LITERAL"7";
+			case MouseButton::VKFW_ENUMERATOR2(8, _8):	return VKFW_CHAR_LITERAL"8";
+			default: return VKFW_CHAR_LITERAL"invalid";
+		}
+	}
+	VKFW_INLINE VKFW_STRING_T to_string(Joystick value) {
+		switch (value) {
+			case Joystick::VKFW_ENUMERATOR2(1, _1): return VKFW_CHAR_LITERAL"1";
+			case Joystick::VKFW_ENUMERATOR2(2, _2): return VKFW_CHAR_LITERAL"2";
+			case Joystick::VKFW_ENUMERATOR2(3, _3): return VKFW_CHAR_LITERAL"3";
+			case Joystick::VKFW_ENUMERATOR2(4, _4): return VKFW_CHAR_LITERAL"4";
+			case Joystick::VKFW_ENUMERATOR2(5, _5): return VKFW_CHAR_LITERAL"5";
+			case Joystick::VKFW_ENUMERATOR2(6, _6): return VKFW_CHAR_LITERAL"6";
+			case Joystick::VKFW_ENUMERATOR2(7, _7): return VKFW_CHAR_LITERAL"7";
+			case Joystick::VKFW_ENUMERATOR2(8, _8): return VKFW_CHAR_LITERAL"8";
+			case Joystick::VKFW_ENUMERATOR2(9, _9): return VKFW_CHAR_LITERAL"9";
+			case Joystick::VKFW_ENUMERATOR2(10, _10): return VKFW_CHAR_LITERAL"10";
+			case Joystick::VKFW_ENUMERATOR2(11, _11): return VKFW_CHAR_LITERAL"11";
+			case Joystick::VKFW_ENUMERATOR2(12, _12): return VKFW_CHAR_LITERAL"12";
+			case Joystick::VKFW_ENUMERATOR2(13, _13): return VKFW_CHAR_LITERAL"13";
+			case Joystick::VKFW_ENUMERATOR2(14, _14): return VKFW_CHAR_LITERAL"14";
+			case Joystick::VKFW_ENUMERATOR2(15, _15): return VKFW_CHAR_LITERAL"15";
+			case Joystick::VKFW_ENUMERATOR2(16, _16): return VKFW_CHAR_LITERAL"16";
+			default: return VKFW_CHAR_LITERAL"invalid";
+		}
+	}
+	VKFW_INLINE VKFW_STRING_T to_string(GamepadButton value) {
+		switch (value) {
+			case GamepadButton::VKFW_ENUMERATOR(A): return VKFW_CHAR_LITERAL"A (Cross)";
+			case GamepadButton::VKFW_ENUMERATOR(B): return VKFW_CHAR_LITERAL"B (Circle)";
+			case GamepadButton::VKFW_ENUMERATOR(X): return VKFW_CHAR_LITERAL"X (Square)";
+			case GamepadButton::VKFW_ENUMERATOR(Y): return VKFW_CHAR_LITERAL"Y (Triangle)";
+			case GamepadButton::VKFW_ENUMERATOR(LeftBumper): return VKFW_CHAR_LITERAL"Left Bumper";
+			case GamepadButton::VKFW_ENUMERATOR(RightBumper): return VKFW_CHAR_LITERAL"Right Bumper";
+			case GamepadButton::VKFW_ENUMERATOR(Back): return VKFW_CHAR_LITERAL"Back";
+			case GamepadButton::VKFW_ENUMERATOR(Start): return VKFW_CHAR_LITERAL"Start";
+			case GamepadButton::VKFW_ENUMERATOR(Guide): return VKFW_CHAR_LITERAL"Guide";
+			case GamepadButton::VKFW_ENUMERATOR(LeftThumb): return VKFW_CHAR_LITERAL"Left Thumb";
+			case GamepadButton::VKFW_ENUMERATOR(RightThumb): return VKFW_CHAR_LITERAL"Right Thumb";
+			case GamepadButton::VKFW_ENUMERATOR(DpadUp): return VKFW_CHAR_LITERAL"Dpad Up";
+			case GamepadButton::VKFW_ENUMERATOR(DpadRight): return VKFW_CHAR_LITERAL"Dpad Right";
+			case GamepadButton::VKFW_ENUMERATOR(DpadDown): return VKFW_CHAR_LITERAL"Dpad Down";
+			case GamepadButton::VKFW_ENUMERATOR(DpadLeft): return VKFW_CHAR_LITERAL"Dpad Left";
+			default: return VKFW_CHAR_LITERAL"invalid";
+		}
+	}
+	VKFW_INLINE VKFW_STRING_T to_string(GamepadAxis value) {
+		switch (value) {
+			case GamepadAxis::VKFW_ENUMERATOR(LeftX): return VKFW_CHAR_LITERAL"Left X";
+			case GamepadAxis::VKFW_ENUMERATOR(LeftY): return VKFW_CHAR_LITERAL"Left Y";
+			case GamepadAxis::VKFW_ENUMERATOR(RightX): return VKFW_CHAR_LITERAL"Right X";
+			case GamepadAxis::VKFW_ENUMERATOR(RightY): return VKFW_CHAR_LITERAL"Right Y";
+			case GamepadAxis::VKFW_ENUMERATOR(LeftTrigger): return VKFW_CHAR_LITERAL"Left Trigger";
+			case GamepadAxis::VKFW_ENUMERATOR(RightTrigger): return VKFW_CHAR_LITERAL"Right Trigger";
+			default: return VKFW_CHAR_LITERAL"invalid";
+		}
+	}
+
 	VKFW_INLINE VKFW_STRING_T to_string(ModifierKeyFlags value) {
 		if (!value) return VKFW_CHAR_LITERAL"{}";
 		VKFW_STRING_T result;
 
 		if (value & ModifierKeyBits::VKFW_ENUMERATOR(CapsLock)) result += VKFW_CHAR_LITERAL"CapsLock | ";
-		if (value & ModifierKeyBits::VKFW_ENUMERATOR(NumLock)) result += VKFW_CHAR_LITERAL"NumLock| ";
+		if (value & ModifierKeyBits::VKFW_ENUMERATOR(NumLock)) result += VKFW_CHAR_LITERAL"NumLock | ";
 
 		if (value & ModifierKeyBits::VKFW_ENUMERATOR(Control)) result += VKFW_CHAR_LITERAL"Control + ";
 		if (value & ModifierKeyBits::VKFW_ENUMERATOR(Alt)) result += VKFW_CHAR_LITERAL"Alt + ";
