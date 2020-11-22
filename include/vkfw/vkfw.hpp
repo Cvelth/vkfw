@@ -391,6 +391,12 @@ namespace VKFW_NAMESPACE {
 		VKFW_ENUMERATOR(FormatUnavailable) = GLFW_FORMAT_UNAVAILABLE,
 		VKFW_ENUMERATOR(NoWindowContext) = GLFW_NO_WINDOW_CONTEXT
 	};
+	bool check(Result result) { return result == Result::VKFW_ENUMERATOR(Success); }
+	enum class InitializationHint {
+		VKFW_ENUMERATOR(JoystickHatButtons) = GLFW_JOYSTICK_HAT_BUTTONS,
+		VKFW_ENUMERATOR(CocoaChdirResources) = GLFW_COCOA_CHDIR_RESOURCES, // MacOS specific
+		VKFW_ENUMERATOR(CocoaMenubar) = GLFW_COCOA_MENUBAR // MacOS specific
+	};
 	enum class Hint {
 
 		// Window Hints
@@ -446,11 +452,6 @@ namespace VKFW_NAMESPACE {
 		// X11 specific Hints
 		VKFW_ENUMERATOR(X11ClassName) = GLFW_X11_CLASS_NAME,
 		VKFW_ENUMERATOR(X11InstanceName) = GLFW_X11_INSTANCE_NAME,
-
-		// Initialization Hints
-		VKFW_ENUMERATOR(JoystickHatButtons) = GLFW_JOYSTICK_HAT_BUTTONS,
-		VKFW_ENUMERATOR(CocoaChdirResources) = GLFW_COCOA_CHDIR_RESOURCES, // MacOS specific
-		VKFW_ENUMERATOR(CocoaMenubar) = GLFW_COCOA_MENUBAR
 	};
 	enum class Attribute {
 
@@ -820,16 +821,11 @@ namespace VKFW_NAMESPACE {
 }
 
 namespace VKFW_NAMESPACE {
-	//template <typename RefType> using Optional
-	//	= VULKAN_HPP_NAMESPACE::Optional<RefType>;
 #ifndef VKFW_NO_SMART_HANDLE
 	template <typename Type> using UniqueHandleTraits
 		= VULKAN_HPP_NAMESPACE::UniqueHandleTraits<Type, VULKAN_HPP_DEFAULT_DISPATCHER_TYPE>;
 	template <typename Type> using UniqueHandle
 		= VULKAN_HPP_NAMESPACE::UniqueHandle<Type, VULKAN_HPP_DEFAULT_DISPATCHER_TYPE>;
-	template <typename OwnerType> using ObjectDestroy
-		= VULKAN_HPP_NAMESPACE::ObjectDestroy<OwnerType, VULKAN_HPP_DEFAULT_DISPATCHER_TYPE>;
-	using NoParent = VULKAN_HPP_NAMESPACE::NoParent;
 #endif
 	//template <typename Type> struct isHandleType {
 	//	static VKFW_CONST_OR_CONSTEXPR bool value = false;
@@ -1030,9 +1026,7 @@ namespace VKFW_NAMESPACE {
 		VKFW_ASSERT_ON_RESULT(result == Result::VKFW_ENUMERATOR(Success));
 		return result;
 #else
-		if (result != Result::VKFW_ENUMERATOR(Success)) {
-			throwResultException(result, message);
-		}
+		if (!check(result)) throwResultException(result, message);
 #endif
 	}
 	template <typename T>
@@ -1042,9 +1036,7 @@ namespace VKFW_NAMESPACE {
 		VKFW_ASSERT_ON_RESULT(result == Result::VKFW_ENUMERATOR(Success));
 		return ResultValue<T>(result, std::move(data));
 #else
-		if (result != Result::VKFW_ENUMERATOR(Success)) {
-			throwResultException(result, message);
-		}
+		if (!check(result)) throwResultException(result, message);
 		return std::move(data);
 #endif
 	}
@@ -1056,9 +1048,7 @@ namespace VKFW_NAMESPACE {
 		VKFW_ASSERT_ON_RESULT(result == Result::VKFW_ENUMERATOR(Success));
 		return ResultValue<UniqueHandle<T>>(result, UniqueHandle<T>(data));
 # else
-		if (result != Result::VKFW_ENUMERATOR(Success)) {
-			throwResultException(result, message);
-		}
+		if (!check(result)) throwResultException(result, message);
 		return UniqueHandle<T>(data);
 # endif
 	}
@@ -1070,6 +1060,85 @@ namespace VKFW_NAMESPACE {
 	};
 #endif
 
+	struct Nullopt {};
+	VKFW_INLINE VKFW_CONSTEXPR Nullopt nullopt = {};
+	template <typename T>
+	class Optional {
+	public:
+		using value_type = T;
+
+		VKFW_INLINE VKFW_CONSTEXPR Optional() : m_has_value(false) {}
+		VKFW_INLINE VKFW_CONSTEXPR Optional(Nullopt) : m_has_value(false) {}
+		VKFW_INLINE VKFW_CONSTEXPR Optional(value_type const &t) : m_has_value(true), m_value(t) {}
+		VKFW_INLINE VKFW_CONSTEXPR Optional(value_type &&t) : m_has_value(true), m_value(std::move(t)) {}
+		template<class U> VKFW_INLINE VKFW_CONSTEXPR Optional(Optional<U> const &another)
+			: m_has_value(another.m_has_value), m_value(another.m_value) {}
+		template<class U> VKFW_INLINE VKFW_CONSTEXPR Optional(Optional<U> &&another)
+			: m_has_value(another.m_has_value), m_value(std::move(another.m_value)) {}
+		VKFW_INLINE VKFW_CONSTEXPR Optional &operator=(Nullopt) { m_has_value = false; return *this; }
+		template<class U> VKFW_INLINE VKFW_CONSTEXPR Optional &operator=(Optional<U> const &another) {
+			m_has_value = another.m_has_value;
+			m_value = another.m_value;
+			return *this; 
+		}
+		template<class U> VKFW_INLINE VKFW_CONSTEXPR Optional &operator=(Optional<U> &&another) {
+			m_has_value = another.m_has_value;
+			m_value = std::move(another.m_value);
+			return *this; 
+		}
+		VKFW_INLINE VKFW_CONSTEXPR bool has_value() const { return m_has_value; }
+		VKFW_INLINE VKFW_CONSTEXPR value_type const &value() const {
+			assert(m_has_value);
+			return m_value;
+		}
+	private:
+		bool m_has_value;
+		T m_value;
+	};
+
+	template <InitializationHint hint_name, typename hint_type>
+	Result initHint(hint_type const &value);
+#ifndef VKFW_DISABLE_ENHANCED_MODE
+	template <typename Type> using HintType = Optional<Type>;
+	template <typename Type, InitializationHint hint> class InitializationHintType : public HintType<Type> {
+	public: using HintType<Type>::HintType;
+	};
+	template <InitializationHint hint> using BooleanInitializationHint = InitializationHintType<bool, hint>;
+	struct InitHints {
+	public:
+# ifndef VKFW_NO_STRUCT_CONSTRUCTORS
+		VKFW_CONSTEXPR InitHints(
+			BooleanInitializationHint<InitializationHint::VKFW_ENUMERATOR(JoystickHatButtons)> joystickHatButtons_ = nullopt,
+			BooleanInitializationHint<InitializationHint::VKFW_ENUMERATOR(CocoaChdirResources)> cocoaChdirResources_ = nullopt,
+			BooleanInitializationHint<InitializationHint::VKFW_ENUMERATOR(CocoaMenubar)> cocoaMenubar_ = nullopt
+		) VKFW_NOEXCEPT 
+			: joystickHatButtons(joystickHatButtons_)
+			, cocoaChdirResources(cocoaChdirResources_)
+			, cocoaMenubar(cocoaMenubar_) {}
+# endif
+	public:
+		BooleanInitializationHint<InitializationHint::VKFW_ENUMERATOR(JoystickHatButtons)> joystickHatButtons = nullopt;
+		BooleanInitializationHint<InitializationHint::VKFW_ENUMERATOR(CocoaChdirResources)> cocoaChdirResources = nullopt;
+		BooleanInitializationHint<InitializationHint::VKFW_ENUMERATOR(CocoaMenubar)> cocoaMenubar = nullopt;
+	};
+	template<typename Type, InitializationHint hint_name>
+	Result setInitHint(InitializationHintType<Type, hint_name> const &hint) {
+		if (hint.has_value())
+			initHint<hint_name>(hint.value());
+		else
+			initHint<hint_name>(true);
+		return static_cast<Result>(glfwGetError(nullptr));
+	}
+	Result setInitHints(InitHints hints) {
+		
+		Result result = Result::VKFW_ENUMERATOR(Success);
+		if (!check(result = setInitHint(hints.joystickHatButtons))) return result;
+		if (!check(result = setInitHint(hints.cocoaChdirResources))) return result;
+		if (!check(result = setInitHint(hints.cocoaMenubar))) return result;
+		return result;
+	}
+#endif
+
 	class Instance {
 	public:
 		using CType = void;
@@ -1077,17 +1146,18 @@ namespace VKFW_NAMESPACE {
 		bool operator!() const VKFW_NOEXCEPT { return false; }
 	};
 
+#ifdef VKFW_DISABLE_ENHANCED_MODE
 	VKFW_NODISCARD Result init();
-	VKFW_NODISCARD Result terminate();
-#ifndef VKFW_DISABLE_ENHANCED_MODE
+#else VKFW_DISABLE_ENHANCED_MODE
 	VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type
-		init(int /* Initialization hints */);
+		init(InitHints hints = {});
 # ifndef VKFW_NO_SMART_HANDLE
 	using UniqueInstance = UniqueHandle<Instance>;
 	VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<UniqueInstance>::type
-		initUnique(int /* Initialization hints */ = 0);
+		initUnique(InitHints hints = {});
 # endif
 #endif
+	VKFW_NODISCARD Result terminate();
 }
 
 template <> struct VULKAN_HPP_NAMESPACE::FlagTraits<VKFW_NAMESPACE::ModifierKeyBits> {
@@ -1111,25 +1181,73 @@ public:
 #endif
 
 namespace VKFW_NAMESPACE {
-	VKFW_NODISCARD Result init() {
+	template<> Result initHint<InitializationHint::VKFW_ENUMERATOR(JoystickHatButtons), Boolean>(Boolean const &value) {
+		glfwInitHint(static_cast<int>(InitializationHint::VKFW_ENUMERATOR(JoystickHatButtons)),
+					 static_cast<int>(value));
+		return static_cast<Result>(glfwGetError(nullptr));
+	}
+	template<> Result initHint<InitializationHint::VKFW_ENUMERATOR(JoystickHatButtons), bool>(bool const &value) {
+		glfwInitHint(static_cast<int>(InitializationHint::VKFW_ENUMERATOR(JoystickHatButtons)),
+					 static_cast<int>(value));
+		return static_cast<Result>(glfwGetError(nullptr));
+	}
+	template<> Result initHint<InitializationHint::VKFW_ENUMERATOR(CocoaChdirResources), Boolean>(Boolean const &value) {
+		glfwInitHint(static_cast<int>(InitializationHint::VKFW_ENUMERATOR(CocoaChdirResources)),
+					 static_cast<int>(value));
+		return static_cast<Result>(glfwGetError(nullptr));
+	}
+	template<> Result initHint<InitializationHint::VKFW_ENUMERATOR(CocoaChdirResources), bool>(bool const &value) {
+		glfwInitHint(static_cast<int>(InitializationHint::VKFW_ENUMERATOR(CocoaChdirResources)),
+					 static_cast<int>(value));
+		return static_cast<Result>(glfwGetError(nullptr));
+	}
+	template<> Result initHint<InitializationHint::VKFW_ENUMERATOR(CocoaMenubar), Boolean>(Boolean const &value) {
+		glfwInitHint(static_cast<int>(InitializationHint::VKFW_ENUMERATOR(CocoaMenubar)),
+					 static_cast<int>(value));
+		return static_cast<Result>(glfwGetError(nullptr));
+	}
+	template<> Result initHint<InitializationHint::VKFW_ENUMERATOR(CocoaMenubar), bool>(bool const &value) {
+		glfwInitHint(static_cast<int>(InitializationHint::VKFW_ENUMERATOR(CocoaMenubar)),
+					 static_cast<int>(value));
+		return static_cast<Result>(glfwGetError(nullptr));
+	}
+
+#ifdef VKFW_DISABLE_ENHANCED_MODE
+	VKFW_NODISCARD VKFW_INLINE Result init() {
 		if (glfwInit())
 			return Result::VKFW_ENUMERATOR(Success);
 		else
 			return static_cast<Result>(glfwGetError(nullptr));
 	}
-	VKFW_NODISCARD Result terminate() {
+#else
+	VKFW_NODISCARD_WHEN_NO_EXCEPTIONS VKFW_INLINE typename ResultValueType<void>::type
+		init(InitHints hints) {
+
+		Result result = setInitHints(hints);
+		if (!check(result)) return createResultValue(result, VKFW_NAMESPACE_STRING"::init");
+
+		if (glfwInit())
+			return createResultValue(Result::VKFW_ENUMERATOR(Success), VKFW_NAMESPACE_STRING"::init");
+		else
+			return createResultValue(static_cast<Result>(glfwGetError(nullptr)), VKFW_NAMESPACE_STRING"::init");
+	}
+# ifndef VKFW_NO_SMART_HANDLE
+	VKFW_NODISCARD_WHEN_NO_EXCEPTIONS VKFW_INLINE typename ResultValueType<VKFW_NAMESPACE::UniqueInstance>::type
+		initUnique(InitHints hints) {
+		Instance instance;
+
+		Result result = setInitHints(hints);
+		if (!check(result)) return createResultValueUnique(result, instance, VKFW_NAMESPACE_STRING"::initUnique");
+
+		if (glfwInit())
+			return createResultValueUnique(Result::VKFW_ENUMERATOR(Success), instance, VKFW_NAMESPACE_STRING"::initUnique");
+		else
+			return createResultValueUnique(static_cast<Result>(glfwGetError(nullptr)), instance, VKFW_NAMESPACE_STRING"::initUnique");
+	}
+# endif
+#endif
+	VKFW_NODISCARD VKFW_INLINE Result terminate() {
 		glfwTerminate();
 		return static_cast<Result>(glfwGetError(nullptr));
-	}
-	VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type
-		init(int /* Initialization hints */) {
-		// Set Hints!
-		return createResultValue(init(), VKFW_NAMESPACE_STRING"::init");
-	}
-	VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<VKFW_NAMESPACE::UniqueInstance>::type
-		initUnique(int /* Initialization hints */) {
-		Instance instance;
-		// Set Hints!
-		return createResultValueUnique(init(), instance, VKFW_NAMESPACE_STRING"::initUnique");
 	}
 }
