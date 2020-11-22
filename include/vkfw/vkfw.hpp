@@ -32,11 +32,14 @@
 #if !defined(VKFW_INCLUDE_GL)
 #  define GLFW_INCLUDE_NONE
 #endif
+#if !defined(VKFW_NO_INCLUDE_VULKAN)
+#  define GLFW_INCLUDE_VULKAN
+#endif
 
 #include <GLFW/glfw3.h>
-#if !defined(VKFW_NO_INCLUDE_VULKAN_HPP)
+//#if !defined(VKFW_NO_INCLUDE_VULKAN_HPP)
 #  include <vulkan/vulkan.hpp>
-#endif
+//#endif
 
 #if defined(VKFW_DISABLE_ENHANCED_MODE)
 #  if !defined(VKFW_NO_SMART_HANDLE)
@@ -168,6 +171,20 @@ static_assert(GLFW_VERSION_MAJOR == 3
 #endif
 
 namespace VKFW_NAMESPACE {
+	template <typename RefType> using Optional
+		= VULKAN_HPP_NAMESPACE::Optional<RefType>;
+	template <typename BitType> using Flags
+		= VULKAN_HPP_NAMESPACE::Flags<BitType>;
+	template <typename FlagBitsType> using FlagTraits
+		= VULKAN_HPP_NAMESPACE::FlagTraits<FlagBitsType>;
+
+#if !defined(VKFW_NO_SMART_HANDLE)
+	template <typename Type> using UniqueHandleTraits
+		= VULKAN_HPP_NAMESPACE::UniqueHandleTraits<Type, VULKAN_HPP_DEFAULT_DISPATCHER_TYPE>;
+	template <typename Type> using UniqueHandle
+		= VULKAN_HPP_NAMESPACE::UniqueHandle<Type, VULKAN_HPP_DEFAULT_DISPATCHER_TYPE>;
+#endif
+
 	enum class Boolean {
 		VKFW_ENUMERATOR(True) = GLFW_TRUE,
 		VKFW_ENUMERATOR(False) = GLFW_FALSE
@@ -323,6 +340,28 @@ namespace VKFW_NAMESPACE {
 
 		VKFW_ENUMERATOR(LAST) = GLFW_KEY_LAST
 	};
+
+	enum class ModifierKeyBits {
+		VKFW_ENUMERATOR(Shift) = GLFW_MOD_SHIFT,
+		VKFW_ENUMERATOR(Control) = GLFW_MOD_CONTROL,
+		VKFW_ENUMERATOR(Alt) = GLFW_MOD_ALT,
+		VKFW_ENUMERATOR(Super) = GLFW_MOD_SUPER,
+		VKFW_ENUMERATOR(CapsLock) = GLFW_MOD_CAPS_LOCK,
+		VKFW_ENUMERATOR(NumLock) = GLFW_MOD_NUM_LOCK
+	};
+	using ModifierKeyFlags = Flags<ModifierKeyBits>;
+	VKFW_INLINE VKFW_CONSTEXPR ModifierKeyFlags operator|(ModifierKeyBits bit0, ModifierKeyBits bit1) VKFW_NOEXCEPT {
+		return ModifierKeyFlags(bit0) | bit1;
+	}
+	VKFW_INLINE VKFW_CONSTEXPR ModifierKeyFlags operator&(ModifierKeyBits bit0, ModifierKeyBits bit1) VKFW_NOEXCEPT {
+		return ModifierKeyFlags(bit0) & bit1;
+	}
+	VKFW_INLINE VKFW_CONSTEXPR ModifierKeyFlags operator^(ModifierKeyBits bit0, ModifierKeyBits bit1) VKFW_NOEXCEPT {
+		return ModifierKeyFlags(bit0) ^ bit1;
+	}
+	VKFW_INLINE VKFW_CONSTEXPR ModifierKeyFlags operator~(ModifierKeyBits bits) VKFW_NOEXCEPT {
+		return ~(ModifierKeyFlags(bits));
+	}
 
 	VKFW_INLINE VKFW_STRING_T to_string(Boolean value) {
 		switch (value) {
@@ -490,20 +529,33 @@ namespace VKFW_NAMESPACE {
 			default: return VKFW_CHAR_LITERAL"invalid";
 		}
 	}
+	VKFW_INLINE VKFW_STRING_T to_string(ModifierKeyFlags value) {
+		if (!value) return VKFW_CHAR_LITERAL"{}";
+		VKFW_STRING_T result;
 
-	template <typename RefType>
-	using Optional = VULKAN_HPP_NAMESPACE::Optional<RefType>;
+		if (value & ModifierKeyBits::VKFW_ENUMERATOR(CapsLock)) result += VKFW_CHAR_LITERAL"CapsLock | ";
+		if (value & ModifierKeyBits::VKFW_ENUMERATOR(NumLock)) result += VKFW_CHAR_LITERAL"NumLock| ";
 
-#if !defined(VKFW_NO_SMART_HANDLE)
-	template <typename Type> using UniqueHandleTraits
-		= VULKAN_HPP_NAMESPACE::UniqueHandleTraits<Type, VULKAN_HPP_DEFAULT_DISPATCHER_TYPE>;
+		if (value & ModifierKeyBits::VKFW_ENUMERATOR(Control)) result += VKFW_CHAR_LITERAL"Control + ";
+		if (value & ModifierKeyBits::VKFW_ENUMERATOR(Alt)) result += VKFW_CHAR_LITERAL"Alt + ";
+		if (value & ModifierKeyBits::VKFW_ENUMERATOR(Super)) result += VKFW_CHAR_LITERAL"Super + ";
 
-	template <typename Type> using UniqueHandle
-		= VULKAN_HPP_NAMESPACE::UniqueHandle<Type, VULKAN_HPP_DEFAULT_DISPATCHER_TYPE>;
-#endif
+		return VKFW_CHAR_LITERAL"{ " + result.substr(0, result.size() - 3) + VKFW_CHAR_LITERAL" }";
+	}
 
 	template <typename Type>
 	struct isHandleType {
 		static VKFW_CONST_OR_CONSTEXPR bool value = false;
 	};
 }
+
+template <> struct VULKAN_HPP_NAMESPACE::FlagTraits<vkfw::ModifierKeyBits> {
+	enum : VkFlags {
+		allFlags = VkFlags(vkfw::ModifierKeyBits::VKFW_ENUMERATOR(Shift))
+		| VkFlags(vkfw::ModifierKeyBits::VKFW_ENUMERATOR(Control))
+		| VkFlags(vkfw::ModifierKeyBits::VKFW_ENUMERATOR(Alt))
+		| VkFlags(vkfw::ModifierKeyBits::VKFW_ENUMERATOR(Super))
+		| VkFlags(vkfw::ModifierKeyBits::VKFW_ENUMERATOR(CapsLock))
+		| VkFlags(vkfw::ModifierKeyBits::VKFW_ENUMERATOR(NumLock))
+	};
+};
