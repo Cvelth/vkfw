@@ -4,58 +4,60 @@
 // SPDX-License-Identifier: Apache-2.0
 //
 
-#if defined(_MSVC_LANG)
-#  define VKFW_CPLUSPLUS _MSVC_LANG
+#ifdef _MSVC_LANG
+# define VKFW_CPLUSPLUS _MSVC_LANG
 #else
-#  define VKFW_CPLUSPLUS __cplusplus
+# define VKFW_CPLUSPLUS __cplusplus
 #endif
 
 #if 201703L < VKFW_CPLUSPLUS
-#  define VKFW_CPP_VERSION 20
+# define VKFW_CPP_VERSION 20
 #elif 201402L < VKFW_CPLUSPLUS
-#  define VKFW_CPP_VERSION 17
+# define VKFW_CPP_VERSION 17
 #elif 201103L < VKFW_CPLUSPLUS
-#  define VKFW_CPP_VERSION 14
+# define VKFW_CPP_VERSION 14
 #elif 199711L < VKFW_CPLUSPLUS
-#  define VKFW_CPP_VERSION 11
+# define VKFW_CPP_VERSION 11
 #else
-#  error "vkfw.hpp needs at least c++ standard version 11"
+# error "vkfw.hpp needs at least c++ standard version 11"
+#endif
+
+#ifndef VKFW_INCLUDE_GL
+# define GLFW_INCLUDE_NONE
+#endif
+#ifndef VKFW_NO_INCLUDE_VULKAN
+# define GLFW_INCLUDE_VULKAN
 #endif
 
 // Standard library includes go here!
 #include <string>
+#include <system_error>
+#include <tuple>
 
-#if 17 <= VULKAN_HPP_CPP_VERSION
-#  include <string_view>
-#endif
-
-#if !defined(VKFW_INCLUDE_GL)
-#  define GLFW_INCLUDE_NONE
-#endif
-#if !defined(VKFW_NO_INCLUDE_VULKAN)
-#  define GLFW_INCLUDE_VULKAN
+#if 17 <= VKFW_CPP_VERSION
+# include <string_view>
 #endif
 
 #include <GLFW/glfw3.h>
-//#if !defined(VKFW_NO_INCLUDE_VULKAN_HPP)
-#  include <vulkan/vulkan.hpp>
+//#ifndef VKFW_NO_INCLUDE_VULKAN_HPP
+# include <vulkan/vulkan.hpp>
 //#endif
 
-#if defined(VKFW_DISABLE_ENHANCED_MODE)
-#  if !defined(VKFW_NO_SMART_HANDLE)
-#    define VKFW_NO_SMART_HANDLE
-#  endif
+#ifdef VKFW_DISABLE_ENHANCED_MODE
+# ifndef VKFW_NO_SMART_HANDLE
+#   define VKFW_NO_SMART_HANDLE
+# endif
 #else
-#  include <memory>
-#  include <vector>
+# include <memory>
+# include <vector>
 #endif
 
-#if !defined(VKFW_ASSERT)
-#  include <cassert>
-#  define VKFW_ASSERT assert
+#ifndef VKFW_ASSERT
+# include <cassert>
+# define VKFW_ASSERT assert
 #endif
 
-#if !defined(VKFW_ASSERT_ON_RESULT)
+#ifndef VKFW_ASSERT_ON_RESULT
 # define VKFW_ASSERT_ON_RESULT VKFW_ASSERT
 #endif
 
@@ -67,70 +69,70 @@ static_assert(GLFW_VERSION_MAJOR == 3
 			  && GLFW_VERSION_REVISION == 2
 			  , "\"glfw3.h\" version is not compatible with the \"vkfw.hpp\" version!");
 
-#if !defined(VKFW_INLINE)
-#  if defined(__clang__)
-#    if __has_attribute(always_inline)
-#      define VKFW_INLINE __attribute__((always_inline)) __inline__
-#    else
-#      define VKFW_INLINE inline
-#    endif
-#  elif defined(__GNUC__)
-#    define VKFW_INLINE __attribute__((always_inline)) __inline__
-#  elif defined(_MSC_VER)
-#    define VKFW_INLINE inline
-#  else
-#    define VKFW_INLINE inline
-#  endif
+#ifndef VKFW_INLINE
+# ifdef __clang__
+#   if __has_attribute(always_inline)
+#     define VKFW_INLINE __attribute__((always_inline)) __inline__
+#   else
+#     define VKFW_INLINE inline
+#   endif
+# elifdef __GNUC__
+#   define VKFW_INLINE __attribute__((always_inline)) __inline__
+# elifdef _MSC_VER
+#   define VKFW_INLINE inline
+# else
+#   define VKFW_INLINE inline
+# endif
 #endif
 
-#if defined(VKFW_TYPESAFE_CONVERSION)
-#  define VKFW_TYPESAFE_EXPLICIT
+#ifdef VKFW_TYPESAFE_CONVERSION
+# define VKFW_TYPESAFE_EXPLICIT
 #else
-#  define VKFW_TYPESAFE_EXPLICIT explicit
+# define VKFW_TYPESAFE_EXPLICIT explicit
 #endif
 
-#if defined(__cpp_constexpr)
-#  define VKFW_CONSTEXPR constexpr
-#  if __cpp_constexpr >= 201304
-#    define VKFW_CONSTEXPR_14  constexpr
-#  else
-#    define VKFW_CONSTEXPR_14
-#  endif
-#  define VKFW_CONST_OR_CONSTEXPR  constexpr
+#ifdef __cpp_constexpr
+# define VKFW_CONSTEXPR constexpr
+# if __cpp_constexpr >= 201304
+#   define VKFW_CONSTEXPR_14  constexpr
+# else
+#   define VKFW_CONSTEXPR_14
+# endif
+# define VKFW_CONST_OR_CONSTEXPR  constexpr
 #else
-#  define VKFW_CONSTEXPR
-#  define VKFW_CONSTEXPR_14
-#  define VKFW_CONST_OR_CONSTEXPR  const
+# define VKFW_CONSTEXPR
+# define VKFW_CONSTEXPR_14
+# define VKFW_CONST_OR_CONSTEXPR  const
 #endif
 
-#if !defined(VKFW_NOEXCEPT)
-#  if defined(_MSC_VER) && (_MSC_VER <= 1800)
-#    define VKFW_NOEXCEPT
-#  else
-#    define VKFW_NOEXCEPT noexcept
-#    define VKFW_HAS_NOEXCEPT 1
-#  endif
+#ifndef VKFW_NOEXCEPT
+# if defined(_MSC_VER) && (_MSC_VER <= 1800)
+#   define VKFW_NOEXCEPT
+# else
+#   define VKFW_NOEXCEPT noexcept
+#   define VKFW_HAS_NOEXCEPT 1
+# endif
 #endif
 
 #if 14 <= VKFW_CPP_VERSION
-#  define VKFW_DEPRECATED( msg ) [[deprecated( msg )]]
+# define VKFW_DEPRECATED( msg ) [[deprecated( msg )]]
 #else
-#  define VKFW_DEPRECATED( msg )
+# define VKFW_DEPRECATED( msg )
 #endif
 
 #if ( 17 <= VKFW_CPP_VERSION ) && !defined( VKFW_NO_NODISCARD_WARNINGS )
-#  define VKFW_NODISCARD [[nodiscard]]
-#  if defined(VKFW_NO_EXCEPTIONS)
-#    define VKFW_NODISCARD_WHEN_NO_EXCEPTIONS [[nodiscard]]
-#  else
-#    define VKFW_NODISCARD_WHEN_NO_EXCEPTIONS
-#  endif
+# define VKFW_NODISCARD [[nodiscard]]
+# ifdef VKFW_NO_EXCEPTIONS
+#   define VKFW_NODISCARD_WHEN_NO_EXCEPTIONS [[nodiscard]]
+# else
+#   define VKFW_NODISCARD_WHEN_NO_EXCEPTIONS
+# endif
 #else
-#  define VKFW_NODISCARD
-#  define VKFW_NODISCARD_WHEN_NO_EXCEPTIONS
+# define VKFW_NODISCARD
+# define VKFW_NODISCARD_WHEN_NO_EXCEPTIONS
 #endif
 
-#if !defined(VKFW_NAMESPACE)
+#ifndef VKFW_NAMESPACE
 #define VKFW_NAMESPACE vkfw
 #endif
 
@@ -138,52 +140,19 @@ static_assert(GLFW_VERSION_MAJOR == 3
 #define VKFW_STRINGIFY(text) VKFW_STRINGIFY2(text)
 #define VKFW_NAMESPACE_STRING VKFW_STRINGIFY(VKFW_NAMESPACE)
 
-#if !(defined(VKFW_CHAR_T) && defined(VKFW_CHAR_LITERAL))
-#  if defined(VKFW_USE_CHAR8_T) && defined(__cpp_char8_t) && defined(__cpp_lib_char8_t)
-#    define VKFW_CHAR_T char8_t
-#    define VKFW_CHAR_LITERAL u8""
-#  elif defined(VKFW_USE_CHAR16_T)
-#    define VKFW_CHAR_T char16_t
-#    define VKFW_CHAR_LITERAL u""
-#  elif defined(VKFW_USE_CHAR32_T)
-#    define VKFW_CHAR_T char32_t
-#    define VKFW_CHAR_LITERAL U""
-#  elif defined(VKFW_USE_WCHAR_T)
-#    define VKFW_CHAR_T wchar_t
-#    define VKFW_CHAR_LITERAL L""
-#  else
-#    define VKFW_CHAR_T char
-#    define VKFW_CHAR_LITERAL
-#  endif
-#endif
-
-#define VKFW_STRING_T std::basic_string<VKFW_CHAR_T>
-#if 17 <= VKFW_CPP_VERSION
-#  define VKFW_STRING_VIEW_T std::basic_string_view<VKFW_CHAR_T>
-#endif
-
-#if defined(VKFW_NO_LEADING_e_IN_ENUMS)
-#  define VKFW_ENUMERATOR(name) name
-#  define VKFW_ENUMERATOR2(name_1, name_2) name_2
+#ifdef VKFW_NO_LEADING_e_IN_ENUMS
+# define VKFW_ENUMERATOR(name) name
+# define VKFW_ENUMERATOR2(name_1, name_2) name_2
 #else
-#  define VKFW_ENUMERATOR(name) e ## name
-#  define VKFW_ENUMERATOR2(name_1, name_2) e ## name_1
+# define VKFW_ENUMERATOR(name) e ## name
+# define VKFW_ENUMERATOR2(name_1, name_2) e ## name_1
 #endif
 
 namespace VKFW_NAMESPACE {
-	template <typename RefType> using Optional
-		= VULKAN_HPP_NAMESPACE::Optional<RefType>;
 	template <typename BitType> using Flags
 		= VULKAN_HPP_NAMESPACE::Flags<BitType>;
 	template <typename FlagBitsType> using FlagTraits
 		= VULKAN_HPP_NAMESPACE::FlagTraits<FlagBitsType>;
-
-#if !defined(VKFW_NO_SMART_HANDLE)
-	template <typename Type> using UniqueHandleTraits
-		= VULKAN_HPP_NAMESPACE::UniqueHandleTraits<Type, VULKAN_HPP_DEFAULT_DISPATCHER_TYPE>;
-	template <typename Type> using UniqueHandle
-		= VULKAN_HPP_NAMESPACE::UniqueHandle<Type, VULKAN_HPP_DEFAULT_DISPATCHER_TYPE>;
-#endif
 
 	enum class Boolean {
 		VKFW_ENUMERATOR(True) = GLFW_TRUE,
@@ -409,8 +378,8 @@ namespace VKFW_NAMESPACE {
 
 		VKFW_ENUMERATOR(LAST) = GLFW_GAMEPAD_AXIS_LAST
 	};
-	enum class Error {
-		VKFW_ENUMERATOR(None) = GLFW_NO_ERROR,
+	enum class Result {
+		VKFW_ENUMERATOR(Success) = GLFW_NO_ERROR,
 		VKFW_ENUMERATOR(NotInitialized) = GLFW_NOT_INITIALIZED,
 		VKFW_ENUMERATOR(NoCurrentContext) = GLFW_NO_CURRENT_CONTEXT,
 		VKFW_ENUMERATOR(InvalidEnum) = GLFW_INVALID_ENUM,
@@ -484,7 +453,7 @@ namespace VKFW_NAMESPACE {
 		VKFW_ENUMERATOR(CocoaMenubar) = GLFW_COCOA_MENUBAR
 	};
 	enum class Attribute {
-		 
+
 		// Window Attributes
 		VKFW_ENUMERATOR(Focused) = GLFW_FOCUSED,
 		VKFW_ENUMERATOR(Iconified) = GLFW_ICONIFIED,
@@ -587,281 +556,580 @@ namespace VKFW_NAMESPACE {
 		return ~(ModifierKeyFlags(bits));
 	}
 
-	VKFW_INLINE VKFW_STRING_T to_string(Boolean value) {
+	VKFW_INLINE std::string to_string(Boolean value) {
 		switch (value) {
-			case Boolean::VKFW_ENUMERATOR(True): return VKFW_CHAR_LITERAL"True";
-			case Boolean::VKFW_ENUMERATOR(False): return VKFW_CHAR_LITERAL"False";
-			default: return VKFW_CHAR_LITERAL"invalid";
+			case Boolean::VKFW_ENUMERATOR(True): return "True";
+			case Boolean::VKFW_ENUMERATOR(False): return "False";
+			default: return "invalid";
 		}
 	}
-	VKFW_INLINE VKFW_STRING_T to_string(KeyAction value) {
+	VKFW_INLINE std::string to_string(KeyAction value) {
 		switch (value) {
-			case KeyAction::VKFW_ENUMERATOR(Release): return VKFW_CHAR_LITERAL"Release";
-			case KeyAction::VKFW_ENUMERATOR(Press): return VKFW_CHAR_LITERAL"Press";
-			case KeyAction::VKFW_ENUMERATOR(Repeat): return VKFW_CHAR_LITERAL"Repeat";
-			default: return VKFW_CHAR_LITERAL"invalid";
+			case KeyAction::VKFW_ENUMERATOR(Release): return "Release";
+			case KeyAction::VKFW_ENUMERATOR(Press): return "Press";
+			case KeyAction::VKFW_ENUMERATOR(Repeat): return "Repeat";
+			default: return "invalid";
 		}
 	}
-	VKFW_INLINE VKFW_STRING_T to_string(MouseButtonAction value) {
+	VKFW_INLINE std::string to_string(MouseButtonAction value) {
 		switch (value) {
-			case MouseButtonAction::VKFW_ENUMERATOR(Release): return VKFW_CHAR_LITERAL"Release";
-			case MouseButtonAction::VKFW_ENUMERATOR(Press): return VKFW_CHAR_LITERAL"Press";
-			default: return VKFW_CHAR_LITERAL"invalid";
+			case MouseButtonAction::VKFW_ENUMERATOR(Release): return "Release";
+			case MouseButtonAction::VKFW_ENUMERATOR(Press): return "Press";
+			default: return "invalid";
 		}
 	}
-	VKFW_INLINE VKFW_STRING_T to_string(JoystickHatState value) {
+	VKFW_INLINE std::string to_string(JoystickHatState value) {
 		switch (value) {
-			case JoystickHatState::VKFW_ENUMERATOR(Centered): return VKFW_CHAR_LITERAL"Centered";
-			case JoystickHatState::VKFW_ENUMERATOR(Up): return VKFW_CHAR_LITERAL"Up";
-			case JoystickHatState::VKFW_ENUMERATOR(Right): return VKFW_CHAR_LITERAL"Right";
-			case JoystickHatState::VKFW_ENUMERATOR(Down): return VKFW_CHAR_LITERAL"Down";
-			case JoystickHatState::VKFW_ENUMERATOR(Left): return VKFW_CHAR_LITERAL"Left";
-			case JoystickHatState::VKFW_ENUMERATOR(Right_Up): return VKFW_CHAR_LITERAL"Right Up";
-			case JoystickHatState::VKFW_ENUMERATOR(Right_Down): return VKFW_CHAR_LITERAL"Right Down";
-			case JoystickHatState::VKFW_ENUMERATOR(Left_Up): return VKFW_CHAR_LITERAL"Left Up";
-			case JoystickHatState::VKFW_ENUMERATOR(Left_Down): return VKFW_CHAR_LITERAL"Left Down";
-			default: return VKFW_CHAR_LITERAL"invalid";
+			case JoystickHatState::VKFW_ENUMERATOR(Centered): return "Centered";
+			case JoystickHatState::VKFW_ENUMERATOR(Up): return "Up";
+			case JoystickHatState::VKFW_ENUMERATOR(Right): return "Right";
+			case JoystickHatState::VKFW_ENUMERATOR(Down): return "Down";
+			case JoystickHatState::VKFW_ENUMERATOR(Left): return "Left";
+			case JoystickHatState::VKFW_ENUMERATOR(Right_Up): return "Right Up";
+			case JoystickHatState::VKFW_ENUMERATOR(Right_Down): return "Right Down";
+			case JoystickHatState::VKFW_ENUMERATOR(Left_Up): return "Left Up";
+			case JoystickHatState::VKFW_ENUMERATOR(Left_Down): return "Left Down";
+			default: return "invalid";
 		}
 	}
-	VKFW_INLINE VKFW_STRING_T to_string(Key value) {
+	VKFW_INLINE std::string to_string(Key value) {
 		switch (value) {
-			case Key::VKFW_ENUMERATOR(Unknown): return VKFW_CHAR_LITERAL"Unknown";
+			case Key::VKFW_ENUMERATOR(Unknown): return "Unknown";
 
 				/* Printable Keys */
-			case Key::VKFW_ENUMERATOR(Space): return VKFW_CHAR_LITERAL"Space";
-			case Key::VKFW_ENUMERATOR(Apostrophe): return VKFW_CHAR_LITERAL"Apostrophe";
-			case Key::VKFW_ENUMERATOR(Comma): return VKFW_CHAR_LITERAL"Comma";
-			case Key::VKFW_ENUMERATOR(Minus): return VKFW_CHAR_LITERAL"Minus";
-			case Key::VKFW_ENUMERATOR(Period): return VKFW_CHAR_LITERAL"Period";
-			case Key::VKFW_ENUMERATOR(Slash): return VKFW_CHAR_LITERAL"Slash";
-			case Key::VKFW_ENUMERATOR2(0, _0): return VKFW_CHAR_LITERAL"0";
-			case Key::VKFW_ENUMERATOR2(1, _1): return VKFW_CHAR_LITERAL"1";
-			case Key::VKFW_ENUMERATOR2(2, _2): return VKFW_CHAR_LITERAL"2";
-			case Key::VKFW_ENUMERATOR2(3, _3): return VKFW_CHAR_LITERAL"3";
-			case Key::VKFW_ENUMERATOR2(4, _4): return VKFW_CHAR_LITERAL"4";
-			case Key::VKFW_ENUMERATOR2(5, _5): return VKFW_CHAR_LITERAL"5";
-			case Key::VKFW_ENUMERATOR2(6, _6): return VKFW_CHAR_LITERAL"6";
-			case Key::VKFW_ENUMERATOR2(7, _7): return VKFW_CHAR_LITERAL"7";
-			case Key::VKFW_ENUMERATOR2(8, _8): return VKFW_CHAR_LITERAL"8";
-			case Key::VKFW_ENUMERATOR2(9, _9): return VKFW_CHAR_LITERAL"9";
-			case Key::VKFW_ENUMERATOR(Semicolon): return VKFW_CHAR_LITERAL"Semicolon";
-			case Key::VKFW_ENUMERATOR(Equal): return VKFW_CHAR_LITERAL"Equal";
-			case Key::VKFW_ENUMERATOR(A): return VKFW_CHAR_LITERAL"A";
-			case Key::VKFW_ENUMERATOR(B): return VKFW_CHAR_LITERAL"B";
-			case Key::VKFW_ENUMERATOR(C): return VKFW_CHAR_LITERAL"C";
-			case Key::VKFW_ENUMERATOR(D): return VKFW_CHAR_LITERAL"D";
-			case Key::VKFW_ENUMERATOR(E): return VKFW_CHAR_LITERAL"E";
-			case Key::VKFW_ENUMERATOR(F): return VKFW_CHAR_LITERAL"F";
-			case Key::VKFW_ENUMERATOR(G): return VKFW_CHAR_LITERAL"G";
-			case Key::VKFW_ENUMERATOR(H): return VKFW_CHAR_LITERAL"H";
-			case Key::VKFW_ENUMERATOR(I): return VKFW_CHAR_LITERAL"I";
-			case Key::VKFW_ENUMERATOR(J): return VKFW_CHAR_LITERAL"J";
-			case Key::VKFW_ENUMERATOR(K): return VKFW_CHAR_LITERAL"K";
-			case Key::VKFW_ENUMERATOR(L): return VKFW_CHAR_LITERAL"L";
-			case Key::VKFW_ENUMERATOR(M): return VKFW_CHAR_LITERAL"M";
-			case Key::VKFW_ENUMERATOR(N): return VKFW_CHAR_LITERAL"N";
-			case Key::VKFW_ENUMERATOR(O): return VKFW_CHAR_LITERAL"O";
-			case Key::VKFW_ENUMERATOR(P): return VKFW_CHAR_LITERAL"P";
-			case Key::VKFW_ENUMERATOR(Q): return VKFW_CHAR_LITERAL"Q";
-			case Key::VKFW_ENUMERATOR(R): return VKFW_CHAR_LITERAL"R";
-			case Key::VKFW_ENUMERATOR(S): return VKFW_CHAR_LITERAL"S";
-			case Key::VKFW_ENUMERATOR(T): return VKFW_CHAR_LITERAL"T";
-			case Key::VKFW_ENUMERATOR(U): return VKFW_CHAR_LITERAL"U";
-			case Key::VKFW_ENUMERATOR(V): return VKFW_CHAR_LITERAL"V";
-			case Key::VKFW_ENUMERATOR(W): return VKFW_CHAR_LITERAL"W";
-			case Key::VKFW_ENUMERATOR(X): return VKFW_CHAR_LITERAL"X";
-			case Key::VKFW_ENUMERATOR(Y): return VKFW_CHAR_LITERAL"Y";
-			case Key::VKFW_ENUMERATOR(Z): return VKFW_CHAR_LITERAL"Z";
-			case Key::VKFW_ENUMERATOR(LeftBracket): return VKFW_CHAR_LITERAL"LeftBracket";
-			case Key::VKFW_ENUMERATOR(Backslash): return VKFW_CHAR_LITERAL"Backslash";
-			case Key::VKFW_ENUMERATOR(RightBracket): return VKFW_CHAR_LITERAL"RightBracket";
-			case Key::VKFW_ENUMERATOR(GraveAccent): return VKFW_CHAR_LITERAL"GraveAccent";
-			case Key::VKFW_ENUMERATOR(World1): return VKFW_CHAR_LITERAL"World1";
-			case Key::VKFW_ENUMERATOR(World2): return VKFW_CHAR_LITERAL"World2";
+			case Key::VKFW_ENUMERATOR(Space): return "Space";
+			case Key::VKFW_ENUMERATOR(Apostrophe): return "Apostrophe";
+			case Key::VKFW_ENUMERATOR(Comma): return "Comma";
+			case Key::VKFW_ENUMERATOR(Minus): return "Minus";
+			case Key::VKFW_ENUMERATOR(Period): return "Period";
+			case Key::VKFW_ENUMERATOR(Slash): return "Slash";
+			case Key::VKFW_ENUMERATOR2(0, _0): return "0";
+			case Key::VKFW_ENUMERATOR2(1, _1): return "1";
+			case Key::VKFW_ENUMERATOR2(2, _2): return "2";
+			case Key::VKFW_ENUMERATOR2(3, _3): return "3";
+			case Key::VKFW_ENUMERATOR2(4, _4): return "4";
+			case Key::VKFW_ENUMERATOR2(5, _5): return "5";
+			case Key::VKFW_ENUMERATOR2(6, _6): return "6";
+			case Key::VKFW_ENUMERATOR2(7, _7): return "7";
+			case Key::VKFW_ENUMERATOR2(8, _8): return "8";
+			case Key::VKFW_ENUMERATOR2(9, _9): return "9";
+			case Key::VKFW_ENUMERATOR(Semicolon): return "Semicolon";
+			case Key::VKFW_ENUMERATOR(Equal): return "Equal";
+			case Key::VKFW_ENUMERATOR(A): return "A";
+			case Key::VKFW_ENUMERATOR(B): return "B";
+			case Key::VKFW_ENUMERATOR(C): return "C";
+			case Key::VKFW_ENUMERATOR(D): return "D";
+			case Key::VKFW_ENUMERATOR(E): return "E";
+			case Key::VKFW_ENUMERATOR(F): return "F";
+			case Key::VKFW_ENUMERATOR(G): return "G";
+			case Key::VKFW_ENUMERATOR(H): return "H";
+			case Key::VKFW_ENUMERATOR(I): return "I";
+			case Key::VKFW_ENUMERATOR(J): return "J";
+			case Key::VKFW_ENUMERATOR(K): return "K";
+			case Key::VKFW_ENUMERATOR(L): return "L";
+			case Key::VKFW_ENUMERATOR(M): return "M";
+			case Key::VKFW_ENUMERATOR(N): return "N";
+			case Key::VKFW_ENUMERATOR(O): return "O";
+			case Key::VKFW_ENUMERATOR(P): return "P";
+			case Key::VKFW_ENUMERATOR(Q): return "Q";
+			case Key::VKFW_ENUMERATOR(R): return "R";
+			case Key::VKFW_ENUMERATOR(S): return "S";
+			case Key::VKFW_ENUMERATOR(T): return "T";
+			case Key::VKFW_ENUMERATOR(U): return "U";
+			case Key::VKFW_ENUMERATOR(V): return "V";
+			case Key::VKFW_ENUMERATOR(W): return "W";
+			case Key::VKFW_ENUMERATOR(X): return "X";
+			case Key::VKFW_ENUMERATOR(Y): return "Y";
+			case Key::VKFW_ENUMERATOR(Z): return "Z";
+			case Key::VKFW_ENUMERATOR(LeftBracket): return "LeftBracket";
+			case Key::VKFW_ENUMERATOR(Backslash): return "Backslash";
+			case Key::VKFW_ENUMERATOR(RightBracket): return "RightBracket";
+			case Key::VKFW_ENUMERATOR(GraveAccent): return "GraveAccent";
+			case Key::VKFW_ENUMERATOR(World1): return "World1";
+			case Key::VKFW_ENUMERATOR(World2): return "World2";
 
 				/* Function Keys */
-			case Key::VKFW_ENUMERATOR(Escape): return VKFW_CHAR_LITERAL"Escape";
-			case Key::VKFW_ENUMERATOR(Enter): return VKFW_CHAR_LITERAL"Enter";
-			case Key::VKFW_ENUMERATOR(Tab): return VKFW_CHAR_LITERAL"Tab";
-			case Key::VKFW_ENUMERATOR(Backspace): return VKFW_CHAR_LITERAL"Backspace";
-			case Key::VKFW_ENUMERATOR(Insert): return VKFW_CHAR_LITERAL"Insert";
-			case Key::VKFW_ENUMERATOR(Delete): return VKFW_CHAR_LITERAL"Delete";
-			case Key::VKFW_ENUMERATOR(Right): return VKFW_CHAR_LITERAL"Right";
-			case Key::VKFW_ENUMERATOR(Left): return VKFW_CHAR_LITERAL"Left";
-			case Key::VKFW_ENUMERATOR(Down): return VKFW_CHAR_LITERAL"Down";
-			case Key::VKFW_ENUMERATOR(Up): return VKFW_CHAR_LITERAL"Up";
-			case Key::VKFW_ENUMERATOR(PageUp): return VKFW_CHAR_LITERAL"PageUp";
-			case Key::VKFW_ENUMERATOR(PageDown): return VKFW_CHAR_LITERAL"PageDown";
-			case Key::VKFW_ENUMERATOR(Home): return VKFW_CHAR_LITERAL"Home";
-			case Key::VKFW_ENUMERATOR(End): return VKFW_CHAR_LITERAL"End";
-			case Key::VKFW_ENUMERATOR(CapsLock): return VKFW_CHAR_LITERAL"CapsLock";
-			case Key::VKFW_ENUMERATOR(ScrollLock): return VKFW_CHAR_LITERAL"ScrollLock";
-			case Key::VKFW_ENUMERATOR(NumLock): return VKFW_CHAR_LITERAL"NumLock";
-			case Key::VKFW_ENUMERATOR(PrintScreen): return VKFW_CHAR_LITERAL"PrintScreen";
-			case Key::VKFW_ENUMERATOR(Pause): return VKFW_CHAR_LITERAL"Pause";
-			case Key::VKFW_ENUMERATOR(F1): return VKFW_CHAR_LITERAL"F1";
-			case Key::VKFW_ENUMERATOR(F2): return VKFW_CHAR_LITERAL"F2";
-			case Key::VKFW_ENUMERATOR(F3): return VKFW_CHAR_LITERAL"F3";
-			case Key::VKFW_ENUMERATOR(F4): return VKFW_CHAR_LITERAL"F4";
-			case Key::VKFW_ENUMERATOR(F5): return VKFW_CHAR_LITERAL"F5";
-			case Key::VKFW_ENUMERATOR(F6): return VKFW_CHAR_LITERAL"F6";
-			case Key::VKFW_ENUMERATOR(F7): return VKFW_CHAR_LITERAL"F7";
-			case Key::VKFW_ENUMERATOR(F8): return VKFW_CHAR_LITERAL"F8";
-			case Key::VKFW_ENUMERATOR(F9): return VKFW_CHAR_LITERAL"F9";
-			case Key::VKFW_ENUMERATOR(F10): return VKFW_CHAR_LITERAL"F10";
-			case Key::VKFW_ENUMERATOR(F11): return VKFW_CHAR_LITERAL"F11";
-			case Key::VKFW_ENUMERATOR(F12): return VKFW_CHAR_LITERAL"F12";
-			case Key::VKFW_ENUMERATOR(F13): return VKFW_CHAR_LITERAL"F13";
-			case Key::VKFW_ENUMERATOR(F14): return VKFW_CHAR_LITERAL"F14";
-			case Key::VKFW_ENUMERATOR(F15): return VKFW_CHAR_LITERAL"F15";
-			case Key::VKFW_ENUMERATOR(F16): return VKFW_CHAR_LITERAL"F16";
-			case Key::VKFW_ENUMERATOR(F17): return VKFW_CHAR_LITERAL"F17";
-			case Key::VKFW_ENUMERATOR(F18): return VKFW_CHAR_LITERAL"F18";
-			case Key::VKFW_ENUMERATOR(F19): return VKFW_CHAR_LITERAL"F19";
-			case Key::VKFW_ENUMERATOR(F20): return VKFW_CHAR_LITERAL"F20";
-			case Key::VKFW_ENUMERATOR(F21): return VKFW_CHAR_LITERAL"F21";
-			case Key::VKFW_ENUMERATOR(F22): return VKFW_CHAR_LITERAL"F22";
-			case Key::VKFW_ENUMERATOR(F23): return VKFW_CHAR_LITERAL"F23";
-			case Key::VKFW_ENUMERATOR(F24): return VKFW_CHAR_LITERAL"F24";
-			case Key::VKFW_ENUMERATOR(F25): return VKFW_CHAR_LITERAL"F25";
-			case Key::VKFW_ENUMERATOR(KeyPad_0): return VKFW_CHAR_LITERAL"KeyPad 0";
-			case Key::VKFW_ENUMERATOR(KeyPad_1): return VKFW_CHAR_LITERAL"KeyPad 1";
-			case Key::VKFW_ENUMERATOR(KeyPad_2): return VKFW_CHAR_LITERAL"KeyPad 2";
-			case Key::VKFW_ENUMERATOR(KeyPad_3): return VKFW_CHAR_LITERAL"KeyPad 3";
-			case Key::VKFW_ENUMERATOR(KeyPad_4): return VKFW_CHAR_LITERAL"KeyPad 4";
-			case Key::VKFW_ENUMERATOR(KeyPad_5): return VKFW_CHAR_LITERAL"KeyPad 5";
-			case Key::VKFW_ENUMERATOR(KeyPad_6): return VKFW_CHAR_LITERAL"KeyPad 6";
-			case Key::VKFW_ENUMERATOR(KeyPad_7): return VKFW_CHAR_LITERAL"KeyPad 7";
-			case Key::VKFW_ENUMERATOR(KeyPad_8): return VKFW_CHAR_LITERAL"KeyPad 8";
-			case Key::VKFW_ENUMERATOR(KeyPad_9): return VKFW_CHAR_LITERAL"KeyPad 9";
-			case Key::VKFW_ENUMERATOR(KeyPad_Decimal): return VKFW_CHAR_LITERAL"KeyPad Decimal";
-			case Key::VKFW_ENUMERATOR(KeyPad_Divide): return VKFW_CHAR_LITERAL"KeyPad Divide";
-			case Key::VKFW_ENUMERATOR(KeyPad_Multiply): return VKFW_CHAR_LITERAL"KeyPad Multiply";
-			case Key::VKFW_ENUMERATOR(KeyPad_Subtract): return VKFW_CHAR_LITERAL"KeyPad Subtract";
-			case Key::VKFW_ENUMERATOR(KeyPad_Add): return VKFW_CHAR_LITERAL"KeyPad Add";
-			case Key::VKFW_ENUMERATOR(KeyPad_Enter): return VKFW_CHAR_LITERAL"KeyPad Enter";
-			case Key::VKFW_ENUMERATOR(KeyPad_Equal): return VKFW_CHAR_LITERAL"KeyPad Equal";
-			case Key::VKFW_ENUMERATOR(LeftShift): return VKFW_CHAR_LITERAL"LeftShift";
-			case Key::VKFW_ENUMERATOR(LeftControl): return VKFW_CHAR_LITERAL"LeftControl";
-			case Key::VKFW_ENUMERATOR(LeftAlt): return VKFW_CHAR_LITERAL"LeftAlt";
-			case Key::VKFW_ENUMERATOR(LeftSuper): return VKFW_CHAR_LITERAL"LeftSuper";
-			case Key::VKFW_ENUMERATOR(RightShift): return VKFW_CHAR_LITERAL"RightShift";
-			case Key::VKFW_ENUMERATOR(RightControl): return VKFW_CHAR_LITERAL"RightControl";
-			case Key::VKFW_ENUMERATOR(RightAlt): return VKFW_CHAR_LITERAL"RightAlt";
-			case Key::VKFW_ENUMERATOR(RightSuper): return VKFW_CHAR_LITERAL"RightSuper";
-			case Key::VKFW_ENUMERATOR(Menu): return VKFW_CHAR_LITERAL"Menu";
-			default: return VKFW_CHAR_LITERAL"invalid";
+			case Key::VKFW_ENUMERATOR(Escape): return "Escape";
+			case Key::VKFW_ENUMERATOR(Enter): return "Enter";
+			case Key::VKFW_ENUMERATOR(Tab): return "Tab";
+			case Key::VKFW_ENUMERATOR(Backspace): return "Backspace";
+			case Key::VKFW_ENUMERATOR(Insert): return "Insert";
+			case Key::VKFW_ENUMERATOR(Delete): return "Delete";
+			case Key::VKFW_ENUMERATOR(Right): return "Right";
+			case Key::VKFW_ENUMERATOR(Left): return "Left";
+			case Key::VKFW_ENUMERATOR(Down): return "Down";
+			case Key::VKFW_ENUMERATOR(Up): return "Up";
+			case Key::VKFW_ENUMERATOR(PageUp): return "PageUp";
+			case Key::VKFW_ENUMERATOR(PageDown): return "PageDown";
+			case Key::VKFW_ENUMERATOR(Home): return "Home";
+			case Key::VKFW_ENUMERATOR(End): return "End";
+			case Key::VKFW_ENUMERATOR(CapsLock): return "CapsLock";
+			case Key::VKFW_ENUMERATOR(ScrollLock): return "ScrollLock";
+			case Key::VKFW_ENUMERATOR(NumLock): return "NumLock";
+			case Key::VKFW_ENUMERATOR(PrintScreen): return "PrintScreen";
+			case Key::VKFW_ENUMERATOR(Pause): return "Pause";
+			case Key::VKFW_ENUMERATOR(F1): return "F1";
+			case Key::VKFW_ENUMERATOR(F2): return "F2";
+			case Key::VKFW_ENUMERATOR(F3): return "F3";
+			case Key::VKFW_ENUMERATOR(F4): return "F4";
+			case Key::VKFW_ENUMERATOR(F5): return "F5";
+			case Key::VKFW_ENUMERATOR(F6): return "F6";
+			case Key::VKFW_ENUMERATOR(F7): return "F7";
+			case Key::VKFW_ENUMERATOR(F8): return "F8";
+			case Key::VKFW_ENUMERATOR(F9): return "F9";
+			case Key::VKFW_ENUMERATOR(F10): return "F10";
+			case Key::VKFW_ENUMERATOR(F11): return "F11";
+			case Key::VKFW_ENUMERATOR(F12): return "F12";
+			case Key::VKFW_ENUMERATOR(F13): return "F13";
+			case Key::VKFW_ENUMERATOR(F14): return "F14";
+			case Key::VKFW_ENUMERATOR(F15): return "F15";
+			case Key::VKFW_ENUMERATOR(F16): return "F16";
+			case Key::VKFW_ENUMERATOR(F17): return "F17";
+			case Key::VKFW_ENUMERATOR(F18): return "F18";
+			case Key::VKFW_ENUMERATOR(F19): return "F19";
+			case Key::VKFW_ENUMERATOR(F20): return "F20";
+			case Key::VKFW_ENUMERATOR(F21): return "F21";
+			case Key::VKFW_ENUMERATOR(F22): return "F22";
+			case Key::VKFW_ENUMERATOR(F23): return "F23";
+			case Key::VKFW_ENUMERATOR(F24): return "F24";
+			case Key::VKFW_ENUMERATOR(F25): return "F25";
+			case Key::VKFW_ENUMERATOR(KeyPad_0): return "KeyPad 0";
+			case Key::VKFW_ENUMERATOR(KeyPad_1): return "KeyPad 1";
+			case Key::VKFW_ENUMERATOR(KeyPad_2): return "KeyPad 2";
+			case Key::VKFW_ENUMERATOR(KeyPad_3): return "KeyPad 3";
+			case Key::VKFW_ENUMERATOR(KeyPad_4): return "KeyPad 4";
+			case Key::VKFW_ENUMERATOR(KeyPad_5): return "KeyPad 5";
+			case Key::VKFW_ENUMERATOR(KeyPad_6): return "KeyPad 6";
+			case Key::VKFW_ENUMERATOR(KeyPad_7): return "KeyPad 7";
+			case Key::VKFW_ENUMERATOR(KeyPad_8): return "KeyPad 8";
+			case Key::VKFW_ENUMERATOR(KeyPad_9): return "KeyPad 9";
+			case Key::VKFW_ENUMERATOR(KeyPad_Decimal): return "KeyPad Decimal";
+			case Key::VKFW_ENUMERATOR(KeyPad_Divide): return "KeyPad Divide";
+			case Key::VKFW_ENUMERATOR(KeyPad_Multiply): return "KeyPad Multiply";
+			case Key::VKFW_ENUMERATOR(KeyPad_Subtract): return "KeyPad Subtract";
+			case Key::VKFW_ENUMERATOR(KeyPad_Add): return "KeyPad Add";
+			case Key::VKFW_ENUMERATOR(KeyPad_Enter): return "KeyPad Enter";
+			case Key::VKFW_ENUMERATOR(KeyPad_Equal): return "KeyPad Equal";
+			case Key::VKFW_ENUMERATOR(LeftShift): return "LeftShift";
+			case Key::VKFW_ENUMERATOR(LeftControl): return "LeftControl";
+			case Key::VKFW_ENUMERATOR(LeftAlt): return "LeftAlt";
+			case Key::VKFW_ENUMERATOR(LeftSuper): return "LeftSuper";
+			case Key::VKFW_ENUMERATOR(RightShift): return "RightShift";
+			case Key::VKFW_ENUMERATOR(RightControl): return "RightControl";
+			case Key::VKFW_ENUMERATOR(RightAlt): return "RightAlt";
+			case Key::VKFW_ENUMERATOR(RightSuper): return "RightSuper";
+			case Key::VKFW_ENUMERATOR(Menu): return "Menu";
+			default: return "invalid";
 		}
 	}
-	VKFW_INLINE VKFW_STRING_T to_string(MouseButton value) {
+	VKFW_INLINE std::string to_string(MouseButton value) {
 		switch (value) {
-			case MouseButton::VKFW_ENUMERATOR2(1, _1):	return VKFW_CHAR_LITERAL"1 (left)";
-			case MouseButton::VKFW_ENUMERATOR2(2, _2):return VKFW_CHAR_LITERAL"2 (right)";
-			case MouseButton::VKFW_ENUMERATOR2(3, _3):return VKFW_CHAR_LITERAL"3 (middle)";
-			case MouseButton::VKFW_ENUMERATOR2(4, _4):return VKFW_CHAR_LITERAL"4";
-			case MouseButton::VKFW_ENUMERATOR2(5, _5):return VKFW_CHAR_LITERAL"5";
-			case MouseButton::VKFW_ENUMERATOR2(6, _6):	return VKFW_CHAR_LITERAL"6";
-			case MouseButton::VKFW_ENUMERATOR2(7, _7):	return VKFW_CHAR_LITERAL"7";
-			case MouseButton::VKFW_ENUMERATOR2(8, _8):	return VKFW_CHAR_LITERAL"8";
-			default: return VKFW_CHAR_LITERAL"invalid";
+			case MouseButton::VKFW_ENUMERATOR2(1, _1):	return "1 (left)";
+			case MouseButton::VKFW_ENUMERATOR2(2, _2):return "2 (right)";
+			case MouseButton::VKFW_ENUMERATOR2(3, _3):return "3 (middle)";
+			case MouseButton::VKFW_ENUMERATOR2(4, _4):return "4";
+			case MouseButton::VKFW_ENUMERATOR2(5, _5):return "5";
+			case MouseButton::VKFW_ENUMERATOR2(6, _6):	return "6";
+			case MouseButton::VKFW_ENUMERATOR2(7, _7):	return "7";
+			case MouseButton::VKFW_ENUMERATOR2(8, _8):	return "8";
+			default: return "invalid";
 		}
 	}
-	VKFW_INLINE VKFW_STRING_T to_string(Joystick value) {
+	VKFW_INLINE std::string to_string(Joystick value) {
 		switch (value) {
-			case Joystick::VKFW_ENUMERATOR2(1, _1): return VKFW_CHAR_LITERAL"1";
-			case Joystick::VKFW_ENUMERATOR2(2, _2): return VKFW_CHAR_LITERAL"2";
-			case Joystick::VKFW_ENUMERATOR2(3, _3): return VKFW_CHAR_LITERAL"3";
-			case Joystick::VKFW_ENUMERATOR2(4, _4): return VKFW_CHAR_LITERAL"4";
-			case Joystick::VKFW_ENUMERATOR2(5, _5): return VKFW_CHAR_LITERAL"5";
-			case Joystick::VKFW_ENUMERATOR2(6, _6): return VKFW_CHAR_LITERAL"6";
-			case Joystick::VKFW_ENUMERATOR2(7, _7): return VKFW_CHAR_LITERAL"7";
-			case Joystick::VKFW_ENUMERATOR2(8, _8): return VKFW_CHAR_LITERAL"8";
-			case Joystick::VKFW_ENUMERATOR2(9, _9): return VKFW_CHAR_LITERAL"9";
-			case Joystick::VKFW_ENUMERATOR2(10, _10): return VKFW_CHAR_LITERAL"10";
-			case Joystick::VKFW_ENUMERATOR2(11, _11): return VKFW_CHAR_LITERAL"11";
-			case Joystick::VKFW_ENUMERATOR2(12, _12): return VKFW_CHAR_LITERAL"12";
-			case Joystick::VKFW_ENUMERATOR2(13, _13): return VKFW_CHAR_LITERAL"13";
-			case Joystick::VKFW_ENUMERATOR2(14, _14): return VKFW_CHAR_LITERAL"14";
-			case Joystick::VKFW_ENUMERATOR2(15, _15): return VKFW_CHAR_LITERAL"15";
-			case Joystick::VKFW_ENUMERATOR2(16, _16): return VKFW_CHAR_LITERAL"16";
-			default: return VKFW_CHAR_LITERAL"invalid";
+			case Joystick::VKFW_ENUMERATOR2(1, _1): return "1";
+			case Joystick::VKFW_ENUMERATOR2(2, _2): return "2";
+			case Joystick::VKFW_ENUMERATOR2(3, _3): return "3";
+			case Joystick::VKFW_ENUMERATOR2(4, _4): return "4";
+			case Joystick::VKFW_ENUMERATOR2(5, _5): return "5";
+			case Joystick::VKFW_ENUMERATOR2(6, _6): return "6";
+			case Joystick::VKFW_ENUMERATOR2(7, _7): return "7";
+			case Joystick::VKFW_ENUMERATOR2(8, _8): return "8";
+			case Joystick::VKFW_ENUMERATOR2(9, _9): return "9";
+			case Joystick::VKFW_ENUMERATOR2(10, _10): return "10";
+			case Joystick::VKFW_ENUMERATOR2(11, _11): return "11";
+			case Joystick::VKFW_ENUMERATOR2(12, _12): return "12";
+			case Joystick::VKFW_ENUMERATOR2(13, _13): return "13";
+			case Joystick::VKFW_ENUMERATOR2(14, _14): return "14";
+			case Joystick::VKFW_ENUMERATOR2(15, _15): return "15";
+			case Joystick::VKFW_ENUMERATOR2(16, _16): return "16";
+			default: return "invalid";
 		}
 	}
-	VKFW_INLINE VKFW_STRING_T to_string(GamepadButton value) {
+	VKFW_INLINE std::string to_string(GamepadButton value) {
 		switch (value) {
-			case GamepadButton::VKFW_ENUMERATOR(A): return VKFW_CHAR_LITERAL"A (Cross)";
-			case GamepadButton::VKFW_ENUMERATOR(B): return VKFW_CHAR_LITERAL"B (Circle)";
-			case GamepadButton::VKFW_ENUMERATOR(X): return VKFW_CHAR_LITERAL"X (Square)";
-			case GamepadButton::VKFW_ENUMERATOR(Y): return VKFW_CHAR_LITERAL"Y (Triangle)";
-			case GamepadButton::VKFW_ENUMERATOR(LeftBumper): return VKFW_CHAR_LITERAL"Left Bumper";
-			case GamepadButton::VKFW_ENUMERATOR(RightBumper): return VKFW_CHAR_LITERAL"Right Bumper";
-			case GamepadButton::VKFW_ENUMERATOR(Back): return VKFW_CHAR_LITERAL"Back";
-			case GamepadButton::VKFW_ENUMERATOR(Start): return VKFW_CHAR_LITERAL"Start";
-			case GamepadButton::VKFW_ENUMERATOR(Guide): return VKFW_CHAR_LITERAL"Guide";
-			case GamepadButton::VKFW_ENUMERATOR(LeftThumb): return VKFW_CHAR_LITERAL"Left Thumb";
-			case GamepadButton::VKFW_ENUMERATOR(RightThumb): return VKFW_CHAR_LITERAL"Right Thumb";
-			case GamepadButton::VKFW_ENUMERATOR(DpadUp): return VKFW_CHAR_LITERAL"Dpad Up";
-			case GamepadButton::VKFW_ENUMERATOR(DpadRight): return VKFW_CHAR_LITERAL"Dpad Right";
-			case GamepadButton::VKFW_ENUMERATOR(DpadDown): return VKFW_CHAR_LITERAL"Dpad Down";
-			case GamepadButton::VKFW_ENUMERATOR(DpadLeft): return VKFW_CHAR_LITERAL"Dpad Left";
-			default: return VKFW_CHAR_LITERAL"invalid";
+			case GamepadButton::VKFW_ENUMERATOR(A): return "A (Cross)";
+			case GamepadButton::VKFW_ENUMERATOR(B): return "B (Circle)";
+			case GamepadButton::VKFW_ENUMERATOR(X): return "X (Square)";
+			case GamepadButton::VKFW_ENUMERATOR(Y): return "Y (Triangle)";
+			case GamepadButton::VKFW_ENUMERATOR(LeftBumper): return "Left Bumper";
+			case GamepadButton::VKFW_ENUMERATOR(RightBumper): return "Right Bumper";
+			case GamepadButton::VKFW_ENUMERATOR(Back): return "Back";
+			case GamepadButton::VKFW_ENUMERATOR(Start): return "Start";
+			case GamepadButton::VKFW_ENUMERATOR(Guide): return "Guide";
+			case GamepadButton::VKFW_ENUMERATOR(LeftThumb): return "Left Thumb";
+			case GamepadButton::VKFW_ENUMERATOR(RightThumb): return "Right Thumb";
+			case GamepadButton::VKFW_ENUMERATOR(DpadUp): return "Dpad Up";
+			case GamepadButton::VKFW_ENUMERATOR(DpadRight): return "Dpad Right";
+			case GamepadButton::VKFW_ENUMERATOR(DpadDown): return "Dpad Down";
+			case GamepadButton::VKFW_ENUMERATOR(DpadLeft): return "Dpad Left";
+			default: return "invalid";
 		}
 	}
-	VKFW_INLINE VKFW_STRING_T to_string(GamepadAxis value) {
+	VKFW_INLINE std::string to_string(GamepadAxis value) {
 		switch (value) {
-			case GamepadAxis::VKFW_ENUMERATOR(LeftX): return VKFW_CHAR_LITERAL"Left X";
-			case GamepadAxis::VKFW_ENUMERATOR(LeftY): return VKFW_CHAR_LITERAL"Left Y";
-			case GamepadAxis::VKFW_ENUMERATOR(RightX): return VKFW_CHAR_LITERAL"Right X";
-			case GamepadAxis::VKFW_ENUMERATOR(RightY): return VKFW_CHAR_LITERAL"Right Y";
-			case GamepadAxis::VKFW_ENUMERATOR(LeftTrigger): return VKFW_CHAR_LITERAL"Left Trigger";
-			case GamepadAxis::VKFW_ENUMERATOR(RightTrigger): return VKFW_CHAR_LITERAL"Right Trigger";
-			default: return VKFW_CHAR_LITERAL"invalid";
+			case GamepadAxis::VKFW_ENUMERATOR(LeftX): return "Left X";
+			case GamepadAxis::VKFW_ENUMERATOR(LeftY): return "Left Y";
+			case GamepadAxis::VKFW_ENUMERATOR(RightX): return "Right X";
+			case GamepadAxis::VKFW_ENUMERATOR(RightY): return "Right Y";
+			case GamepadAxis::VKFW_ENUMERATOR(LeftTrigger): return "Left Trigger";
+			case GamepadAxis::VKFW_ENUMERATOR(RightTrigger): return "Right Trigger";
+			default: return "invalid";
 		}
 	}
-	VKFW_INLINE VKFW_STRING_T to_string(Error value) {
+	VKFW_INLINE std::string to_string(Result value) {
 		switch (value) {
-			case Error::VKFW_ENUMERATOR(None): return VKFW_CHAR_LITERAL"No error has occurred";
-			case Error::VKFW_ENUMERATOR(NotInitialized): return VKFW_CHAR_LITERAL"GLFW has not been initialized";
-			case Error::VKFW_ENUMERATOR(NoCurrentContext): return VKFW_CHAR_LITERAL"No context is current for this thread";
-			case Error::VKFW_ENUMERATOR(InvalidEnum): return VKFW_CHAR_LITERAL"One of the arguments to the function was an invalid enum value";
-			case Error::VKFW_ENUMERATOR(InvalidValue): return VKFW_CHAR_LITERAL"One of the arguments to the function was an invalid value";
-			case Error::VKFW_ENUMERATOR(OutOfMemory): return VKFW_CHAR_LITERAL"A memory allocation failed";
-			case Error::VKFW_ENUMERATOR(ApiUnavailable): return VKFW_CHAR_LITERAL"GLFW could not find support for the requested API on the system";
-			case Error::VKFW_ENUMERATOR(VersionUnavailable): return VKFW_CHAR_LITERAL"The requested OpenGL or OpenGL ES version is not available";
-			case Error::VKFW_ENUMERATOR(PlatformError): return VKFW_CHAR_LITERAL"A platform-specific error occurred that does not match any of the more specific categories";
-			case Error::VKFW_ENUMERATOR(FormatUnavailable): return VKFW_CHAR_LITERAL"The requested format is not supported or available";
-			case Error::VKFW_ENUMERATOR(NoWindowContext): return VKFW_CHAR_LITERAL"The specified window does not have an OpenGL or OpenGL ES context";
-			default: return VKFW_CHAR_LITERAL"invalid";
+			case Result::VKFW_ENUMERATOR(Success): return "No error has occurred";
+			case Result::VKFW_ENUMERATOR(NotInitialized): return "GLFW has not been initialized";
+			case Result::VKFW_ENUMERATOR(NoCurrentContext): return "No context is current for this thread";
+			case Result::VKFW_ENUMERATOR(InvalidEnum): return "One of the arguments to the function was an invalid enum value";
+			case Result::VKFW_ENUMERATOR(InvalidValue): return "One of the arguments to the function was an invalid value";
+			case Result::VKFW_ENUMERATOR(OutOfMemory): return "A memory allocation failed";
+			case Result::VKFW_ENUMERATOR(ApiUnavailable): return "GLFW could not find support for the requested API on the system";
+			case Result::VKFW_ENUMERATOR(VersionUnavailable): return "The requested OpenGL or OpenGL ES version is not available";
+			case Result::VKFW_ENUMERATOR(PlatformError): return "A platform-specific error occurred that does not match any of the more specific categories";
+			case Result::VKFW_ENUMERATOR(FormatUnavailable): return "The requested format is not supported or available";
+			case Result::VKFW_ENUMERATOR(NoWindowContext): return "The specified window does not have an OpenGL or OpenGL ES context";
+			default: return "invalid";
 		}
 	}
 
-	VKFW_INLINE VKFW_STRING_T to_string(ModifierKeyFlags value) {
-		if (!value) return VKFW_CHAR_LITERAL"{}";
-		VKFW_STRING_T result;
+	VKFW_INLINE std::string to_string(ModifierKeyFlags value) {
+		if (!value) return "{}";
+		std::string result;
 
-		if (value & ModifierKeyBits::VKFW_ENUMERATOR(CapsLock)) result += VKFW_CHAR_LITERAL"CapsLock | ";
-		if (value & ModifierKeyBits::VKFW_ENUMERATOR(NumLock)) result += VKFW_CHAR_LITERAL"NumLock | ";
+		if (value & ModifierKeyBits::VKFW_ENUMERATOR(CapsLock)) result += "CapsLock | ";
+		if (value & ModifierKeyBits::VKFW_ENUMERATOR(NumLock)) result += "NumLock | ";
 
-		if (value & ModifierKeyBits::VKFW_ENUMERATOR(Control)) result += VKFW_CHAR_LITERAL"Control + ";
-		if (value & ModifierKeyBits::VKFW_ENUMERATOR(Alt)) result += VKFW_CHAR_LITERAL"Alt + ";
-		if (value & ModifierKeyBits::VKFW_ENUMERATOR(Super)) result += VKFW_CHAR_LITERAL"Super + ";
+		if (value & ModifierKeyBits::VKFW_ENUMERATOR(Control)) result += "Control + ";
+		if (value & ModifierKeyBits::VKFW_ENUMERATOR(Alt)) result += "Alt + ";
+		if (value & ModifierKeyBits::VKFW_ENUMERATOR(Super)) result += "Super + ";
 
-		return VKFW_CHAR_LITERAL"{ " + result.substr(0, result.size() - 3) + VKFW_CHAR_LITERAL" }";
+		return "{ " + result.substr(0, result.size() - 3) + " }";
 	}
-
-	template <typename Type>
-	struct isHandleType {
-		static VKFW_CONST_OR_CONSTEXPR bool value = false;
-	};
 }
 
-template <> struct VULKAN_HPP_NAMESPACE::FlagTraits<vkfw::ModifierKeyBits> {
+namespace VKFW_NAMESPACE {
+	//template <typename RefType> using Optional
+	//	= VULKAN_HPP_NAMESPACE::Optional<RefType>;
+#ifndef VKFW_NO_SMART_HANDLE
+	template <typename Type> using UniqueHandleTraits
+		= VULKAN_HPP_NAMESPACE::UniqueHandleTraits<Type, VULKAN_HPP_DEFAULT_DISPATCHER_TYPE>;
+	template <typename Type> using UniqueHandle
+		= VULKAN_HPP_NAMESPACE::UniqueHandle<Type, VULKAN_HPP_DEFAULT_DISPATCHER_TYPE>;
+	template <typename OwnerType> using ObjectDestroy
+		= VULKAN_HPP_NAMESPACE::ObjectDestroy<OwnerType, VULKAN_HPP_DEFAULT_DISPATCHER_TYPE>;
+	using NoParent = VULKAN_HPP_NAMESPACE::NoParent;
+#endif
+	//template <typename Type> struct isHandleType {
+	//	static VKFW_CONST_OR_CONSTEXPR bool value = false;
+	//};
+}
+
+#ifndef VKFW_NO_EXCEPTIONS
+namespace std {
+	template <>
+	struct is_error_code_enum<VKFW_NAMESPACE::Result> : public true_type {};
+}
+#endif
+
+namespace VKFW_NAMESPACE {
+#ifndef VKFW_NO_EXCEPTIONS
+	class ErrorCategoryImpl : public std::error_category {
+	public:
+		virtual char const *name() const VKFW_NOEXCEPT override {
+			return VKFW_NAMESPACE_STRING"::Result";
+		}
+		virtual std::string message(int ev) const override { return to_string(static_cast<Result>(ev)); }
+	};
+	class Error {
+	public:
+		Error() VKFW_NOEXCEPT = default;
+		Error(const Error &) VKFW_NOEXCEPT = default;
+		virtual ~Error() VKFW_NOEXCEPT = default;
+
+		virtual const char *what() const VKFW_NOEXCEPT = 0;
+	};
+	class SystemError : public Error, public std::system_error {
+	public:
+		SystemError(std::error_code ec)
+			: Error(), std::system_error(ec) {}
+		SystemError(std::error_code ec, std::string const &what)
+			: Error(), std::system_error(ec, what) {}
+		SystemError(std::error_code ec, char const *what)
+			: Error(), std::system_error(ec, what) {}
+		SystemError(int ev, std::error_category const &ecat)
+			: Error(), std::system_error(ev, ecat) {}
+		SystemError(int ev, std::error_category const &ecat, std::string const &what)
+			: Error(), std::system_error(ev, ecat, what) {}
+		SystemError(int ev, std::error_category const &ecat, char const *what)
+			: Error(), std::system_error(ev, ecat, what) {}
+
+		virtual const char *what() const VKFW_NOEXCEPT { return std::system_error::what(); }
+	};
+	VKFW_INLINE const std::error_category &errorCategory() VKFW_NOEXCEPT {
+		static ErrorCategoryImpl instance;
+		return instance;
+	}
+	VKFW_INLINE std::error_code make_error_code(Result e) VKFW_NOEXCEPT {
+		return std::error_code(static_cast<int>(e), errorCategory());
+	}
+	VKFW_INLINE std::error_condition make_error_condition(Result e) VKFW_NOEXCEPT {
+		return std::error_condition(static_cast<int>(e), errorCategory());
+	}
+	class NotInitializedError : public SystemError {
+	public:
+		NotInitializedError(std::string const &message)
+			: SystemError(make_error_code(Result::VKFW_ENUMERATOR(NotInitialized)), message) {}
+		NotInitializedError(char const *message)
+			: SystemError(make_error_code(Result::VKFW_ENUMERATOR(NotInitialized)), message) {}
+	};
+	class NoCurrentContextError : public SystemError {
+	public:
+		NoCurrentContextError(std::string const &message)
+			: SystemError(make_error_code(Result::VKFW_ENUMERATOR(NoCurrentContext)), message) {}
+		NoCurrentContextError(char const *message)
+			: SystemError(make_error_code(Result::VKFW_ENUMERATOR(NoCurrentContext)), message) {}
+	};
+	class InvalidEnumError : public SystemError {
+	public:
+		InvalidEnumError(std::string const &message)
+			: SystemError(make_error_code(Result::VKFW_ENUMERATOR(InvalidEnum)), message) {}
+		InvalidEnumError(char const *message)
+			: SystemError(make_error_code(Result::VKFW_ENUMERATOR(InvalidEnum)), message) {}
+	};
+	class InvalidValueError : public SystemError {
+	public:
+		InvalidValueError(std::string const &message)
+			: SystemError(make_error_code(Result::VKFW_ENUMERATOR(InvalidValue)), message) {}
+		InvalidValueError(char const *message)
+			: SystemError(make_error_code(Result::VKFW_ENUMERATOR(InvalidValue)), message) {}
+	};
+	class OutOfMemoryError : public SystemError {
+	public:
+		OutOfMemoryError(std::string const &message)
+			: SystemError(make_error_code(Result::VKFW_ENUMERATOR(OutOfMemory)), message) {}
+		OutOfMemoryError(char const *message)
+			: SystemError(make_error_code(Result::VKFW_ENUMERATOR(OutOfMemory)), message) {}
+	};
+	class ApiUnavailableError : public SystemError {
+	public:
+		ApiUnavailableError(std::string const &message)
+			: SystemError(make_error_code(Result::VKFW_ENUMERATOR(ApiUnavailable)), message) {}
+		ApiUnavailableError(char const *message)
+			: SystemError(make_error_code(Result::VKFW_ENUMERATOR(ApiUnavailable)), message) {}
+	};
+	class VersionUnavailableError : public SystemError {
+	public:
+		VersionUnavailableError(std::string const &message)
+			: SystemError(make_error_code(Result::VKFW_ENUMERATOR(VersionUnavailable)), message) {}
+		VersionUnavailableError(char const *message)
+			: SystemError(make_error_code(Result::VKFW_ENUMERATOR(VersionUnavailable)), message) {}
+	};
+	class PlatformError : public SystemError {
+	public:
+		PlatformError(std::string const &message)
+			: SystemError(make_error_code(Result::VKFW_ENUMERATOR(PlatformError)), message) {}
+		PlatformError(char const *message)
+			: SystemError(make_error_code(Result::VKFW_ENUMERATOR(PlatformError)), message) {}
+	};
+	class FormatUnavailableError : public SystemError {
+	public:
+		FormatUnavailableError(std::string const &message)
+			: SystemError(make_error_code(Result::VKFW_ENUMERATOR(FormatUnavailable)), message) {}
+		FormatUnavailableError(char const *message)
+			: SystemError(make_error_code(Result::VKFW_ENUMERATOR(FormatUnavailable)), message) {}
+	};
+	class NoWindowContextError : public SystemError {
+	public:
+		NoWindowContextError(std::string const &message)
+			: SystemError(make_error_code(Result::VKFW_ENUMERATOR(NoWindowContext)), message) {}
+		NoWindowContextError(char const *message)
+			: SystemError(make_error_code(Result::VKFW_ENUMERATOR(NoWindowContext)), message) {}
+	};
+
+	[[noreturn]] static void throwResultException(Result result, char const *message) {
+		switch (result) {
+			case Result::VKFW_ENUMERATOR(Success): break;
+			case Result::VKFW_ENUMERATOR(NotInitialized):  throw NotInitializedError(message);
+			case Result::VKFW_ENUMERATOR(NoCurrentContext): throw NoCurrentContextError(message);
+			case Result::VKFW_ENUMERATOR(InvalidEnum): throw InvalidEnumError(message);
+			case Result::VKFW_ENUMERATOR(InvalidValue): throw InvalidValueError(message);
+			case Result::VKFW_ENUMERATOR(OutOfMemory): throw OutOfMemoryError(message);
+			case Result::VKFW_ENUMERATOR(ApiUnavailable): throw ApiUnavailableError(message);
+			case Result::VKFW_ENUMERATOR(VersionUnavailable): throw VersionUnavailableError(message);
+			case Result::VKFW_ENUMERATOR(PlatformError): throw PlatformError(message);
+			case Result::VKFW_ENUMERATOR(FormatUnavailable): throw FormatUnavailableError(message);
+			case Result::VKFW_ENUMERATOR(NoWindowContext): throw NoWindowContextError(message);
+			default: throw SystemError(make_error_code(result));
+		}
+	}
+#endif
+
+	template <typename T> struct ResultValue {
+#ifdef VKFW_HAS_NOEXCEPT
+		ResultValue(Result r, T &&v) VKFW_NOEXCEPT(VKFW_NOEXCEPT(T(std::move(v))))
+#else
+		ResultValue(Result r, T &&v)
+#endif
+			: result(r), value(std::move(v)) {}
+
+		Result result;
+		T value;
+
+		operator std::tuple<Result &, T &>() VKFW_NOEXCEPT { return std::tuple<Result &, T &>(result, value); }
+	};
+
+#ifndef VKFW_NO_SMART_HANDLE
+	template <typename Type> struct ResultValue<UniqueHandle<Type>> {
+# ifdef VKFW_HAS_NOEXCEPT
+		ResultValue(Result r, UniqueHandle<Type> &&v) VKFW_NOEXCEPT
+# else
+		ResultValue(Result r, UniqueHandle<Type> &&v)
+# endif
+			: result(r), value(std::move(v)) {}
+
+		std::tuple<Result, UniqueHandle<Type>> asTuple() {
+			return std::make_tuple(result, std::move(value));
+		}
+
+		Result result;
+		UniqueHandle<Type> value;
+	};
+#endif
+
+	template <typename T> struct ResultValueType {
+#ifdef VKFW_NO_EXCEPTIONS
+		typedef ResultValue<T> type;
+#else
+		typedef T type;
+#endif
+	};
+	template <> struct ResultValueType<void> {
+#ifdef VKFW_NO_EXCEPTIONS
+		typedef Result type;
+#else
+		typedef void type;
+#endif
+	};
+
+	template <typename T> VKFW_INLINE void ignore(T const &) VKFW_NOEXCEPT {}
+	VKFW_INLINE typename ResultValueType<void>::type createResultValue(Result result, char const *message) {
+#ifdef VKFW_NO_EXCEPTIONS
+		ignore(message);
+		VKFW_ASSERT_ON_RESULT(result == Result::VKFW_ENUMERATOR(Success));
+		return result;
+#else
+		if (result != Result::VKFW_ENUMERATOR(Success)) {
+			throwResultException(result, message);
+		}
+#endif
+	}
+	template <typename T>
+	VKFW_INLINE typename ResultValueType<T>::type createResultValue(Result result, T &data, char const *message) {
+#ifdef VKFW_NO_EXCEPTIONS
+		ignore(message);
+		VKFW_ASSERT_ON_RESULT(result == Result::VKFW_ENUMERATOR(Success));
+		return ResultValue<T>(result, std::move(data));
+#else
+		if (result != Result::VKFW_ENUMERATOR(Success)) {
+			throwResultException(result, message);
+		}
+		return std::move(data);
+#endif
+	}
+#ifndef VKFW_NO_SMART_HANDLE
+	template <typename T>
+	VKFW_INLINE typename ResultValueType<UniqueHandle<T>>::type createResultValueUnique(Result result, T &data, char const *message) {
+# ifdef VKFW_NO_EXCEPTIONS
+		ignore(message);
+		VKFW_ASSERT_ON_RESULT(result == Result::VKFW_ENUMERATOR(Success));
+		return ResultValue<UniqueHandle<T>>(result, UniqueHandle<T>(data));
+# else
+		if (result != Result::VKFW_ENUMERATOR(Success)) {
+			throwResultException(result, message);
+		}
+		return UniqueHandle<T>(data);
+# endif
+	}
+#endif
+#ifndef VKFW_NO_SMART_HANDLE
+	template<typename T>
+	struct CustomDestroy {
+		void destroy(T &t) { static_assert("Cannot delete an object without a specified deleter."); }
+	};
+#endif
+
+	class Instance {
+	public:
+		using CType = void;
+		explicit operator bool() const VKFW_NOEXCEPT { return true; }
+		bool operator!() const VKFW_NOEXCEPT { return false; }
+	};
+
+	VKFW_NODISCARD Result init();
+	VKFW_NODISCARD Result terminate();
+#ifndef VKFW_DISABLE_ENHANCED_MODE
+	VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type
+		init(int /* Initialization hints */);
+# ifndef VKFW_NO_SMART_HANDLE
+	using UniqueInstance = UniqueHandle<Instance>;
+	VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<UniqueInstance>::type
+		initUnique(int /* Initialization hints */ = 0);
+# endif
+#endif
+}
+
+template <> struct VULKAN_HPP_NAMESPACE::FlagTraits<VKFW_NAMESPACE::ModifierKeyBits> {
 	enum : VkFlags {
-		allFlags = VkFlags(vkfw::ModifierKeyBits::VKFW_ENUMERATOR(Shift))
-		| VkFlags(vkfw::ModifierKeyBits::VKFW_ENUMERATOR(Control))
-		| VkFlags(vkfw::ModifierKeyBits::VKFW_ENUMERATOR(Alt))
-		| VkFlags(vkfw::ModifierKeyBits::VKFW_ENUMERATOR(Super))
-		| VkFlags(vkfw::ModifierKeyBits::VKFW_ENUMERATOR(CapsLock))
-		| VkFlags(vkfw::ModifierKeyBits::VKFW_ENUMERATOR(NumLock))
+		allFlags = VkFlags(VKFW_NAMESPACE::ModifierKeyBits::VKFW_ENUMERATOR(Shift))
+		| VkFlags(VKFW_NAMESPACE::ModifierKeyBits::VKFW_ENUMERATOR(Control))
+		| VkFlags(VKFW_NAMESPACE::ModifierKeyBits::VKFW_ENUMERATOR(Alt))
+		| VkFlags(VKFW_NAMESPACE::ModifierKeyBits::VKFW_ENUMERATOR(Super))
+		| VkFlags(VKFW_NAMESPACE::ModifierKeyBits::VKFW_ENUMERATOR(CapsLock))
+		| VkFlags(VKFW_NAMESPACE::ModifierKeyBits::VKFW_ENUMERATOR(NumLock))
 	};
 };
+#ifndef VKFW_NO_SMART_HANDLE
+template<> struct VKFW_NAMESPACE::CustomDestroy<VKFW_NAMESPACE::Instance> {
+	void destroy(Instance &) { glfwTerminate(); }
+};
+template<> class VULKAN_HPP_NAMESPACE::UniqueHandleTraits<VKFW_NAMESPACE::Instance, VULKAN_HPP_DEFAULT_DISPATCHER_TYPE> {
+public:
+	using deleter = VKFW_NAMESPACE::CustomDestroy<VKFW_NAMESPACE::Instance>;
+};
+#endif
+
+namespace VKFW_NAMESPACE {
+	VKFW_NODISCARD Result init() {
+		if (glfwInit())
+			return Result::VKFW_ENUMERATOR(Success);
+		else
+			return static_cast<Result>(glfwGetError(nullptr));
+	}
+	VKFW_NODISCARD Result terminate() {
+		glfwTerminate();
+		return static_cast<Result>(glfwGetError(nullptr));
+	}
+	VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type
+		init(int /* Initialization hints */) {
+		// Set Hints!
+		return createResultValue(init(), VKFW_NAMESPACE_STRING"::init");
+	}
+	VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<VKFW_NAMESPACE::UniqueInstance>::type
+		initUnique(int /* Initialization hints */) {
+		Instance instance;
+		// Set Hints!
+		return createResultValueUnique(init(), instance, VKFW_NAMESPACE_STRING"::initUnique");
+	}
+}
