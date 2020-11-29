@@ -94,15 +94,17 @@ static_assert(GLFW_VERSION_MAJOR == 3
 #ifdef __cpp_constexpr
 # define VKFW_CONSTEXPR constexpr
 # if __cpp_constexpr >= 201304
-#   define VKFW_CONSTEXPR_14  constexpr
+#   define VKFW_CONSTEXPR_14 constexpr
 # else
 #   define VKFW_CONSTEXPR_14
 # endif
-# define VKFW_CONST_OR_CONSTEXPR  constexpr
+# define VKFW_CONST_OR_CONSTEXPR constexpr
+# define VKFW_INLINE_OR_CONSTEXPR constexpr
 #else
 # define VKFW_CONSTEXPR
 # define VKFW_CONSTEXPR_14
-# define VKFW_CONST_OR_CONSTEXPR  const
+# define VKFW_CONST_OR_CONSTEXPR const
+# define VKFW_INLINE_OR_CONSTEXPR VKFW_INLINE
 #endif
 
 #ifndef VKFW_NOEXCEPT
@@ -391,7 +393,7 @@ namespace VKFW_NAMESPACE {
 		VKFW_ENUMERATOR(FormatUnavailable) = GLFW_FORMAT_UNAVAILABLE,
 		VKFW_ENUMERATOR(NoWindowContext) = GLFW_NO_WINDOW_CONTEXT
 	};
-	bool check(Result result) { return result == Result::VKFW_ENUMERATOR(Success); }
+	VKFW_INLINE_OR_CONSTEXPR bool check(Result result) { return result == Result::VKFW_ENUMERATOR(Success); }
 	enum class InitializationHint {
 		VKFW_ENUMERATOR(JoystickHatButtons) = GLFW_JOYSTICK_HAT_BUTTONS,
 		VKFW_ENUMERATOR(CocoaChdirResources) = GLFW_COCOA_CHDIR_RESOURCES, // MacOS specific
@@ -504,7 +506,7 @@ namespace VKFW_NAMESPACE {
 		VKFW_ENUMERATOR(LockKeyModifiers) = GLFW_LOCK_KEY_MODS,
 		VKFW_ENUMERATOR(RawMouseMotion) = GLFW_RAW_MOUSE_MOTION
 	};
-	enum class Cursor {
+	enum class CursorVisibility {
 		VKFW_ENUMERATOR(Normal) = GLFW_CURSOR_NORMAL,
 		VKFW_ENUMERATOR(Hidden) = GLFW_CURSOR_HIDDEN,
 		VKFW_ENUMERATOR(Disabled) = GLFW_CURSOR_DISABLED
@@ -957,7 +959,7 @@ namespace VKFW_NAMESPACE {
 	[[noreturn]] static void throwResultException(Result result, char const *message) {
 		switch (result) {
 			case Result::VKFW_ENUMERATOR(Success): break;
-			case Result::VKFW_ENUMERATOR(NotInitialized):  throw NotInitializedError(message);
+			case Result::VKFW_ENUMERATOR(NotInitialized): throw NotInitializedError(message);
 			case Result::VKFW_ENUMERATOR(NoCurrentContext): throw NoCurrentContextError(message);
 			case Result::VKFW_ENUMERATOR(InvalidEnum): throw InvalidEnumError(message);
 			case Result::VKFW_ENUMERATOR(InvalidValue): throw InvalidValueError(message);
@@ -1096,6 +1098,119 @@ namespace VKFW_NAMESPACE {
 		T m_value;
 	};
 
+#ifndef VKFW_DISABLE_ENHANCED_MODE
+	class Instance {
+	public:
+		using CType = void;
+		VKFW_INLINE explicit operator bool() const VKFW_NOEXCEPT { return true; }
+		VKFW_INLINE bool operator!() const VKFW_NOEXCEPT { return false; }
+	};
+
+	class Monitor {
+	public:
+		using CType = GLFWmonitor;
+	public:
+		VKFW_INLINE_OR_CONSTEXPR Monitor() VKFW_NOEXCEPT : m_monitor(nullptr) {}
+		VKFW_INLINE_OR_CONSTEXPR Monitor(std::nullptr_t) VKFW_NOEXCEPT : m_monitor(nullptr) {}
+		VKFW_INLINE_OR_CONSTEXPR Monitor(GLFWmonitor *monitor) VKFW_NOEXCEPT : m_monitor(monitor) {}
+		VKFW_INLINE_OR_CONSTEXPR Monitor(Monitor const &another) VKFW_NOEXCEPT : m_monitor(another.m_monitor) {}
+		VKFW_INLINE_OR_CONSTEXPR Monitor(Monitor &&another) VKFW_NOEXCEPT : m_monitor(another.m_monitor) { another.m_monitor = nullptr; }
+		VKFW_INLINE_OR_CONSTEXPR Monitor operator=(Monitor const &another) VKFW_NOEXCEPT {
+			m_monitor = another.m_monitor; return *this;
+		}
+		VKFW_INLINE_OR_CONSTEXPR Monitor operator=(Monitor &&another) VKFW_NOEXCEPT {
+			m_monitor = another.m_monitor; another.m_monitor = nullptr; return *this;
+		}
+		VKFW_INLINE_OR_CONSTEXPR Monitor &operator=(GLFWmonitor *monitor) VKFW_NOEXCEPT { 
+			m_monitor = monitor; return *this; 
+		}
+		VKFW_INLINE_OR_CONSTEXPR Monitor &operator=(std::nullptr_t) VKFW_NOEXCEPT {
+			m_monitor = nullptr; return *this;
+		}
+
+		// Member functions go here.
+
+		VKFW_INLINE_OR_CONSTEXPR operator GLFWmonitor *() const VKFW_NOEXCEPT { return m_monitor; }
+		VKFW_INLINE_OR_CONSTEXPR explicit operator bool() const VULKAN_HPP_NOEXCEPT { return m_monitor != nullptr; }
+		VKFW_INLINE_OR_CONSTEXPR bool operator!() const VULKAN_HPP_NOEXCEPT { return m_monitor == nullptr; }
+
+	private:
+		GLFWmonitor *m_monitor;
+	};
+	
+	class Window {
+	public:
+		using CType = GLFWwindow;
+	public:
+		VKFW_INLINE_OR_CONSTEXPR Window() VKFW_NOEXCEPT : m_window(nullptr) {}
+		VKFW_INLINE_OR_CONSTEXPR Window(std::nullptr_t) VKFW_NOEXCEPT : m_window(nullptr) {}
+		VKFW_INLINE_OR_CONSTEXPR Window(GLFWwindow *window) VKFW_NOEXCEPT : m_window(window) {}
+		VKFW_INLINE_OR_CONSTEXPR Window(Window const &another) VKFW_NOEXCEPT : m_window(another.m_window) {}
+		VKFW_INLINE_OR_CONSTEXPR Window(Window &&another) VKFW_NOEXCEPT : m_window(another.m_window) { another.m_window = nullptr; }
+		VKFW_INLINE_OR_CONSTEXPR Window operator=(Window const &another) VKFW_NOEXCEPT { 
+			m_window = another.m_window; return *this;
+		}
+		VKFW_INLINE_OR_CONSTEXPR Window operator=(Window &&another) VKFW_NOEXCEPT { 
+			m_window = another.m_window; another.m_window = nullptr; return *this;
+		}
+		VKFW_INLINE_OR_CONSTEXPR Window &operator=(GLFWwindow *window) VKFW_NOEXCEPT { 
+			m_window = window; return *this;
+		}
+		VKFW_INLINE_OR_CONSTEXPR Window &operator=(std::nullptr_t) VKFW_NOEXCEPT {
+			m_window = nullptr; return *this;
+		}
+
+		VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type destroy();
+		// Member functions go here.
+
+		VKFW_INLINE_OR_CONSTEXPR operator GLFWwindow *() const VKFW_NOEXCEPT { return m_window; }
+		VKFW_INLINE_OR_CONSTEXPR explicit operator bool() const VULKAN_HPP_NOEXCEPT { return m_window != nullptr; }
+		VKFW_INLINE_OR_CONSTEXPR bool operator!() const VULKAN_HPP_NOEXCEPT { return m_window == nullptr; }
+
+	private:
+		GLFWwindow *m_window;
+	};
+
+	class Cursor {
+	public:
+		using CType = GLFWcursor;
+	public:
+		VKFW_INLINE_OR_CONSTEXPR Cursor() VKFW_NOEXCEPT : m_cursor(nullptr) {}
+		VKFW_INLINE_OR_CONSTEXPR Cursor(std::nullptr_t) VKFW_NOEXCEPT : m_cursor(nullptr) {}
+		VKFW_INLINE_OR_CONSTEXPR Cursor(GLFWcursor *cursor) VKFW_NOEXCEPT : m_cursor(cursor) {}
+		VKFW_INLINE_OR_CONSTEXPR Cursor(Cursor const &another) VKFW_NOEXCEPT : m_cursor(another.m_cursor) {}
+		VKFW_INLINE_OR_CONSTEXPR Cursor(Cursor &&another) VKFW_NOEXCEPT : m_cursor(another.m_cursor) { another.m_cursor = nullptr; }
+		VKFW_INLINE_OR_CONSTEXPR Cursor operator=(Cursor const &another) VKFW_NOEXCEPT { 
+			m_cursor = another.m_cursor; return *this;
+		}
+		VKFW_INLINE_OR_CONSTEXPR Cursor operator=(Cursor &&another) VKFW_NOEXCEPT { 
+			m_cursor = another.m_cursor; another.m_cursor = nullptr; return *this;
+		}
+		VKFW_INLINE_OR_CONSTEXPR Cursor &operator=(GLFWcursor *cursor) VKFW_NOEXCEPT { 
+			m_cursor = cursor; return *this;
+		}
+		VKFW_INLINE_OR_CONSTEXPR Cursor &operator=(std::nullptr_t) VKFW_NOEXCEPT { 
+			m_cursor = nullptr; return *this; 
+		}
+
+		// Member functions go here.
+
+		VKFW_INLINE_OR_CONSTEXPR operator GLFWcursor *() const VKFW_NOEXCEPT { return m_cursor; }
+		VKFW_INLINE_OR_CONSTEXPR explicit operator bool() const VULKAN_HPP_NOEXCEPT { return m_cursor != nullptr; }
+		VKFW_INLINE_OR_CONSTEXPR bool operator!() const VULKAN_HPP_NOEXCEPT { return m_cursor == nullptr; }
+
+	private:
+		GLFWcursor *m_cursor;
+	};
+#endif
+
+	VKFW_INLINE Result getError(const char **description = nullptr) {
+		return static_cast<Result>(glfwGetError(description));
+	}
+	VKFW_INLINE GLFWerrorfun setErrorCallback(GLFWerrorfun callback) {
+		return glfwSetErrorCallback(callback);
+	}
+
 	template <InitializationHint hint_name, typename hint_type>
 	Result initHint(hint_type const &value);
 #ifndef VKFW_DISABLE_ENHANCED_MODE
@@ -1127,10 +1242,9 @@ namespace VKFW_NAMESPACE {
 			initHint<hint_name>(hint.value());
 		else
 			initHint<hint_name>(true);
-		return static_cast<Result>(glfwGetError(nullptr));
+		return getError();
 	}
 	Result setInitHints(InitHints hints) {
-		
 		Result result = Result::VKFW_ENUMERATOR(Success);
 		if (!check(result = setInitHint(hints.joystickHatButtons))) return result;
 		if (!check(result = setInitHint(hints.cocoaChdirResources))) return result;
@@ -1138,26 +1252,76 @@ namespace VKFW_NAMESPACE {
 		return result;
 	}
 #endif
-
-	class Instance {
-	public:
-		using CType = void;
-		explicit operator bool() const VKFW_NOEXCEPT { return true; }
-		bool operator!() const VKFW_NOEXCEPT { return false; }
-	};
-
 #ifdef VKFW_DISABLE_ENHANCED_MODE
 	VKFW_NODISCARD Result init();
+	VKFW_NODISCARD Result terminate();
 #else VKFW_DISABLE_ENHANCED_MODE
 	VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type
 		init(InitHints hints = {});
+	VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type
+		terminate();
 # ifndef VKFW_NO_SMART_HANDLE
 	using UniqueInstance = UniqueHandle<Instance>;
 	VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<UniqueInstance>::type
 		initUnique(InitHints hints = {});
 # endif
 #endif
-	VKFW_NODISCARD Result terminate();
+
+	struct Version {
+		size_t major, minor, revision;
+	};
+	VKFW_INLINE Version getVersion() {
+		int major, minor, revision;
+		glfwGetVersion(&major, &minor, &revision);
+		return Version{ 
+			static_cast<size_t>(major), 
+			static_cast<size_t>(minor), 
+			static_cast<size_t>(revision) 
+		};
+	}
+
+#if VKFW_CPP_VERSION >= 20
+	VKFW_INLINE std::string_view getVersionString() {
+#else
+	VKFW_INLINE char const *getVersionString() {
+#endif
+		return glfwGetVersionString();
+	}
+
+	// To be implemented.
+	// GLFWmonitor **glfwGetMonitors(int *count);
+	// GLFWmonitor *glfwGetPrimaryMonitor(void);
+	// void glfwGetMonitorPos(GLFWmonitor *monitor, int *xpos, int *ypos);
+	// void glfwGetMonitorWorkarea(GLFWmonitor *monitor, int *xpos, int *ypos, int *width, int *height);
+	// void glfwGetMonitorPhysicalSize(GLFWmonitor *monitor, int *widthMM, int *heightMM);
+	// void glfwGetMonitorContentScale(GLFWmonitor *monitor, float *xscale, float *yscale);
+	// const char *glfwGetMonitorName(GLFWmonitor *monitor);
+	// void glfwSetMonitorUserPointer(GLFWmonitor *monitor, void *pointer);
+	// void *glfwGetMonitorUserPointer(GLFWmonitor *monitor);
+	// GLFWmonitorfun glfwSetMonitorCallback(GLFWmonitorfun callback);
+	// const GLFWvidmode *glfwGetVideoModes(GLFWmonitor *monitor, int *count);
+	// const GLFWvidmode *glfwGetVideoMode(GLFWmonitor *monitor);
+	// void glfwSetGamma(GLFWmonitor *monitor, float gamma);
+	// const GLFWgammaramp *glfwGetGammaRamp(GLFWmonitor *monitor);
+	// void glfwSetGammaRamp(GLFWmonitor *monitor, const GLFWgammaramp *ramp);
+
+#ifdef VKFW_DISABLE_ENHANCED_MODE
+	VKFW_NODISCARD GLFWwindow createWindow(size_t width, size_t height, const char *title, 
+										   GLFWmonitor *monitor = nullptr, GLFWwindow *share = nullptr);
+	VKFW_NODISCARD Result destroyWindow(GLFWwindow *window);
+#else VKFW_DISABLE_ENHANCED_MODE
+	VKFW_NODISCARD typename ResultValueType<Window>::type
+		createWindow(size_t width, size_t height, const char *title, 
+					 Monitor monitor = nullptr, Window share = nullptr);
+	VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type
+		destroyWindow(GLFWwindow *window);
+# ifndef VKFW_NO_SMART_HANDLE
+	using UniqueWindow = UniqueHandle<Window>;
+	VKFW_NODISCARD typename ResultValueType<UniqueWindow>::type
+		createWindowUnique(size_t width, size_t height, const char *title,
+						   Monitor monitor = nullptr, Window share = nullptr);
+# endif
+#endif
 }
 
 template <> struct VULKAN_HPP_NAMESPACE::FlagTraits<VKFW_NAMESPACE::ModifierKeyBits> {
@@ -1178,38 +1342,59 @@ template<> class VULKAN_HPP_NAMESPACE::UniqueHandleTraits<VKFW_NAMESPACE::Instan
 public:
 	using deleter = VKFW_NAMESPACE::CustomDestroy<VKFW_NAMESPACE::Instance>;
 };
+
+template<> struct VKFW_NAMESPACE::CustomDestroy<VKFW_NAMESPACE::Window> {
+	void destroy(Window &window) { glfwDestroyWindow(window); }
+};
+template<> class VULKAN_HPP_NAMESPACE::UniqueHandleTraits<VKFW_NAMESPACE::Window, VULKAN_HPP_DEFAULT_DISPATCHER_TYPE> {
+public:
+	using deleter = VKFW_NAMESPACE::CustomDestroy<VKFW_NAMESPACE::Window>;
+};
+
+template<> struct VKFW_NAMESPACE::CustomDestroy<VKFW_NAMESPACE::Cursor> {
+	void destroy(Cursor &cursor) { glfwDestroyCursor(cursor); }
+};
+template<> class VULKAN_HPP_NAMESPACE::UniqueHandleTraits<VKFW_NAMESPACE::Cursor, VULKAN_HPP_DEFAULT_DISPATCHER_TYPE> {
+public:
+	using deleter = VKFW_NAMESPACE::CustomDestroy<VKFW_NAMESPACE::Cursor>;
+};
 #endif
 
 namespace VKFW_NAMESPACE {
+	VKFW_NODISCARD_WHEN_NO_EXCEPTIONS VKFW_INLINE typename ResultValueType<void>::type Window::destroy() {
+		glfwDestroyWindow(m_window); m_window = nullptr;
+		return createResultValue(getError(), VKFW_NAMESPACE_STRING"::init");
+	}
+
 	template<> Result initHint<InitializationHint::VKFW_ENUMERATOR(JoystickHatButtons), Boolean>(Boolean const &value) {
 		glfwInitHint(static_cast<int>(InitializationHint::VKFW_ENUMERATOR(JoystickHatButtons)),
 					 static_cast<int>(value));
-		return static_cast<Result>(glfwGetError(nullptr));
+		return getError();
 	}
 	template<> Result initHint<InitializationHint::VKFW_ENUMERATOR(JoystickHatButtons), bool>(bool const &value) {
 		glfwInitHint(static_cast<int>(InitializationHint::VKFW_ENUMERATOR(JoystickHatButtons)),
 					 static_cast<int>(value));
-		return static_cast<Result>(glfwGetError(nullptr));
+		return getError();
 	}
 	template<> Result initHint<InitializationHint::VKFW_ENUMERATOR(CocoaChdirResources), Boolean>(Boolean const &value) {
 		glfwInitHint(static_cast<int>(InitializationHint::VKFW_ENUMERATOR(CocoaChdirResources)),
 					 static_cast<int>(value));
-		return static_cast<Result>(glfwGetError(nullptr));
+		return getError();
 	}
 	template<> Result initHint<InitializationHint::VKFW_ENUMERATOR(CocoaChdirResources), bool>(bool const &value) {
 		glfwInitHint(static_cast<int>(InitializationHint::VKFW_ENUMERATOR(CocoaChdirResources)),
 					 static_cast<int>(value));
-		return static_cast<Result>(glfwGetError(nullptr));
+		return getError();
 	}
 	template<> Result initHint<InitializationHint::VKFW_ENUMERATOR(CocoaMenubar), Boolean>(Boolean const &value) {
 		glfwInitHint(static_cast<int>(InitializationHint::VKFW_ENUMERATOR(CocoaMenubar)),
 					 static_cast<int>(value));
-		return static_cast<Result>(glfwGetError(nullptr));
+		return getError();
 	}
 	template<> Result initHint<InitializationHint::VKFW_ENUMERATOR(CocoaMenubar), bool>(bool const &value) {
 		glfwInitHint(static_cast<int>(InitializationHint::VKFW_ENUMERATOR(CocoaMenubar)),
 					 static_cast<int>(value));
-		return static_cast<Result>(glfwGetError(nullptr));
+		return getError();
 	}
 
 #ifdef VKFW_DISABLE_ENHANCED_MODE
@@ -1217,19 +1402,25 @@ namespace VKFW_NAMESPACE {
 		if (glfwInit())
 			return Result::VKFW_ENUMERATOR(Success);
 		else
-			return static_cast<Result>(glfwGetError(nullptr));
+			return getError();
+	}
+	VKFW_NODISCARD VKFW_INLINE Result terminate() {
+		glfwTerminate();
+		return getError();
 	}
 #else
-	VKFW_NODISCARD_WHEN_NO_EXCEPTIONS VKFW_INLINE typename ResultValueType<void>::type
-		init(InitHints hints) {
-
+	VKFW_NODISCARD_WHEN_NO_EXCEPTIONS VKFW_INLINE typename ResultValueType<void>::type init(InitHints hints) {
 		Result result = setInitHints(hints);
 		if (!check(result)) return createResultValue(result, VKFW_NAMESPACE_STRING"::init");
 
 		if (glfwInit())
 			return createResultValue(Result::VKFW_ENUMERATOR(Success), VKFW_NAMESPACE_STRING"::init");
 		else
-			return createResultValue(static_cast<Result>(glfwGetError(nullptr)), VKFW_NAMESPACE_STRING"::init");
+			return createResultValue(getError(), VKFW_NAMESPACE_STRING"::init");
+	}
+	VKFW_NODISCARD_WHEN_NO_EXCEPTIONS VKFW_INLINE typename ResultValueType<void>::type terminate() {
+		glfwTerminate();
+		return createResultValue(getError(), VKFW_NAMESPACE_STRING"::terminate");
 	}
 # ifndef VKFW_NO_SMART_HANDLE
 	VKFW_NODISCARD_WHEN_NO_EXCEPTIONS VKFW_INLINE typename ResultValueType<VKFW_NAMESPACE::UniqueInstance>::type
@@ -1237,17 +1428,48 @@ namespace VKFW_NAMESPACE {
 		Instance instance;
 
 		Result result = setInitHints(hints);
-		if (!check(result)) return createResultValueUnique(result, instance, VKFW_NAMESPACE_STRING"::initUnique");
+		if (!check(result)) return createResultValueUnique(result, instance, 
+														   VKFW_NAMESPACE_STRING"::initUnique");
 
 		if (glfwInit())
-			return createResultValueUnique(Result::VKFW_ENUMERATOR(Success), instance, VKFW_NAMESPACE_STRING"::initUnique");
+			return createResultValueUnique(Result::VKFW_ENUMERATOR(Success), instance, 
+										   VKFW_NAMESPACE_STRING"::initUnique");
 		else
-			return createResultValueUnique(static_cast<Result>(glfwGetError(nullptr)), instance, VKFW_NAMESPACE_STRING"::initUnique");
+			return createResultValueUnique(getError(), instance, 
+										   VKFW_NAMESPACE_STRING"::initUnique");
 	}
 # endif
 #endif
-	VKFW_NODISCARD VKFW_INLINE Result terminate() {
-		glfwTerminate();
-		return static_cast<Result>(glfwGetError(nullptr));
+
+#ifdef VKFW_DISABLE_ENHANCED_MODE
+	VKFW_NODISCARD VKFW_INLINE GLFWwindow createWindow(size_t width, size_t height, const char *title,
+													   GLFWmonitor *monitor, GLFWwindow *share) {
+		return glfwCreateWindow(static_cast<int>(width), static_cast<int>(height), title, monitor, share);
 	}
+	VKFW_NODISCARD VKFW_INLINE Result destroyWindow(GLFWwindow *window) {
+		glfwDestroyWindow(window);
+		return getError();
+	}
+#else
+	VKFW_NODISCARD VKFW_INLINE typename ResultValueType<Window>::type
+		createWindow(size_t width, size_t height, const char *title,
+					 Monitor monitor, Window share) {
+		Window window = glfwCreateWindow(static_cast<int>(width), static_cast<int>(height), title, monitor, share);
+		return createResultValue(getError(), window, VKFW_NAMESPACE_STRING"::createWindow");
+	}
+	VKFW_NODISCARD_WHEN_NO_EXCEPTIONS VKFW_INLINE typename ResultValueType<void>::type 
+		destroyWindow(GLFWwindow *window) {
+
+		glfwDestroyWindow(window);
+		return createResultValue(getError(), VKFW_NAMESPACE_STRING"::destroyWindow");
+	}
+# ifndef VKFW_NO_SMART_HANDLE
+	VKFW_NODISCARD VKFW_INLINE typename ResultValueType<UniqueWindow>::type
+		createWindowUnique(size_t width, size_t height, const char *title,
+						   Monitor monitor, Window share) {
+		Window window = glfwCreateWindow(static_cast<int>(width), static_cast<int>(height), title, monitor, share);
+		return createResultValueUnique(getError(), window, VKFW_NAMESPACE_STRING"::createWindowUnique");
+	}
+# endif
+#endif
 }
