@@ -48,6 +48,8 @@
 #   define VKFW_NO_SMART_HANDLE
 # endif
 #else
+# include <algorithm>
+# include <iterator>
 # include <memory>
 # include <vector>
 #endif
@@ -809,16 +811,16 @@ namespace VKFW_NAMESPACE {
 
 	VKFW_INLINE std::string to_string(ModifierKeyFlags value) {
 		if (!value) return "{}";
-		std::string result;
+		std::string output;
 
-		if (value & ModifierKeyBits::VKFW_ENUMERATOR(CapsLock)) result += "CapsLock | ";
-		if (value & ModifierKeyBits::VKFW_ENUMERATOR(NumLock)) result += "NumLock | ";
+		if (value & ModifierKeyBits::VKFW_ENUMERATOR(CapsLock)) output += "CapsLock | ";
+		if (value & ModifierKeyBits::VKFW_ENUMERATOR(NumLock)) output += "NumLock | ";
 
-		if (value & ModifierKeyBits::VKFW_ENUMERATOR(Control)) result += "Control + ";
-		if (value & ModifierKeyBits::VKFW_ENUMERATOR(Alt)) result += "Alt + ";
-		if (value & ModifierKeyBits::VKFW_ENUMERATOR(Super)) result += "Super + ";
+		if (value & ModifierKeyBits::VKFW_ENUMERATOR(Control)) output += "Control + ";
+		if (value & ModifierKeyBits::VKFW_ENUMERATOR(Alt)) output += "Alt + ";
+		if (value & ModifierKeyBits::VKFW_ENUMERATOR(Super)) output += "Super + ";
 
-		return "{ " + result.substr(0, result.size() - 3) + " }";
+		return "{ " + output.substr(0, output.size() - 3) + " }";
 	}
 }
 
@@ -856,7 +858,7 @@ namespace VKFW_NAMESPACE {
 		Error(const Error &) VKFW_NOEXCEPT = default;
 		virtual ~Error() VKFW_NOEXCEPT = default;
 
-		virtual const char *what() const VKFW_NOEXCEPT = 0;
+		virtual char const *what() const VKFW_NOEXCEPT = 0;
 	};
 	class SystemError : public Error, public std::system_error {
 	public:
@@ -873,7 +875,7 @@ namespace VKFW_NAMESPACE {
 		SystemError(int ev, std::error_category const &ecat, char const *what)
 			: Error(), std::system_error(ev, ecat, what) {}
 
-		virtual const char *what() const VKFW_NOEXCEPT { return std::system_error::what(); }
+		virtual char const *what() const VKFW_NOEXCEPT { return std::system_error::what(); }
 	};
 	VKFW_INLINE const std::error_category &errorCategory() VKFW_NOEXCEPT {
 		static ErrorCategoryImpl instance;
@@ -1081,12 +1083,12 @@ namespace VKFW_NAMESPACE {
 		template<class U> VKFW_INLINE VKFW_CONSTEXPR Optional &operator=(Optional<U> const &another) {
 			m_has_value = another.m_has_value;
 			m_value = another.m_value;
-			return *this; 
+			return *this;
 		}
 		template<class U> VKFW_INLINE VKFW_CONSTEXPR Optional &operator=(Optional<U> &&another) {
 			m_has_value = another.m_has_value;
 			m_value = std::move(another.m_value);
-			return *this; 
+			return *this;
 		}
 		VKFW_INLINE VKFW_CONSTEXPR bool has_value() const { return m_has_value; }
 		VKFW_INLINE VKFW_CONSTEXPR value_type const &value() const {
@@ -1121,14 +1123,43 @@ namespace VKFW_NAMESPACE {
 		VKFW_INLINE_OR_CONSTEXPR Monitor operator=(Monitor &&another) VKFW_NOEXCEPT {
 			m_monitor = another.m_monitor; another.m_monitor = nullptr; return *this;
 		}
-		VKFW_INLINE_OR_CONSTEXPR Monitor &operator=(GLFWmonitor *monitor) VKFW_NOEXCEPT { 
-			m_monitor = monitor; return *this; 
+		VKFW_INLINE_OR_CONSTEXPR Monitor &operator=(GLFWmonitor *monitor) VKFW_NOEXCEPT {
+			m_monitor = monitor; return *this;
 		}
 		VKFW_INLINE_OR_CONSTEXPR Monitor &operator=(std::nullptr_t) VKFW_NOEXCEPT {
 			m_monitor = nullptr; return *this;
 		}
 
-		// Member functions go here.
+		VKFW_NODISCARD typename ResultValueType<void>::type getPos(int *xpos, int *ypos) const;
+		VKFW_NODISCARD typename ResultValueType<std::tuple<int, int>>::type getPos() const;
+		VKFW_NODISCARD typename ResultValueType<int>::type getPosX() const;
+		VKFW_NODISCARD typename ResultValueType<int>::type getPosY() const;
+
+		VKFW_NODISCARD typename ResultValueType<void>::type getWorkarea(int *xpos, int *ypos,
+																		size_t *width, size_t *height) const;
+		VKFW_NODISCARD typename ResultValueType<std::tuple<int, int, size_t, size_t>>::type getWorkarea() const;
+		VKFW_NODISCARD typename ResultValueType<std::tuple<int, int>>::type getWorkareaPos() const;
+		VKFW_NODISCARD typename ResultValueType<int>::type getWorkareaPosX() const;
+		VKFW_NODISCARD typename ResultValueType<int>::type getWorkareaPosY() const;
+		VKFW_NODISCARD typename ResultValueType<std::tuple<size_t, size_t>>::type getWorkareaSize() const;
+		VKFW_NODISCARD typename ResultValueType<size_t>::type getWorkareaWidth() const;
+		VKFW_NODISCARD typename ResultValueType<size_t>::type getWorkareaHeight() const;
+
+		VKFW_NODISCARD typename ResultValueType<void>::type getPhysicalSize(size_t *widthMM, size_t *heightMM) const;
+		VKFW_NODISCARD typename ResultValueType<std::tuple<size_t, size_t>>::type getPhysicalSize() const;
+		VKFW_NODISCARD typename ResultValueType<size_t>::type getPhysicalWidth() const;
+		VKFW_NODISCARD typename ResultValueType<size_t>::type getPhysicalHeight() const;
+
+		VKFW_NODISCARD typename ResultValueType<void>::type getContentScale(float *xscale, float *yscale) const;
+		VKFW_NODISCARD typename ResultValueType<std::tuple<float, float>>::type getContentScale() const;
+		VKFW_NODISCARD typename ResultValueType<float>::type getContentScaleX() const;
+		VKFW_NODISCARD typename ResultValueType<float>::type getContentScaleY() const;
+
+# if 17 <= VKFW_CPP_VERSION
+		VKFW_NODISCARD typename ResultValueType<std::string_view>::type getName() const;
+# else
+		VKFW_NODISCARD typename ResultValueType<char const *>::type getName() const;
+# endif
 
 		VKFW_INLINE_OR_CONSTEXPR operator GLFWmonitor *() const VKFW_NOEXCEPT { return m_monitor; }
 		VKFW_INLINE_OR_CONSTEXPR explicit operator bool() const VULKAN_HPP_NOEXCEPT { return m_monitor != nullptr; }
@@ -1137,7 +1168,7 @@ namespace VKFW_NAMESPACE {
 	private:
 		GLFWmonitor *m_monitor;
 	};
-	
+
 	class Window {
 	public:
 		using CType = GLFWwindow;
@@ -1147,13 +1178,13 @@ namespace VKFW_NAMESPACE {
 		VKFW_INLINE_OR_CONSTEXPR Window(GLFWwindow *window) VKFW_NOEXCEPT : m_window(window) {}
 		VKFW_INLINE_OR_CONSTEXPR Window(Window const &another) VKFW_NOEXCEPT : m_window(another.m_window) {}
 		VKFW_INLINE_OR_CONSTEXPR Window(Window &&another) VKFW_NOEXCEPT : m_window(another.m_window) { another.m_window = nullptr; }
-		VKFW_INLINE_OR_CONSTEXPR Window operator=(Window const &another) VKFW_NOEXCEPT { 
+		VKFW_INLINE_OR_CONSTEXPR Window operator=(Window const &another) VKFW_NOEXCEPT {
 			m_window = another.m_window; return *this;
 		}
-		VKFW_INLINE_OR_CONSTEXPR Window operator=(Window &&another) VKFW_NOEXCEPT { 
+		VKFW_INLINE_OR_CONSTEXPR Window operator=(Window &&another) VKFW_NOEXCEPT {
 			m_window = another.m_window; another.m_window = nullptr; return *this;
 		}
-		VKFW_INLINE_OR_CONSTEXPR Window &operator=(GLFWwindow *window) VKFW_NOEXCEPT { 
+		VKFW_INLINE_OR_CONSTEXPR Window &operator=(GLFWwindow *window) VKFW_NOEXCEPT {
 			m_window = window; return *this;
 		}
 		VKFW_INLINE_OR_CONSTEXPR Window &operator=(std::nullptr_t) VKFW_NOEXCEPT {
@@ -1180,19 +1211,21 @@ namespace VKFW_NAMESPACE {
 		VKFW_INLINE_OR_CONSTEXPR Cursor(GLFWcursor *cursor) VKFW_NOEXCEPT : m_cursor(cursor) {}
 		VKFW_INLINE_OR_CONSTEXPR Cursor(Cursor const &another) VKFW_NOEXCEPT : m_cursor(another.m_cursor) {}
 		VKFW_INLINE_OR_CONSTEXPR Cursor(Cursor &&another) VKFW_NOEXCEPT : m_cursor(another.m_cursor) { another.m_cursor = nullptr; }
-		VKFW_INLINE_OR_CONSTEXPR Cursor operator=(Cursor const &another) VKFW_NOEXCEPT { 
+		VKFW_INLINE_OR_CONSTEXPR Cursor operator=(Cursor const &another) VKFW_NOEXCEPT {
 			m_cursor = another.m_cursor; return *this;
 		}
-		VKFW_INLINE_OR_CONSTEXPR Cursor operator=(Cursor &&another) VKFW_NOEXCEPT { 
+		VKFW_INLINE_OR_CONSTEXPR Cursor operator=(Cursor &&another) VKFW_NOEXCEPT {
 			m_cursor = another.m_cursor; another.m_cursor = nullptr; return *this;
 		}
-		VKFW_INLINE_OR_CONSTEXPR Cursor &operator=(GLFWcursor *cursor) VKFW_NOEXCEPT { 
+		VKFW_INLINE_OR_CONSTEXPR Cursor &operator=(GLFWcursor *cursor) VKFW_NOEXCEPT {
 			m_cursor = cursor; return *this;
 		}
-		VKFW_INLINE_OR_CONSTEXPR Cursor &operator=(std::nullptr_t) VKFW_NOEXCEPT { 
-			m_cursor = nullptr; return *this; 
+		VKFW_INLINE_OR_CONSTEXPR Cursor &operator=(std::nullptr_t) VKFW_NOEXCEPT {
+			m_cursor = nullptr; return *this;
 		}
 
+		// TEMPORARY!
+		VKFW_NODISCARD_WHEN_NO_EXCEPTIONS VKFW_INLINE typename ResultValueType<void>::type destroy() {}
 		// Member functions go here.
 
 		VKFW_INLINE_OR_CONSTEXPR operator GLFWcursor *() const VKFW_NOEXCEPT { return m_cursor; }
@@ -1204,7 +1237,7 @@ namespace VKFW_NAMESPACE {
 	};
 #endif
 
-	VKFW_INLINE Result getError(const char **description = nullptr) {
+	VKFW_INLINE Result getError(char const **description = nullptr) {
 		return static_cast<Result>(glfwGetError(description));
 	}
 	VKFW_INLINE GLFWerrorfun setErrorCallback(GLFWerrorfun callback) {
@@ -1226,7 +1259,7 @@ namespace VKFW_NAMESPACE {
 			BooleanInitializationHint<InitializationHint::VKFW_ENUMERATOR(JoystickHatButtons)> joystickHatButtons_ = nullopt,
 			BooleanInitializationHint<InitializationHint::VKFW_ENUMERATOR(CocoaChdirResources)> cocoaChdirResources_ = nullopt,
 			BooleanInitializationHint<InitializationHint::VKFW_ENUMERATOR(CocoaMenubar)> cocoaMenubar_ = nullopt
-		) VKFW_NOEXCEPT 
+		) VKFW_NOEXCEPT
 			: joystickHatButtons(joystickHatButtons_)
 			, cocoaChdirResources(cocoaChdirResources_)
 			, cocoaMenubar(cocoaMenubar_) {}
@@ -1273,14 +1306,14 @@ namespace VKFW_NAMESPACE {
 	VKFW_INLINE Version getVersion() {
 		int major, minor, revision;
 		glfwGetVersion(&major, &minor, &revision);
-		return Version{ 
-			static_cast<size_t>(major), 
-			static_cast<size_t>(minor), 
-			static_cast<size_t>(revision) 
+		return Version{
+			static_cast<size_t>(major),
+			static_cast<size_t>(minor),
+			static_cast<size_t>(revision)
 		};
 	}
 
-#if VKFW_CPP_VERSION >= 20
+#if 17 <= VKFW_CPP_VERSION
 	VKFW_INLINE std::string_view getVersionString() {
 #else
 	VKFW_INLINE char const *getVersionString() {
@@ -1288,14 +1321,29 @@ namespace VKFW_NAMESPACE {
 		return glfwGetVersionString();
 	}
 
+#ifdef VKFW_DISABLE_ENHANCED_MODE
+	VKFW_NODISCARD GLFWmonitor **getMonitors(size_t *count);
+	VKFW_NODISCARD GLFWmonitor *getPrimaryMonitor();
+	VKFW_NODISCARD Result getMonitorPos(GLFWmonitor *monitor, int *xpos, int *ypos);
+	VKFW_NODISCARD Result getMonitorWorkarea(GLFWmonitor *monitor, int *xpos, int *ypos, size_t *width, size_t *height);
+	VKFW_NODISCARD Result getMonitorPhysicalSize(GLFWmonitor *monitor, size_t *widthMM, size_t *heightMM);
+	VKFW_NODISCARD Result getMonitorContentScale(GLFWmonitor *monitor, float *xscale, float *yscale);
+	VKFW_NODISCARD char const *glfwGetMonitorName(GLFWmonitor *monitor);
+#else
+	VKFW_NODISCARD typename ResultValueType<std::vector<Monitor>>::type getMonitors();
+	VKFW_NODISCARD typename ResultValueType<Monitor>::type getPrimaryMonitor();
+	VKFW_NODISCARD typename ResultValueType<void>::type getMonitorPos(Monitor const &monitor, int *xpos, int *ypos);
+	VKFW_NODISCARD typename ResultValueType<void>::type getMonitorWorkarea(Monitor const &monitor, int *xpos, int *ypos, size_t * width, size_t * height);
+	VKFW_NODISCARD typename ResultValueType<void>::type getMonitorPhysicalSize(Monitor const &monitor, size_t * widthMM, size_t * heightMM);
+	VKFW_NODISCARD typename ResultValueType<void>::type getMonitorContentScale(Monitor const &monitor, float *xscale, float *yscale);
+# if 17 <= VKFW_CPP_VERSION
+	VKFW_NODISCARD typename ResultValueType<std::string_view>::type getMonitorName(Monitor const &monitor);
+# else
+	VKFW_NODISCARD typename ResultValueType<char const *>::type getMonitorName(Monitor const &monitor);
+# endif
+#endif
+
 	// To be implemented.
-	// GLFWmonitor **glfwGetMonitors(int *count);
-	// GLFWmonitor *glfwGetPrimaryMonitor(void);
-	// void glfwGetMonitorPos(GLFWmonitor *monitor, int *xpos, int *ypos);
-	// void glfwGetMonitorWorkarea(GLFWmonitor *monitor, int *xpos, int *ypos, int *width, int *height);
-	// void glfwGetMonitorPhysicalSize(GLFWmonitor *monitor, int *widthMM, int *heightMM);
-	// void glfwGetMonitorContentScale(GLFWmonitor *monitor, float *xscale, float *yscale);
-	// const char *glfwGetMonitorName(GLFWmonitor *monitor);
 	// void glfwSetMonitorUserPointer(GLFWmonitor *monitor, void *pointer);
 	// void *glfwGetMonitorUserPointer(GLFWmonitor *monitor);
 	// GLFWmonitorfun glfwSetMonitorCallback(GLFWmonitorfun callback);
@@ -1305,23 +1353,126 @@ namespace VKFW_NAMESPACE {
 	// const GLFWgammaramp *glfwGetGammaRamp(GLFWmonitor *monitor);
 	// void glfwSetGammaRamp(GLFWmonitor *monitor, const GLFWgammaramp *ramp);
 
+	// To be implemented.
+	// void glfwDefaultWindowHints(void);
+	// void glfwWindowHint(int hint, int value);
+	// void glfwWindowHintString(int hint, char const *value);
+
 #ifdef VKFW_DISABLE_ENHANCED_MODE
-	VKFW_NODISCARD GLFWwindow createWindow(size_t width, size_t height, const char *title, 
-										   GLFWmonitor *monitor = nullptr, GLFWwindow *share = nullptr);
-	VKFW_NODISCARD Result destroyWindow(GLFWwindow *window);
+	VKFW_NODISCARD GLFWwindow createWindow(size_t width, size_t height, char const *title,
+										   GLFWmonitor * monitor = nullptr, GLFWwindow * share = nullptr);
+	VKFW_NODISCARD Result destroyWindow(GLFWwindow * window);
 #else VKFW_DISABLE_ENHANCED_MODE
 	VKFW_NODISCARD typename ResultValueType<Window>::type
-		createWindow(size_t width, size_t height, const char *title, 
+		createWindow(size_t width, size_t height, char const *title,
 					 Monitor monitor = nullptr, Window share = nullptr);
 	VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type
-		destroyWindow(GLFWwindow *window);
+		destroyWindow(GLFWwindow * window);
 # ifndef VKFW_NO_SMART_HANDLE
 	using UniqueWindow = UniqueHandle<Window>;
 	VKFW_NODISCARD typename ResultValueType<UniqueWindow>::type
-		createWindowUnique(size_t width, size_t height, const char *title,
+		createWindowUnique(size_t width, size_t height, char const *title,
 						   Monitor monitor = nullptr, Window share = nullptr);
 # endif
 #endif
+
+	// To be implemented
+	// int glfwWindowShouldClose(GLFWwindow *window);
+	// void glfwSetWindowShouldClose(GLFWwindow *window, int value);
+	// void glfwSetWindowTitle(GLFWwindow *window, char const *title);
+	// void glfwSetWindowIcon(GLFWwindow *window, int count, const GLFWimage *images);
+	// void glfwGetWindowPos(GLFWwindow *window, int *xpos, int *ypos);
+	// void glfwSetWindowPos(GLFWwindow *window, int xpos, int ypos);
+	// void glfwGetWindowSize(GLFWwindow *window, int *width, int *height);
+	// void glfwSetWindowSizeLimits(GLFWwindow *window, int minwidth, int minheight, int maxwidth, int maxheight);
+	// void glfwSetWindowAspectRatio(GLFWwindow *window, int numer, int denom);
+	// void glfwSetWindowSize(GLFWwindow *window, int width, int height);
+	// void glfwGetFramebufferSize(GLFWwindow *window, int *width, int *height);
+	// void glfwGetWindowFrameSize(GLFWwindow *window, int *left, int *top, int *right, int *bottom);
+	// void glfwGetWindowContentScale(GLFWwindow *window, float *xscale, float *yscale);
+	// float glfwGetWindowOpacity(GLFWwindow *window);
+	// void glfwSetWindowOpacity(GLFWwindow *window, float opacity);
+	// void glfwIconifyWindow(GLFWwindow *window);
+	// void glfwRestoreWindow(GLFWwindow *window);
+	// void glfwMaximizeWindow(GLFWwindow *window);
+	// void glfwShowWindow(GLFWwindow *window);
+	// void glfwHideWindow(GLFWwindow *window);
+	// void glfwFocusWindow(GLFWwindow *window);
+	// void glfwRequestWindowAttention(GLFWwindow *window);
+	// GLFWmonitor *glfwGetWindowMonitor(GLFWwindow *window);
+	// void glfwSetWindowMonitor(GLFWwindow *window, GLFWmonitor *monitor, int xpos, int ypos, int width, int height, int refreshRate);
+	// int glfwGetWindowAttrib(GLFWwindow *window, int attrib);
+	// void glfwSetWindowAttrib(GLFWwindow *window, int attrib, int value);
+	// void glfwSetWindowUserPointer(GLFWwindow *window, void *pointer);
+	// void *glfwGetWindowUserPointer(GLFWwindow *window);
+	// GLFWwindowposfun glfwSetWindowPosCallback(GLFWwindow *window, GLFWwindowposfun callback);
+	// GLFWwindowsizefun glfwSetWindowSizeCallback(GLFWwindow *window, GLFWwindowsizefun callback);
+	// GLFWwindowclosefun glfwSetWindowCloseCallback(GLFWwindow *window, GLFWwindowclosefun callback);
+	// GLFWwindowrefreshfun glfwSetWindowRefreshCallback(GLFWwindow *window, GLFWwindowrefreshfun callback);
+	// GLFWwindowfocusfun glfwSetWindowFocusCallback(GLFWwindow *window, GLFWwindowfocusfun callback);
+	// GLFWwindowiconifyfun glfwSetWindowIconifyCallback(GLFWwindow *window, GLFWwindowiconifyfun callback);
+	// GLFWwindowmaximizefun glfwSetWindowMaximizeCallback(GLFWwindow *window, GLFWwindowmaximizefun callback);
+	// GLFWframebuffersizefun glfwSetFramebufferSizeCallback(GLFWwindow *window, GLFWframebuffersizefun callback);
+	// GLFWwindowcontentscalefun glfwSetWindowContentScaleCallback(GLFWwindow *window, GLFWwindowcontentscalefun callback);
+	// void glfwPollEvents(void);
+	// void glfwWaitEvents(void);
+	// void glfwWaitEventsTimeout(double timeout);
+	// void glfwPostEmptyEvent(void);
+	// int glfwGetInputMode(GLFWwindow *window, int mode);
+	// void glfwSetInputMode(GLFWwindow *window, int mode, int value);
+	// int glfwRawMouseMotionSupported(void);
+	// char const *glfwGetKeyName(int key, int scancode);
+	// int glfwGetKeyScancode(int key);
+	// int glfwGetKey(GLFWwindow *window, int key);
+	// int glfwGetMouseButton(GLFWwindow *window, int button);
+	// void glfwGetCursorPos(GLFWwindow *window, double *xpos, double *ypos);
+	// void glfwSetCursorPos(GLFWwindow *window, double xpos, double ypos);
+	// GLFWcursor *glfwCreateCursor(const GLFWimage *image, int xhot, int yhot);
+	// GLFWcursor *glfwCreateStandardCursor(int shape);
+	// void glfwDestroyCursor(GLFWcursor *cursor);
+	// void glfwSetCursor(GLFWwindow *window, GLFWcursor *cursor);
+	// GLFWkeyfun glfwSetKeyCallback(GLFWwindow *window, GLFWkeyfun callback);
+	// GLFWcharfun glfwSetCharCallback(GLFWwindow *window, GLFWcharfun callback);
+	// GLFWcharmodsfun glfwSetCharModsCallback(GLFWwindow *window, GLFWcharmodsfun callback);
+	// GLFWmousebuttonfun glfwSetMouseButtonCallback(GLFWwindow *window, GLFWmousebuttonfun callback);
+	// GLFWcursorposfun glfwSetCursorPosCallback(GLFWwindow *window, GLFWcursorposfun callback);
+	// GLFWcursorenterfun glfwSetCursorEnterCallback(GLFWwindow *window, GLFWcursorenterfun callback);
+	// GLFWscrollfun glfwSetScrollCallback(GLFWwindow *window, GLFWscrollfun callback);
+	// GLFWdropfun glfwSetDropCallback(GLFWwindow *window, GLFWdropfun callback);
+
+	// To be implemented
+	// int glfwJoystickPresent(int jid);
+	// const float *glfwGetJoystickAxes(int jid, int *count);
+	// const unsigned char *glfwGetJoystickButtons(int jid, int *count);
+	// const unsigned char *glfwGetJoystickHats(int jid, int *count);
+	// char const *glfwGetJoystickName(int jid);
+	// char const *glfwGetJoystickGUID(int jid);
+	// void glfwSetJoystickUserPointer(int jid, void *pointer);
+	// void *glfwGetJoystickUserPointer(int jid);
+	// int glfwJoystickIsGamepad(int jid);
+	// GLFWjoystickfun glfwSetJoystickCallback(GLFWjoystickfun callback);
+	// int glfwUpdateGamepadMappings(char const *string);
+	// char const *glfwGetGamepadName(int jid);
+	// int glfwGetGamepadState(int jid, GLFWgamepadstate *state);
+	// void glfwSetClipboardString(GLFWwindow *window, char const *string);
+	// char const *glfwGetClipboardString(GLFWwindow *window);
+	// double glfwGetTime(void);
+	// void glfwSetTime(double time);
+	// uint64_t glfwGetTimerValue(void);
+	// uint64_t glfwGetTimerFrequency(void);
+	// void glfwMakeContextCurrent(GLFWwindow *window);
+	// GLFWwindow *glfwGetCurrentContext(void);
+	// void glfwSwapBuffers(GLFWwindow *window);
+	// void glfwSwapInterval(int interval);
+	// int glfwExtensionSupported(char const *extension);
+	// GLFWglproc glfwGetProcAddress(char const *procname);
+	// int glfwVulkanSupported(void);
+	// char const **glfwGetRequiredInstanceExtensions(uint32_t *count);
+
+	// To be implemented
+	// GLFWvkproc glfwGetInstanceProcAddress(VkInstance instance, char const *procname);
+	// int glfwGetPhysicalDevicePresentationSupport(VkInstance instance, VkPhysicalDevice device, uint32_t queuefamily);
+	// VkResult glfwCreateWindowSurface(VkInstance instance, GLFWwindow *window, const VkAllocationCallbacks *allocator, VkSurfaceKHR *surface);
 }
 
 template <> struct VULKAN_HPP_NAMESPACE::FlagTraits<VKFW_NAMESPACE::ModifierKeyBits> {
@@ -1344,7 +1495,7 @@ public:
 };
 
 template<> struct VKFW_NAMESPACE::CustomDestroy<VKFW_NAMESPACE::Window> {
-	void destroy(Window &window) { glfwDestroyWindow(window); }
+	void destroy(Window &window) { window.destroy(); }
 };
 template<> class VULKAN_HPP_NAMESPACE::UniqueHandleTraits<VKFW_NAMESPACE::Window, VULKAN_HPP_DEFAULT_DISPATCHER_TYPE> {
 public:
@@ -1352,7 +1503,7 @@ public:
 };
 
 template<> struct VKFW_NAMESPACE::CustomDestroy<VKFW_NAMESPACE::Cursor> {
-	void destroy(Cursor &cursor) { glfwDestroyCursor(cursor); }
+	void destroy(Cursor &cursor) { cursor.destroy(); }
 };
 template<> class VULKAN_HPP_NAMESPACE::UniqueHandleTraits<VKFW_NAMESPACE::Cursor, VULKAN_HPP_DEFAULT_DISPATCHER_TYPE> {
 public:
@@ -1361,10 +1512,193 @@ public:
 #endif
 
 namespace VKFW_NAMESPACE {
+#ifndef VKFW_DISABLE_ENHANCED_MODE
+	VKFW_NODISCARD VKFW_INLINE typename ResultValueType<void>::type Monitor::getPos(int *xpos, int *ypos) const {
+		glfwGetMonitorPos(m_monitor, xpos, ypos);
+		return createResultValue(getError(), VKFW_NAMESPACE_STRING"::Monitor::getPos");
+	}
+	VKFW_NODISCARD VKFW_INLINE typename ResultValueType<std::tuple<int, int>>::type Monitor::getPos() const {
+		std::tuple<int, int> output;
+		glfwGetMonitorPos(m_monitor, &std::get<0>(output), &std::get<1>(output));
+		return createResultValue(getError(), output, VKFW_NAMESPACE_STRING"::Monitor::getPos");
+	}
+	VKFW_NODISCARD VKFW_INLINE typename ResultValueType<int>::type Monitor::getPosX() const {
+		int output;
+		glfwGetMonitorPos(m_monitor, &output, nullptr);
+		return createResultValue(getError(), output, VKFW_NAMESPACE_STRING"::Monitor::getPosX");
+	}
+	VKFW_NODISCARD VKFW_INLINE typename ResultValueType<int>::type Monitor::getPosY() const {
+		int output;
+		glfwGetMonitorPos(m_monitor, nullptr, &output);
+		return createResultValue(getError(), output, VKFW_NAMESPACE_STRING"::Monitor::getPosY");
+	}
+
+	VKFW_NODISCARD VKFW_INLINE typename ResultValueType<void>::type Monitor::getWorkarea(int *xpos, int *ypos,
+																						 size_t *width, size_t *height) const {
+		int temp_width, temp_height;
+		glfwGetMonitorWorkarea(m_monitor, xpos, ypos, &temp_width, &temp_height);
+		Result result = getError();
+		if (check(result)) {
+			*width = temp_width;
+			*height = temp_height;
+		} else {
+			*width = 0u;
+			*height = 0u;
+		}
+		return createResultValue(result, VKFW_NAMESPACE_STRING"::Monitor::getWorkarea");
+	}
+	VKFW_NODISCARD VKFW_INLINE typename ResultValueType<std::tuple<int, int, size_t, size_t>>::type Monitor::getWorkarea() const {
+		std::tuple<int, int, size_t, size_t> output;
+		int temp_width, temp_height;
+		glfwGetMonitorWorkarea(m_monitor, &std::get<0>(output), &std::get<1>(output), &temp_width, &temp_height);
+		Result result = getError();
+		if (check(result)) {
+			std::get<2>(output) = temp_width;
+			std::get<3>(output) = temp_height;
+		} else {
+			std::get<2>(output) = 0u;
+			std::get<3>(output) = 0u;
+		}
+		return createResultValue(result, output, VKFW_NAMESPACE_STRING"::Monitor::getWorkarea");
+	}
+	VKFW_NODISCARD VKFW_INLINE typename ResultValueType<std::tuple<int, int>>::type Monitor::getWorkareaPos() const {
+		std::tuple<int, int> output;
+		glfwGetMonitorWorkarea(m_monitor, &std::get<0>(output), &std::get<1>(output), nullptr, nullptr);
+		return createResultValue(getError(), output, VKFW_NAMESPACE_STRING"::Monitor::getWorkareaPos");
+	}
+	VKFW_NODISCARD VKFW_INLINE typename ResultValueType<int>::type Monitor::getWorkareaPosX() const {
+		int output;
+		glfwGetMonitorWorkarea(m_monitor, &output, nullptr, nullptr, nullptr);
+		return createResultValue(getError(), output, VKFW_NAMESPACE_STRING"::Monitor::getWorkareaPosX");
+	}
+	VKFW_NODISCARD VKFW_INLINE typename ResultValueType<int>::type Monitor::getWorkareaPosY() const {
+		int output;
+		glfwGetMonitorWorkarea(m_monitor, nullptr, &output, nullptr, nullptr);
+		return createResultValue(getError(), output, VKFW_NAMESPACE_STRING"::Monitor::getWorkareaPosY");
+	}
+	VKFW_NODISCARD VKFW_INLINE typename ResultValueType<std::tuple<size_t, size_t>>::type Monitor::getWorkareaSize() const {
+		std::tuple<size_t, size_t> output;
+		int temp_width, temp_height;
+		glfwGetMonitorWorkarea(m_monitor, nullptr, nullptr, &temp_width, &temp_height);
+		Result result = getError();
+		if (check(result)) {
+			std::get<0>(output) = temp_width;
+			std::get<1>(output) = temp_height;
+		} else {
+			std::get<0>(output) = 0u;
+			std::get<1>(output) = 0u;
+		}
+		return createResultValue(result, output, VKFW_NAMESPACE_STRING"::Monitor::getWorkareaSize");
+	}
+	VKFW_NODISCARD VKFW_INLINE typename ResultValueType<size_t>::type Monitor::getWorkareaWidth() const {
+		size_t output;
+		int temp;
+		glfwGetMonitorWorkarea(m_monitor, nullptr, nullptr, &temp, nullptr);
+		Result result = getError();
+		if (check(result))
+			output = static_cast<size_t>(temp);
+		else
+			output = 0u;
+		return createResultValue(result, output, VKFW_NAMESPACE_STRING"::Monitor::getWorkareaWidth");
+	}
+	VKFW_NODISCARD VKFW_INLINE typename ResultValueType<size_t>::type Monitor::getWorkareaHeight() const {
+		size_t output;
+		int temp;
+		glfwGetMonitorWorkarea(m_monitor, nullptr, nullptr, nullptr, &temp);
+		Result result = getError();
+		if (check(result))
+			output = static_cast<size_t>(temp);
+		else
+			output = 0u;
+		return createResultValue(result, output, VKFW_NAMESPACE_STRING"::Monitor::getWorkareaHeight");
+	}
+
+	VKFW_NODISCARD VKFW_INLINE typename ResultValueType<void>::type Monitor::getPhysicalSize(size_t *widthMM, size_t *heightMM) const {
+		int temp_width, temp_height;
+		glfwGetMonitorPhysicalSize(m_monitor, &temp_width, &temp_height);
+		Result result = getError();
+		if (check(result)) {
+			*widthMM = temp_width;
+			*heightMM = temp_height;
+		} else {
+			*widthMM = 0u;
+			*heightMM = 0u;
+		}
+		return createResultValue(result, VKFW_NAMESPACE_STRING"::Monitor::getPhysicalSize");
+	}
+	VKFW_NODISCARD VKFW_INLINE typename ResultValueType<std::tuple<size_t, size_t>>::type Monitor::getPhysicalSize() const {
+		std::tuple<size_t, size_t> output;
+		int temp_width, temp_height;
+		glfwGetMonitorPhysicalSize(m_monitor, &temp_width, &temp_height);
+		Result result = getError();
+		if (check(result)) {
+			std::get<0>(output) = temp_width;
+			std::get<1>(output) = temp_height;
+		} else {
+			std::get<0>(output) = 0u;
+			std::get<1>(output) = 0u;
+		}
+		return createResultValue(result, output, VKFW_NAMESPACE_STRING"::Monitor::getPhysicalSize");
+	}
+	VKFW_NODISCARD VKFW_INLINE typename ResultValueType<size_t>::type Monitor::getPhysicalWidth() const {
+		size_t output;
+		int temp;
+		glfwGetMonitorPhysicalSize(m_monitor, &temp, nullptr);
+		Result result = getError();
+		if (check(result))
+			output = static_cast<size_t>(temp);
+		else
+			output = 0u;
+		return createResultValue(result, output, VKFW_NAMESPACE_STRING"::Monitor::getPhysicalWidth");
+	}
+	VKFW_NODISCARD VKFW_INLINE typename ResultValueType<size_t>::type Monitor::getPhysicalHeight() const {
+		size_t output;
+		int temp;
+		glfwGetMonitorPhysicalSize(m_monitor, nullptr, &temp);
+		Result result = getError();
+		if (check(result))
+			output = static_cast<size_t>(temp);
+		else
+			output = 0u;
+		return createResultValue(result, output, VKFW_NAMESPACE_STRING"::Monitor::getPhysicalHeight");
+	}
+
+	VKFW_NODISCARD VKFW_INLINE typename ResultValueType<void>::type Monitor::getContentScale(float *xscale, float *yscale) const {
+		glfwGetMonitorContentScale(m_monitor, xscale, yscale);
+		return createResultValue(getError(), VKFW_NAMESPACE_STRING"::Monitor::getContentScale");
+	}
+	VKFW_NODISCARD VKFW_INLINE typename ResultValueType<std::tuple<float, float>>::type Monitor::getContentScale() const {
+		std::tuple<float, float> output;
+		glfwGetMonitorContentScale(m_monitor, &std::get<0>(output), &std::get<1>(output));
+		return createResultValue(getError(), output, VKFW_NAMESPACE_STRING"::Monitor::getContentScale");
+	}
+	VKFW_NODISCARD VKFW_INLINE typename ResultValueType<float>::type Monitor::getContentScaleX() const {
+		float output;
+		glfwGetMonitorContentScale(m_monitor, &output, nullptr);
+		return createResultValue(getError(), output, VKFW_NAMESPACE_STRING"::Monitor::getContentScaleX");
+	}
+	VKFW_NODISCARD VKFW_INLINE typename ResultValueType<float>::type Monitor::getContentScaleY() const {
+		float output;
+		glfwGetMonitorContentScale(m_monitor, nullptr, &output);
+		return createResultValue(getError(), output, VKFW_NAMESPACE_STRING"::Monitor::getContentScaleY");
+	}
+
+# if 17 <= VKFW_CPP_VERSION
+	VKFW_NODISCARD VKFW_INLINE typename ResultValueType<std::string_view>::type Monitor::getName() const {
+# else
+	VKFW_NODISCARD VKFW_INLINE typename ResultValueType<char const *>::type Monitor::getName() const {
+# endif
+		auto *output = glfwGetMonitorName(m_monitor);
+		return createResultValue(getError(), output, VKFW_NAMESPACE_STRING"::Monitor::getName");
+	}
+#endif
+
+#ifndef VKFW_DISABLE_ENHANCED_MODE
 	VKFW_NODISCARD_WHEN_NO_EXCEPTIONS VKFW_INLINE typename ResultValueType<void>::type Window::destroy() {
 		glfwDestroyWindow(m_window); m_window = nullptr;
 		return createResultValue(getError(), VKFW_NAMESPACE_STRING"::init");
 	}
+#endif
 
 	template<> Result initHint<InitializationHint::VKFW_ENUMERATOR(JoystickHatButtons), Boolean>(Boolean const &value) {
 		glfwInitHint(static_cast<int>(InitializationHint::VKFW_ENUMERATOR(JoystickHatButtons)),
@@ -1428,21 +1762,130 @@ namespace VKFW_NAMESPACE {
 		Instance instance;
 
 		Result result = setInitHints(hints);
-		if (!check(result)) return createResultValueUnique(result, instance, 
+		if (!check(result)) return createResultValueUnique(result, instance,
 														   VKFW_NAMESPACE_STRING"::initUnique");
 
 		if (glfwInit())
-			return createResultValueUnique(Result::VKFW_ENUMERATOR(Success), instance, 
+			return createResultValueUnique(Result::VKFW_ENUMERATOR(Success), instance,
 										   VKFW_NAMESPACE_STRING"::initUnique");
 		else
-			return createResultValueUnique(getError(), instance, 
+			return createResultValueUnique(getError(), instance,
 										   VKFW_NAMESPACE_STRING"::initUnique");
 	}
 # endif
 #endif
 
 #ifdef VKFW_DISABLE_ENHANCED_MODE
-	VKFW_NODISCARD VKFW_INLINE GLFWwindow createWindow(size_t width, size_t height, const char *title,
+	VKFW_NODISCARD VKFW_INLINE GLFWmonitor **getMonitors(size_t *count) {
+		int tmp_count;
+		auto **output = glfwGetMonitors(tmp_count);
+		*count = static_cast<size_t>(tmp_count > 0 ? tmp_count : 0);
+		return output;
+	}
+	VKFW_NODISCARD VKFW_INLINE GLFWmonitor *getPrimaryMonitor() { return glfwGetPrimaryMonitor(); }
+	VKFW_NODISCARD VKFW_INLINE Result getMonitorPos(GLFWmonitor *monitor, int *xpos, int *ypos) {
+		glfwGetMonitorPos(monitor, xpos, ypos);
+		return getError();
+	}
+	VKFW_NODISCARD VKFW_INLINE Result getMonitorWorkarea(GLFWmonitor *monitor, int *xpos, int *ypos, size_t *width, size_t *height) {
+		int temp_width, temp_height;
+		glfwGetMonitorWorkarea(monitor, xpos, ypos, &temp_width, &temp_height);
+		Result result = getError();
+		if (check(result)) {
+			*width = temp_width;
+			*height = temp_height;
+		} else {
+			*width = 0u;
+			*height = 0u;
+		}
+		return result;
+	}
+	VKFW_NODISCARD VKFW_INLINE Result getMonitorPhysicalSize(GLFWmonitor *monitor, size_t *widthMM, size_t *heightMM) {
+		int temp_width, temp_height;
+		glfwGetMonitorPhysicalSize(monitor, &temp_width, &temp_height);
+		Result result = getError();
+		if (check(result)) {
+			*widthMM = temp_width;
+			*heightMM = temp_height;
+		} else {
+			*widthMM = 0u;
+			*heightMM = 0u;
+		}
+		return result;
+	}
+	VKFW_NODISCARD VKFW_INLINE Result getMonitorContentScale(GLFWmonitor *monitor, float *xscale, float *yscale) {
+		glfwGetMonitorContentScale(monitor, xscale, yscale);
+		return getError();
+	}
+	VKFW_NODISCARD VKFW_INLINE char const *getMonitorName(GLFWmonitor *monitor) {
+		return glfwGetMonitorName(monitor);
+	}
+#else
+	VKFW_NODISCARD VKFW_INLINE typename ResultValueType<std::vector<Monitor>>::type getMonitors() {
+		std::vector<Monitor> output;
+
+		int count;
+		auto ptr = glfwGetMonitors(&count);
+		Result result = getError();
+		if (check(result)) {
+			output.reserve(static_cast<size_t>(count));
+			std::transform(ptr, ptr + count, std::back_inserter(output),
+						   [](GLFWmonitor *monitor) { return Monitor(monitor); });
+			VKFW_ASSERT(output.size() == static_cast<size_t>(count));
+		}
+		return createResultValue(result, output, VKFW_NAMESPACE_STRING"::getMonitors");
+	}
+	VKFW_NODISCARD VKFW_INLINE typename ResultValueType<Monitor>::type getPrimaryMonitor() {
+		Monitor monitor = glfwGetPrimaryMonitor();
+		return createResultValue(getError(), monitor, VKFW_NAMESPACE_STRING"::getPrimaryMonitor");
+	}
+	VKFW_NODISCARD VKFW_INLINE typename ResultValueType<void>::type getMonitorPos(Monitor const &monitor, int *xpos, int *ypos) {
+		glfwGetMonitorPos(monitor, xpos, ypos);
+		return createResultValue(getError(), VKFW_NAMESPACE_STRING"::getMonitorPos");
+	}
+	VKFW_NODISCARD VKFW_INLINE typename ResultValueType<void>::type getMonitorWorkarea(Monitor const &monitor, int *xpos, int *ypos, size_t *width, size_t *height) {
+		int temp_width, temp_height;
+		glfwGetMonitorWorkarea(monitor, xpos, ypos, &temp_width, &temp_height);
+		Result result = getError();
+		if (check(result)) {
+			*width = temp_width;
+			*height = temp_height;
+		} else {
+			*width = 0u;
+			*height = 0u;
+		}
+		return createResultValue(result, VKFW_NAMESPACE_STRING"::getMonitorWorkarea");
+	}
+	VKFW_NODISCARD VKFW_INLINE typename ResultValueType<void>::type getMonitorPhysicalSize(Monitor const &monitor, size_t *widthMM, size_t *heightMM) {
+		int temp_width, temp_height;
+		glfwGetMonitorPhysicalSize(monitor, &temp_width, &temp_height);
+		Result result = getError();
+		if (check(result)) {
+			*widthMM = temp_width;
+			*heightMM = temp_height;
+		} else {
+			*widthMM = 0u;
+			*heightMM = 0u;
+		}
+		return createResultValue(result, VKFW_NAMESPACE_STRING"::getMonitorPhysicalSize");
+	}
+	VKFW_NODISCARD VKFW_INLINE typename ResultValueType<void>::type getMonitorContentScale(Monitor const &monitor, float *xscale, float *yscale) {
+		glfwGetMonitorContentScale(monitor, xscale, yscale);
+		return createResultValue(getError(), VKFW_NAMESPACE_STRING"::getMonitorPhysicalSize");
+	}
+# if 17 <= VKFW_CPP_VERSION
+	VKFW_NODISCARD VKFW_INLINE typename ResultValueType<std::string_view>::type getMonitorName(Monitor const &monitor) {
+		std::string_view output = glfwGetMonitorName(monitor);
+# else
+	VKFW_NODISCARD typename ResultValueType<char const *>::type getMonitorName(Monitor const &monitor) {
+		char const *output = glfwGetMonitorName(monitor);
+# endif
+		return createResultValue(getError(), output, VKFW_NAMESPACE_STRING"::getMonitorPhysicalSize");
+	}
+#endif
+
+#ifdef VKFW_DISABLE_ENHANCED_MODE
+	VKFW_NODISCARD VKFW_INLINE GLFWwindow createWindow(size_t width, size_t height, char const *title,
 													   GLFWmonitor *monitor, GLFWwindow *share) {
 		return glfwCreateWindow(static_cast<int>(width), static_cast<int>(height), title, monitor, share);
 	}
@@ -1452,12 +1895,12 @@ namespace VKFW_NAMESPACE {
 	}
 #else
 	VKFW_NODISCARD VKFW_INLINE typename ResultValueType<Window>::type
-		createWindow(size_t width, size_t height, const char *title,
+		createWindow(size_t width, size_t height, char const *title,
 					 Monitor monitor, Window share) {
 		Window window = glfwCreateWindow(static_cast<int>(width), static_cast<int>(height), title, monitor, share);
 		return createResultValue(getError(), window, VKFW_NAMESPACE_STRING"::createWindow");
 	}
-	VKFW_NODISCARD_WHEN_NO_EXCEPTIONS VKFW_INLINE typename ResultValueType<void>::type 
+	VKFW_NODISCARD_WHEN_NO_EXCEPTIONS VKFW_INLINE typename ResultValueType<void>::type
 		destroyWindow(GLFWwindow *window) {
 
 		glfwDestroyWindow(window);
@@ -1465,7 +1908,7 @@ namespace VKFW_NAMESPACE {
 	}
 # ifndef VKFW_NO_SMART_HANDLE
 	VKFW_NODISCARD VKFW_INLINE typename ResultValueType<UniqueWindow>::type
-		createWindowUnique(size_t width, size_t height, const char *title,
+		createWindowUnique(size_t width, size_t height, char const *title,
 						   Monitor monitor, Window share) {
 		Window window = glfwCreateWindow(static_cast<int>(width), static_cast<int>(height), title, monitor, share);
 		return createResultValueUnique(getError(), window, VKFW_NAMESPACE_STRING"::createWindowUnique");
