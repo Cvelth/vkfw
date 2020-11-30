@@ -29,6 +29,32 @@
 # define GLFW_INCLUDE_VULKAN
 #endif
 
+
+#if defined(VKFW_NO_STRUCT_CONSTRUCTORS) && !defined(VULKAN_HPP_NO_STRUCT_CONSTRUCTORS)
+# define VULKAN_HPP_NO_STRUCT_CONSTRUCTORS VKFW_NO_STRUCT_CONSTRUCTORS
+#endif
+#if defined(VKFW_NO_EXCEPTIONS) && !defined(VULKAN_HPP_NO_EXCEPTIONS)
+# define VULKAN_HPP_NO_EXCEPTIONS VKFW_NO_EXCEPTIONS
+#endif
+#if defined(VKFW_NO_NODISCARD_WARNINGS) && !defined(VULKAN_HPP_NO_NODISCARD_WARNINGS)
+# define VULKAN_HPP_NO_NODISCARD_WARNINGS VKFW_NO_NODISCARD_WARNINGS
+#endif
+#if defined(VKFW_ASSERT) && !defined(VULKAN_HPP_ASSERT)
+# define VULKAN_HPP_ASSERT VKFW_ASSERT
+#endif
+#if defined(VKFW_ASSERT_ON_RESULT) && !defined(VULKAN_HPP_ASSERT_ON_RESULT)
+# define VULKAN_HPP_ASSERT_ON_RESULT VKFW_ASSERT_ON_RESULT
+#endif
+#if defined(VKFW_DISABLE_ENHANCED_MODE) && !defined(VULKAN_HPP_DISABLE_ENHANCED_MODE)
+# define VULKAN_HPP_DISABLE_ENHANCED_MODE VKFW_DISABLE_ENHANCED_MODE
+#endif
+#if defined(VKFW_HPP_INLINE) && !defined(VULKAN_HPP_INLINE)
+# define VULKAN_HPP_INLINE VKFW_HPP_INLINE
+#endif
+#if defined(VKFW_NO_SMART_HANDLE) && !defined(VULKAN_HPP_NO_SMART_HANDLE)
+# define VULKAN_HPP_NO_SMART_HANDLE VKFW_NO_SMART_HANDLE
+#endif
+
 // Standard library includes go here!
 #include <string>
 #include <system_error>
@@ -87,11 +113,11 @@ static_assert(GLFW_VERSION_MAJOR == 3
 # endif
 #endif
 
-#ifdef VKFW_TYPESAFE_CONVERSION
-# define VKFW_TYPESAFE_EXPLICIT
-#else
-# define VKFW_TYPESAFE_EXPLICIT explicit
-#endif
+//#ifdef VKFW_TYPESAFE_CONVERSION
+//# define VKFW_TYPESAFE_EXPLICIT
+//#else
+//# define VKFW_TYPESAFE_EXPLICIT explicit
+//#endif
 
 #ifdef __cpp_constexpr
 # define VKFW_CONSTEXPR constexpr
@@ -1277,7 +1303,7 @@ namespace VKFW_NAMESPACE {
 			initHint<hint_name>(true);
 		return getError();
 	}
-	Result setInitHints(InitHints hints) {
+	VKFW_INLINE Result setInitHints(InitHints hints) {
 		Result result = Result::VKFW_ENUMERATOR(Success);
 		if (!check(result = setInitHint(hints.joystickHatButtons))) return result;
 		if (!check(result = setInitHint(hints.cocoaChdirResources))) return result;
@@ -1700,32 +1726,32 @@ namespace VKFW_NAMESPACE {
 	}
 #endif
 
-	template<> Result initHint<InitializationHint::VKFW_ENUMERATOR(JoystickHatButtons), Boolean>(Boolean const &value) {
+	template<> VKFW_INLINE Result initHint<InitializationHint::VKFW_ENUMERATOR(JoystickHatButtons), Boolean>(Boolean const &value) {
 		glfwInitHint(static_cast<int>(InitializationHint::VKFW_ENUMERATOR(JoystickHatButtons)),
 					 static_cast<int>(value));
 		return getError();
 	}
-	template<> Result initHint<InitializationHint::VKFW_ENUMERATOR(JoystickHatButtons), bool>(bool const &value) {
+	template<> VKFW_INLINE Result initHint<InitializationHint::VKFW_ENUMERATOR(JoystickHatButtons), bool>(bool const &value) {
 		glfwInitHint(static_cast<int>(InitializationHint::VKFW_ENUMERATOR(JoystickHatButtons)),
 					 static_cast<int>(value));
 		return getError();
 	}
-	template<> Result initHint<InitializationHint::VKFW_ENUMERATOR(CocoaChdirResources), Boolean>(Boolean const &value) {
+	template<> VKFW_INLINE Result initHint<InitializationHint::VKFW_ENUMERATOR(CocoaChdirResources), Boolean>(Boolean const &value) {
 		glfwInitHint(static_cast<int>(InitializationHint::VKFW_ENUMERATOR(CocoaChdirResources)),
 					 static_cast<int>(value));
 		return getError();
 	}
-	template<> Result initHint<InitializationHint::VKFW_ENUMERATOR(CocoaChdirResources), bool>(bool const &value) {
+	template<> VKFW_INLINE Result initHint<InitializationHint::VKFW_ENUMERATOR(CocoaChdirResources), bool>(bool const &value) {
 		glfwInitHint(static_cast<int>(InitializationHint::VKFW_ENUMERATOR(CocoaChdirResources)),
 					 static_cast<int>(value));
 		return getError();
 	}
-	template<> Result initHint<InitializationHint::VKFW_ENUMERATOR(CocoaMenubar), Boolean>(Boolean const &value) {
+	template<> VKFW_INLINE Result initHint<InitializationHint::VKFW_ENUMERATOR(CocoaMenubar), Boolean>(Boolean const &value) {
 		glfwInitHint(static_cast<int>(InitializationHint::VKFW_ENUMERATOR(CocoaMenubar)),
 					 static_cast<int>(value));
 		return getError();
 	}
-	template<> Result initHint<InitializationHint::VKFW_ENUMERATOR(CocoaMenubar), bool>(bool const &value) {
+	template<> VKFW_INLINE Result initHint<InitializationHint::VKFW_ENUMERATOR(CocoaMenubar), bool>(bool const &value) {
 		glfwInitHint(static_cast<int>(InitializationHint::VKFW_ENUMERATOR(CocoaMenubar)),
 					 static_cast<int>(value));
 		return getError();
