@@ -126,12 +126,10 @@ static_assert(GLFW_VERSION_MAJOR == 3
 #   define VKFW_CONSTEXPR_14
 # endif
 # define VKFW_CONST_OR_CONSTEXPR constexpr
-# define VKFW_INLINE_OR_CONSTEXPR constexpr
 #else
 # define VKFW_CONSTEXPR
 # define VKFW_CONSTEXPR_14
 # define VKFW_CONST_OR_CONSTEXPR const
-# define VKFW_INLINE_OR_CONSTEXPR VKFW_INLINE
 #endif
 
 #ifndef VKFW_NOEXCEPT
@@ -424,7 +422,7 @@ namespace VKFW_NAMESPACE {
 		VKFW_ENUMERATOR(FormatUnavailable) = GLFW_FORMAT_UNAVAILABLE,
 		VKFW_ENUMERATOR(NoWindowContext) = GLFW_NO_WINDOW_CONTEXT
 	};
-	VKFW_INLINE_OR_CONSTEXPR bool check(Result result) { return result == Result::VKFW_ENUMERATOR(Success); }
+	VKFW_INLINE VKFW_CONSTEXPR bool check(Result result) { return result == Result::VKFW_ENUMERATOR(Success); }
 	enum class InitializationHint {
 		VKFW_ENUMERATOR(JoystickHatButtons) = GLFW_JOYSTICK_HAT_BUTTONS,
 		VKFW_ENUMERATOR(CocoaChdirResources) = GLFW_COCOA_CHDIR_RESOURCES, // MacOS specific
@@ -577,13 +575,16 @@ namespace VKFW_NAMESPACE {
 		VKFW_ENUMERATOR(NumLock) = GLFW_MOD_NUM_LOCK
 	};
 	using ModifierKeyFlags = Flags<ModifierKeyBits>;
-	VKFW_INLINE VKFW_CONSTEXPR ModifierKeyFlags operator|(ModifierKeyBits bit0, ModifierKeyBits bit1) VKFW_NOEXCEPT {
+	VKFW_INLINE VKFW_CONSTEXPR ModifierKeyFlags operator|(ModifierKeyBits bit0, 
+														  ModifierKeyBits bit1) VKFW_NOEXCEPT {
 		return ModifierKeyFlags(bit0) | bit1;
 	}
-	VKFW_INLINE VKFW_CONSTEXPR ModifierKeyFlags operator&(ModifierKeyBits bit0, ModifierKeyBits bit1) VKFW_NOEXCEPT {
+	VKFW_INLINE VKFW_CONSTEXPR ModifierKeyFlags operator&(ModifierKeyBits bit0, 
+														  ModifierKeyBits bit1) VKFW_NOEXCEPT {
 		return ModifierKeyFlags(bit0) & bit1;
 	}
-	VKFW_INLINE VKFW_CONSTEXPR ModifierKeyFlags operator^(ModifierKeyBits bit0, ModifierKeyBits bit1) VKFW_NOEXCEPT {
+	VKFW_INLINE VKFW_CONSTEXPR ModifierKeyFlags operator^(ModifierKeyBits bit0, 
+														  ModifierKeyBits bit1) VKFW_NOEXCEPT {
 		return ModifierKeyFlags(bit0) ^ bit1;
 	}
 	VKFW_INLINE VKFW_CONSTEXPR ModifierKeyFlags operator~(ModifierKeyBits bits) VKFW_NOEXCEPT {
@@ -825,15 +826,25 @@ namespace VKFW_NAMESPACE {
 		switch (value) {
 			case Result::VKFW_ENUMERATOR(Success): return "No error has occurred";
 			case Result::VKFW_ENUMERATOR(NotInitialized): return "GLFW has not been initialized";
-			case Result::VKFW_ENUMERATOR(NoCurrentContext): return "No context is current for this thread";
-			case Result::VKFW_ENUMERATOR(InvalidEnum): return "One of the arguments to the function was an invalid enum value";
-			case Result::VKFW_ENUMERATOR(InvalidValue): return "One of the arguments to the function was an invalid value";
-			case Result::VKFW_ENUMERATOR(OutOfMemory): return "A memory allocation failed";
-			case Result::VKFW_ENUMERATOR(ApiUnavailable): return "GLFW could not find support for the requested API on the system";
-			case Result::VKFW_ENUMERATOR(VersionUnavailable): return "The requested OpenGL or OpenGL ES version is not available";
-			case Result::VKFW_ENUMERATOR(PlatformError): return "A platform-specific error occurred that does not match any of the more specific categories";
-			case Result::VKFW_ENUMERATOR(FormatUnavailable): return "The requested format is not supported or available";
-			case Result::VKFW_ENUMERATOR(NoWindowContext): return "The specified window does not have an OpenGL or OpenGL ES context";
+			case Result::VKFW_ENUMERATOR(NoCurrentContext): 
+				return "No context is current for this thread";
+			case Result::VKFW_ENUMERATOR(InvalidEnum): 
+				return "One of the arguments to the function was an invalid enum value";
+			case Result::VKFW_ENUMERATOR(InvalidValue): 
+				return "One of the arguments to the function was an invalid value";
+			case Result::VKFW_ENUMERATOR(OutOfMemory): 
+				return "A memory allocation failed";
+			case Result::VKFW_ENUMERATOR(ApiUnavailable): 
+				return "GLFW could not find support for the requested API on the system";
+			case Result::VKFW_ENUMERATOR(VersionUnavailable): 
+				return "The requested OpenGL or OpenGL ES version is not available";
+			case Result::VKFW_ENUMERATOR(PlatformError): 
+				return "A platform-specific error occurred that does not match "
+					"any of the more specific categories";
+			case Result::VKFW_ENUMERATOR(FormatUnavailable): 
+				return "The requested format is not supported or available";
+			case Result::VKFW_ENUMERATOR(NoWindowContext): 
+				return "The specified window does not have an OpenGL or OpenGL ES context";
 			default: return "invalid";
 		}
 	}
@@ -989,7 +1000,7 @@ namespace VKFW_NAMESPACE {
 
 	[[noreturn]] static void throwResultException(Result result, char const *message) {
 		switch (result) {
-			case Result::VKFW_ENUMERATOR(Success): break;
+			// case Result::VKFW_ENUMERATOR(Success): break;
 			case Result::VKFW_ENUMERATOR(NotInitialized): throw NotInitializedError(message);
 			case Result::VKFW_ENUMERATOR(NoCurrentContext): throw NoCurrentContextError(message);
 			case Result::VKFW_ENUMERATOR(InvalidEnum): throw InvalidEnumError(message);
@@ -1016,7 +1027,9 @@ namespace VKFW_NAMESPACE {
 		Result result;
 		T value;
 
-		operator std::tuple<Result &, T &>() VKFW_NOEXCEPT { return std::tuple<Result &, T &>(result, value); }
+		operator std::tuple<Result &, T &>() VKFW_NOEXCEPT { 
+			return std::tuple<Result &, T &>(result, value); 
+		}
 	};
 
 #ifndef VKFW_NO_SMART_HANDLE
@@ -1053,7 +1066,8 @@ namespace VKFW_NAMESPACE {
 	};
 
 	template <typename T> VKFW_INLINE void ignore(T const &) VKFW_NOEXCEPT {}
-	VKFW_INLINE typename ResultValueType<void>::type createResultValue(Result result, char const *message) {
+	VKFW_NODISCARD_WHEN_NO_EXCEPTIONS VKFW_INLINE typename ResultValueType<void>::type 
+		createResultValue(Result result, char const *message) {
 #ifdef VKFW_NO_EXCEPTIONS
 		ignore(message);
 		VKFW_ASSERT_ON_RESULT(result == Result::VKFW_ENUMERATOR(Success));
@@ -1063,7 +1077,8 @@ namespace VKFW_NAMESPACE {
 #endif
 	}
 	template <typename T>
-	VKFW_INLINE typename ResultValueType<T>::type createResultValue(Result result, T &data, char const *message) {
+	VKFW_INLINE typename ResultValueType<T>::type createResultValue(Result result, T &data, 
+																	char const *message) {
 #ifdef VKFW_NO_EXCEPTIONS
 		ignore(message);
 		VKFW_ASSERT_ON_RESULT(result == Result::VKFW_ENUMERATOR(Success));
@@ -1075,7 +1090,8 @@ namespace VKFW_NAMESPACE {
 	}
 #ifndef VKFW_NO_SMART_HANDLE
 	template <typename T>
-	VKFW_INLINE typename ResultValueType<UniqueHandle<T>>::type createResultValueUnique(Result result, T &data, char const *message) {
+	VKFW_INLINE typename ResultValueType<UniqueHandle<T>>::type 
+		createResultValueUnique(Result result, T &data, char const *message) {
 # ifdef VKFW_NO_EXCEPTIONS
 		ignore(message);
 		VKFW_ASSERT_ON_RESULT(result == Result::VKFW_ENUMERATOR(Success));
@@ -1094,7 +1110,7 @@ namespace VKFW_NAMESPACE {
 #endif
 
 	struct Nullopt {};
-	VKFW_INLINE VKFW_CONSTEXPR Nullopt nullopt = {};
+	VKFW_CONSTEXPR Nullopt nullopt = {};
 	template <typename T>
 	class Optional {
 	public:
@@ -1109,18 +1125,18 @@ namespace VKFW_NAMESPACE {
 		template<class U> VKFW_INLINE VKFW_CONSTEXPR Optional(Optional<U> &&another)
 			: m_has_value(another.m_has_value), m_value(std::move(another.m_value)) {}
 		VKFW_INLINE VKFW_CONSTEXPR Optional &operator=(Nullopt) { m_has_value = false; return *this; }
-		template<class U> VKFW_INLINE VKFW_CONSTEXPR Optional &operator=(Optional<U> const &another) {
+		template<class U> VKFW_INLINE VKFW_CONSTEXPR_14 Optional &operator=(Optional<U> const &another) {
 			m_has_value = another.m_has_value;
 			m_value = another.m_value;
 			return *this;
 		}
-		template<class U> VKFW_INLINE VKFW_CONSTEXPR Optional &operator=(Optional<U> &&another) {
+		template<class U> VKFW_INLINE VKFW_CONSTEXPR_14 Optional &operator=(Optional<U> &&another) {
 			m_has_value = another.m_has_value;
 			m_value = std::move(another.m_value);
 			return *this;
 		}
 		VKFW_INLINE VKFW_CONSTEXPR bool has_value() const { return m_has_value; }
-		VKFW_INLINE VKFW_CONSTEXPR value_type const &value() const {
+		VKFW_INLINE VKFW_CONSTEXPR_14 value_type const &value() const {
 			assert(m_has_value);
 			return m_value;
 		}
@@ -1133,31 +1149,32 @@ namespace VKFW_NAMESPACE {
 	class Instance {
 	public:
 		using CType = void;
-		VKFW_INLINE Instance() : m_state(false) {}
-		VKFW_INLINE_OR_CONSTEXPR Instance(std::nullptr_t) VKFW_NOEXCEPT : m_state(false) {}
-		VKFW_INLINE_OR_CONSTEXPR Instance(bool state) VKFW_NOEXCEPT : m_state(state) {}
-		VKFW_INLINE_OR_CONSTEXPR Instance(Instance const &another) VKFW_NOEXCEPT : m_state(another.m_state) {}
-		VKFW_INLINE_OR_CONSTEXPR Instance(Instance &&another) VKFW_NOEXCEPT : m_state(another.m_state) { another.m_state = false; }
-		VKFW_INLINE_OR_CONSTEXPR Instance operator=(Instance const &another) VKFW_NOEXCEPT {
+		VKFW_INLINE VKFW_CONSTEXPR Instance() : m_state(false) {}
+		VKFW_INLINE VKFW_CONSTEXPR Instance(std::nullptr_t) VKFW_NOEXCEPT : m_state(false) {}
+		VKFW_INLINE VKFW_CONSTEXPR Instance(bool state) VKFW_NOEXCEPT : m_state(state) {}
+		VKFW_INLINE VKFW_CONSTEXPR Instance(Instance const &another) VKFW_NOEXCEPT : m_state(another.m_state) {}
+		VKFW_INLINE VKFW_CONSTEXPR_14 Instance(Instance &&another) VKFW_NOEXCEPT : m_state(another.m_state) { another.m_state = false; }
+		VKFW_INLINE VKFW_CONSTEXPR_14 Instance operator=(Instance const &another) VKFW_NOEXCEPT {
 			m_state = another.m_state; return *this;
 		}
-		VKFW_INLINE_OR_CONSTEXPR Instance operator=(Instance &&another) VKFW_NOEXCEPT {
+		VKFW_INLINE VKFW_CONSTEXPR_14 Instance operator=(Instance &&another) VKFW_NOEXCEPT {
 			m_state = another.m_state; another.m_state = false; return *this;
 		}
-		VKFW_INLINE_OR_CONSTEXPR Instance &operator=(bool state) VKFW_NOEXCEPT {
+		VKFW_INLINE VKFW_CONSTEXPR_14 Instance &operator=(bool state) VKFW_NOEXCEPT {
 			m_state = state; return *this;
 		}
-		VKFW_INLINE_OR_CONSTEXPR Instance &operator=(std::nullptr_t) VKFW_NOEXCEPT {
+		VKFW_INLINE VKFW_CONSTEXPR_14 Instance &operator=(std::nullptr_t) VKFW_NOEXCEPT {
 			m_state = false; return *this;
 		}
 		VKFW_INLINE explicit operator bool() const VKFW_NOEXCEPT { return m_state; }
 		VKFW_INLINE bool operator!() const VKFW_NOEXCEPT { return !m_state; }
-#if defined(VKFW_HAS_SPACESHIP_OPERATOR)
+# if defined(VKFW_HAS_SPACESHIP_OPERATOR)
 		auto operator<=>(Instance const &) const = default;
-#else
+# else
 		bool operator==(Instance const &another) const VKFW_NOEXCEPT { return m_state == another.m_state; }
 		bool operator!=(Instance const &another) const VKFW_NOEXCEPT { return !operator==(another); }
-#endif
+# endif
+		VKFW_NODISCARD_WHEN_NO_EXCEPTIONS VKFW_INLINE typename ResultValueType<void>::type destroy();
 	private:
 		bool m_state;
 	};
@@ -1166,40 +1183,42 @@ namespace VKFW_NAMESPACE {
 	public:
 		using CType = GLFWmonitor;
 	public:
-		VKFW_INLINE_OR_CONSTEXPR Monitor() VKFW_NOEXCEPT : m_monitor(nullptr) {}
-		VKFW_INLINE_OR_CONSTEXPR Monitor(std::nullptr_t) VKFW_NOEXCEPT : m_monitor(nullptr) {}
-		VKFW_INLINE_OR_CONSTEXPR Monitor(GLFWmonitor *monitor) VKFW_NOEXCEPT : m_monitor(monitor) {}
-		VKFW_INLINE_OR_CONSTEXPR Monitor(Monitor const &another) VKFW_NOEXCEPT : m_monitor(another.m_monitor) {}
-		VKFW_INLINE_OR_CONSTEXPR Monitor(Monitor &&another) VKFW_NOEXCEPT : m_monitor(another.m_monitor) { another.m_monitor = nullptr; }
-		VKFW_INLINE_OR_CONSTEXPR Monitor operator=(Monitor const &another) VKFW_NOEXCEPT {
+		VKFW_INLINE VKFW_CONSTEXPR Monitor() VKFW_NOEXCEPT : m_monitor(nullptr) {}
+		VKFW_INLINE VKFW_CONSTEXPR Monitor(std::nullptr_t) VKFW_NOEXCEPT : m_monitor(nullptr) {}
+		VKFW_INLINE VKFW_CONSTEXPR Monitor(GLFWmonitor *monitor) VKFW_NOEXCEPT : m_monitor(monitor) {}
+		VKFW_INLINE VKFW_CONSTEXPR Monitor(Monitor const &another) VKFW_NOEXCEPT 
+			: m_monitor(another.m_monitor) {}
+		VKFW_INLINE VKFW_CONSTEXPR_14 Monitor(Monitor &&another) VKFW_NOEXCEPT
+			: m_monitor(another.m_monitor) { another.m_monitor = nullptr; }
+		VKFW_INLINE VKFW_CONSTEXPR_14 Monitor operator=(Monitor const &another) VKFW_NOEXCEPT {
 			m_monitor = another.m_monitor; return *this;
 		}
-		VKFW_INLINE_OR_CONSTEXPR Monitor operator=(Monitor &&another) VKFW_NOEXCEPT {
+		VKFW_INLINE VKFW_CONSTEXPR_14 Monitor operator=(Monitor &&another) VKFW_NOEXCEPT {
 			m_monitor = another.m_monitor; another.m_monitor = nullptr; return *this;
 		}
-		VKFW_INLINE_OR_CONSTEXPR Monitor &operator=(GLFWmonitor *monitor) VKFW_NOEXCEPT {
+		VKFW_INLINE VKFW_CONSTEXPR_14 Monitor &operator=(GLFWmonitor *monitor) VKFW_NOEXCEPT {
 			m_monitor = monitor; return *this;
 		}
-		VKFW_INLINE_OR_CONSTEXPR Monitor &operator=(std::nullptr_t) VKFW_NOEXCEPT {
+		VKFW_INLINE VKFW_CONSTEXPR_14 Monitor &operator=(std::nullptr_t) VKFW_NOEXCEPT {
 			m_monitor = nullptr; return *this;
 		}
-		VKFW_INLINE_OR_CONSTEXPR operator GLFWmonitor *() const VKFW_NOEXCEPT { return m_monitor; }
-		VKFW_INLINE_OR_CONSTEXPR explicit operator bool() const VULKAN_HPP_NOEXCEPT { return m_monitor != nullptr; }
-		VKFW_INLINE_OR_CONSTEXPR bool operator!() const VULKAN_HPP_NOEXCEPT { return m_monitor == nullptr; }
-#if defined(VKFW_HAS_SPACESHIP_OPERATOR)
+		VKFW_INLINE VKFW_CONSTEXPR operator GLFWmonitor *() const VKFW_NOEXCEPT { return m_monitor; }
+		VKFW_INLINE VKFW_CONSTEXPR explicit operator bool() const VULKAN_HPP_NOEXCEPT { return m_monitor != nullptr; }
+		VKFW_INLINE VKFW_CONSTEXPR bool operator!() const VULKAN_HPP_NOEXCEPT { return m_monitor == nullptr; }
+# if defined(VKFW_HAS_SPACESHIP_OPERATOR)
 		auto operator<=>(Monitor const &) const = default;
-#else
+# else
 		bool operator==(Monitor const &another) const VKFW_NOEXCEPT { return m_monitor == another.m_monitor; }
 		bool operator!=(Monitor const &another) const VKFW_NOEXCEPT { return !operator==(another); }
-#endif
+# endif
 
-		VKFW_NODISCARD typename ResultValueType<void>::type getPos(int *xpos, int *ypos) const;
+		VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type getPos(int *xpos, int *ypos) const;
 		VKFW_NODISCARD typename ResultValueType<std::tuple<int, int>>::type getPos() const;
 		VKFW_NODISCARD typename ResultValueType<int>::type getPosX() const;
 		VKFW_NODISCARD typename ResultValueType<int>::type getPosY() const;
 
-		VKFW_NODISCARD typename ResultValueType<void>::type getWorkarea(int *xpos, int *ypos,
-																		size_t *width, size_t *height) const;
+		VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type 
+			getWorkarea(int *xpos, int *ypos, size_t *width, size_t *height) const;
 		VKFW_NODISCARD typename ResultValueType<std::tuple<int, int, size_t, size_t>>::type getWorkarea() const;
 		VKFW_NODISCARD typename ResultValueType<std::tuple<int, int>>::type getWorkareaPos() const;
 		VKFW_NODISCARD typename ResultValueType<int>::type getWorkareaPosX() const;
@@ -1208,12 +1227,14 @@ namespace VKFW_NAMESPACE {
 		VKFW_NODISCARD typename ResultValueType<size_t>::type getWorkareaWidth() const;
 		VKFW_NODISCARD typename ResultValueType<size_t>::type getWorkareaHeight() const;
 
-		VKFW_NODISCARD typename ResultValueType<void>::type getPhysicalSize(size_t *widthMM, size_t *heightMM) const;
+		VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type 
+			getPhysicalSize(size_t *widthMM, size_t *heightMM) const;
 		VKFW_NODISCARD typename ResultValueType<std::tuple<size_t, size_t>>::type getPhysicalSize() const;
 		VKFW_NODISCARD typename ResultValueType<size_t>::type getPhysicalWidth() const;
 		VKFW_NODISCARD typename ResultValueType<size_t>::type getPhysicalHeight() const;
 
-		VKFW_NODISCARD typename ResultValueType<void>::type getContentScale(float *xscale, float *yscale) const;
+		VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type 
+			getContentScale(float *xscale, float *yscale) const;
 		VKFW_NODISCARD typename ResultValueType<std::tuple<float, float>>::type getContentScale() const;
 		VKFW_NODISCARD typename ResultValueType<float>::type getContentScaleX() const;
 		VKFW_NODISCARD typename ResultValueType<float>::type getContentScaleY() const;
@@ -1232,35 +1253,35 @@ namespace VKFW_NAMESPACE {
 	public:
 		using CType = GLFWwindow;
 	public:
-		VKFW_INLINE_OR_CONSTEXPR Window() VKFW_NOEXCEPT : m_window(nullptr) {}
-		VKFW_INLINE_OR_CONSTEXPR Window(std::nullptr_t) VKFW_NOEXCEPT : m_window(nullptr) {}
-		VKFW_INLINE_OR_CONSTEXPR Window(GLFWwindow *window) VKFW_NOEXCEPT : m_window(window) {}
-		VKFW_INLINE_OR_CONSTEXPR Window(Window const &another) VKFW_NOEXCEPT : m_window(another.m_window) {}
-		VKFW_INLINE_OR_CONSTEXPR Window(Window &&another) VKFW_NOEXCEPT : m_window(another.m_window) { another.m_window = nullptr; }
-		VKFW_INLINE_OR_CONSTEXPR Window operator=(Window const &another) VKFW_NOEXCEPT {
+		VKFW_INLINE VKFW_CONSTEXPR Window() VKFW_NOEXCEPT : m_window(nullptr) {}
+		VKFW_INLINE VKFW_CONSTEXPR Window(std::nullptr_t) VKFW_NOEXCEPT : m_window(nullptr) {}
+		VKFW_INLINE VKFW_CONSTEXPR Window(GLFWwindow *window) VKFW_NOEXCEPT : m_window(window) {}
+		VKFW_INLINE VKFW_CONSTEXPR Window(Window const &another) VKFW_NOEXCEPT : m_window(another.m_window) {}
+		VKFW_INLINE VKFW_CONSTEXPR_14 Window(Window &&another) VKFW_NOEXCEPT : m_window(another.m_window) { another.m_window = nullptr; }
+		VKFW_INLINE VKFW_CONSTEXPR_14 Window operator=(Window const &another) VKFW_NOEXCEPT {
 			m_window = another.m_window; return *this;
 		}
-		VKFW_INLINE_OR_CONSTEXPR Window operator=(Window &&another) VKFW_NOEXCEPT {
+		VKFW_INLINE VKFW_CONSTEXPR_14 Window operator=(Window &&another) VKFW_NOEXCEPT {
 			m_window = another.m_window; another.m_window = nullptr; return *this;
 		}
-		VKFW_INLINE_OR_CONSTEXPR Window &operator=(GLFWwindow *window) VKFW_NOEXCEPT {
+		VKFW_INLINE VKFW_CONSTEXPR_14 Window &operator=(GLFWwindow *window) VKFW_NOEXCEPT {
 			m_window = window; return *this;
 		}
-		VKFW_INLINE_OR_CONSTEXPR Window &operator=(std::nullptr_t) VKFW_NOEXCEPT {
+		VKFW_INLINE VKFW_CONSTEXPR_14 Window &operator=(std::nullptr_t) VKFW_NOEXCEPT {
 			m_window = nullptr; return *this;
 		}
 
-		VKFW_INLINE_OR_CONSTEXPR operator GLFWwindow *() const VKFW_NOEXCEPT { return m_window; }
-		VKFW_INLINE_OR_CONSTEXPR explicit operator bool() const VULKAN_HPP_NOEXCEPT { return m_window != nullptr; }
-		VKFW_INLINE_OR_CONSTEXPR bool operator!() const VULKAN_HPP_NOEXCEPT { return m_window == nullptr; }
-#if defined(VKFW_HAS_SPACESHIP_OPERATOR)
+		VKFW_INLINE VKFW_CONSTEXPR operator GLFWwindow *() const VKFW_NOEXCEPT { return m_window; }
+		VKFW_INLINE VKFW_CONSTEXPR explicit operator bool() const VULKAN_HPP_NOEXCEPT { return m_window != nullptr; }
+		VKFW_INLINE VKFW_CONSTEXPR bool operator!() const VULKAN_HPP_NOEXCEPT { return m_window == nullptr; }
+# if defined(VKFW_HAS_SPACESHIP_OPERATOR)
 		auto operator<=>(Window const &) const = default;
-#else
+# else
 		bool operator==(Window const &another) const VKFW_NOEXCEPT { return m_window == another.m_window; }
 		bool operator!=(Window const &another) const VKFW_NOEXCEPT { return !operator==(another); }
-#endif
+# endif
+		VKFW_NODISCARD_WHEN_NO_EXCEPTIONS VKFW_INLINE typename ResultValueType<void>::type destroy();
 
-		VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type destroy();
 		// Member functions go here.
 
 	private:
@@ -1271,35 +1292,34 @@ namespace VKFW_NAMESPACE {
 	public:
 		using CType = GLFWcursor;
 	public:
-		VKFW_INLINE_OR_CONSTEXPR Cursor() VKFW_NOEXCEPT : m_cursor(nullptr) {}
-		VKFW_INLINE_OR_CONSTEXPR Cursor(std::nullptr_t) VKFW_NOEXCEPT : m_cursor(nullptr) {}
-		VKFW_INLINE_OR_CONSTEXPR Cursor(GLFWcursor *cursor) VKFW_NOEXCEPT : m_cursor(cursor) {}
-		VKFW_INLINE_OR_CONSTEXPR Cursor(Cursor const &another) VKFW_NOEXCEPT : m_cursor(another.m_cursor) {}
-		VKFW_INLINE_OR_CONSTEXPR Cursor(Cursor &&another) VKFW_NOEXCEPT : m_cursor(another.m_cursor) { another.m_cursor = nullptr; }
-		VKFW_INLINE_OR_CONSTEXPR Cursor operator=(Cursor const &another) VKFW_NOEXCEPT {
+		VKFW_INLINE VKFW_CONSTEXPR Cursor() VKFW_NOEXCEPT : m_cursor(nullptr) {}
+		VKFW_INLINE VKFW_CONSTEXPR Cursor(std::nullptr_t) VKFW_NOEXCEPT : m_cursor(nullptr) {}
+		VKFW_INLINE VKFW_CONSTEXPR Cursor(GLFWcursor *cursor) VKFW_NOEXCEPT : m_cursor(cursor) {}
+		VKFW_INLINE VKFW_CONSTEXPR Cursor(Cursor const &another) VKFW_NOEXCEPT : m_cursor(another.m_cursor) {}
+		VKFW_INLINE VKFW_CONSTEXPR_14 Cursor(Cursor &&another) VKFW_NOEXCEPT : m_cursor(another.m_cursor) { another.m_cursor = nullptr; }
+		VKFW_INLINE VKFW_CONSTEXPR_14 Cursor operator=(Cursor const &another) VKFW_NOEXCEPT {
 			m_cursor = another.m_cursor; return *this;
 		}
-		VKFW_INLINE_OR_CONSTEXPR Cursor operator=(Cursor &&another) VKFW_NOEXCEPT {
+		VKFW_INLINE VKFW_CONSTEXPR_14 Cursor operator=(Cursor &&another) VKFW_NOEXCEPT {
 			m_cursor = another.m_cursor; another.m_cursor = nullptr; return *this;
 		}
-		VKFW_INLINE_OR_CONSTEXPR Cursor &operator=(GLFWcursor *cursor) VKFW_NOEXCEPT {
+		VKFW_INLINE VKFW_CONSTEXPR_14 Cursor &operator=(GLFWcursor *cursor) VKFW_NOEXCEPT {
 			m_cursor = cursor; return *this;
 		}
-		VKFW_INLINE_OR_CONSTEXPR Cursor &operator=(std::nullptr_t) VKFW_NOEXCEPT {
+		VKFW_INLINE VKFW_CONSTEXPR_14 Cursor &operator=(std::nullptr_t) VKFW_NOEXCEPT {
 			m_cursor = nullptr; return *this;
 		}
-		VKFW_INLINE_OR_CONSTEXPR operator GLFWcursor *() const VKFW_NOEXCEPT { return m_cursor; }
-		VKFW_INLINE_OR_CONSTEXPR explicit operator bool() const VULKAN_HPP_NOEXCEPT { return m_cursor != nullptr; }
-		VKFW_INLINE_OR_CONSTEXPR bool operator!() const VULKAN_HPP_NOEXCEPT { return m_cursor == nullptr; }
-#if defined(VKFW_HAS_SPACESHIP_OPERATOR)
+		VKFW_INLINE VKFW_CONSTEXPR operator GLFWcursor *() const VKFW_NOEXCEPT { return m_cursor; }
+		VKFW_INLINE VKFW_CONSTEXPR explicit operator bool() const VULKAN_HPP_NOEXCEPT { return m_cursor != nullptr; }
+		VKFW_INLINE VKFW_CONSTEXPR bool operator!() const VULKAN_HPP_NOEXCEPT { return m_cursor == nullptr; }
+# if defined(VKFW_HAS_SPACESHIP_OPERATOR)
 		auto operator<=>(Cursor const &) const = default;
-#else
+# else
 		bool operator==(Cursor const &another) const VKFW_NOEXCEPT { return m_cursor == another.m_cursor; }
 		bool operator!=(Cursor const &another) const VKFW_NOEXCEPT { return !operator==(another); }
-#endif
+# endif
+		VKFW_NODISCARD_WHEN_NO_EXCEPTIONS VKFW_INLINE typename ResultValueType<void>::type destroy();
 
-		// TEMPORARY!
-		VKFW_NODISCARD_WHEN_NO_EXCEPTIONS VKFW_INLINE typename ResultValueType<void>::type destroy() {}
 		// Member functions go here.
 
 	private:
@@ -1335,9 +1355,12 @@ namespace VKFW_NAMESPACE {
 			, cocoaMenubar(cocoaMenubar_) {}
 # endif
 	public:
-		BooleanInitializationHint<InitializationHint::VKFW_ENUMERATOR(JoystickHatButtons)> joystickHatButtons = nullopt;
-		BooleanInitializationHint<InitializationHint::VKFW_ENUMERATOR(CocoaChdirResources)> cocoaChdirResources = nullopt;
-		BooleanInitializationHint<InitializationHint::VKFW_ENUMERATOR(CocoaMenubar)> cocoaMenubar = nullopt;
+		BooleanInitializationHint<InitializationHint::VKFW_ENUMERATOR(JoystickHatButtons)> 
+			joystickHatButtons = nullopt;
+		BooleanInitializationHint<InitializationHint::VKFW_ENUMERATOR(CocoaChdirResources)> 
+			cocoaChdirResources = nullopt;
+		BooleanInitializationHint<InitializationHint::VKFW_ENUMERATOR(CocoaMenubar)> 
+			cocoaMenubar = nullopt;
 	};
 	template<typename Type, InitializationHint hint_name>
 	Result setInitHint(InitializationHintType<Type, hint_name> const &hint) {
@@ -1358,14 +1381,14 @@ namespace VKFW_NAMESPACE {
 #ifdef VKFW_DISABLE_ENHANCED_MODE
 	VKFW_NODISCARD Result init();
 	VKFW_NODISCARD Result terminate();
-#else VKFW_DISABLE_ENHANCED_MODE
+#else
 	VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type
 		init(InitHints hints = {});
 	VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type
 		terminate();
 # ifndef VKFW_NO_SMART_HANDLE
 	using UniqueInstance = UniqueHandle<Instance>;
-	VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<UniqueInstance>::type
+	VKFW_NODISCARD typename ResultValueType<UniqueInstance>::type
 		initUnique(InitHints hints = {});
 # endif
 #endif
@@ -1395,22 +1418,12 @@ namespace VKFW_NAMESPACE {
 	VKFW_NODISCARD GLFWmonitor **getMonitors(size_t *count);
 	VKFW_NODISCARD GLFWmonitor *getPrimaryMonitor();
 	VKFW_NODISCARD Result getMonitorPos(GLFWmonitor *monitor, int *xpos, int *ypos);
-	VKFW_NODISCARD Result getMonitorWorkarea(GLFWmonitor *monitor, int *xpos, int *ypos, size_t *width, size_t *height);
-	VKFW_NODISCARD Result getMonitorPhysicalSize(GLFWmonitor *monitor, size_t *widthMM, size_t *heightMM);
+	VKFW_NODISCARD Result getMonitorWorkarea(GLFWmonitor *monitor, 
+											 int *xpos, int *ypos, size_t *width, size_t *height);
+	VKFW_NODISCARD Result getMonitorPhysicalSize(GLFWmonitor *monitor, 
+												 size_t *widthMM, size_t *heightMM);
 	VKFW_NODISCARD Result getMonitorContentScale(GLFWmonitor *monitor, float *xscale, float *yscale);
 	VKFW_NODISCARD char const *getMonitorName(GLFWmonitor *monitor);
-#else
-	VKFW_NODISCARD typename ResultValueType<std::vector<Monitor>>::type getMonitors();
-	VKFW_NODISCARD typename ResultValueType<Monitor>::type getPrimaryMonitor();
-	VKFW_NODISCARD typename ResultValueType<void>::type getMonitorPos(Monitor const &monitor, int *xpos, int *ypos);
-	VKFW_NODISCARD typename ResultValueType<void>::type getMonitorWorkarea(Monitor const &monitor, int *xpos, int *ypos, size_t *width, size_t *height);
-	VKFW_NODISCARD typename ResultValueType<void>::type getMonitorPhysicalSize(Monitor const &monitor, size_t *widthMM, size_t *heightMM);
-	VKFW_NODISCARD typename ResultValueType<void>::type getMonitorContentScale(Monitor const &monitor, float *xscale, float *yscale);
-# if 17 <= VKFW_CPP_VERSION
-	VKFW_NODISCARD typename ResultValueType<std::string_view>::type getMonitorName(Monitor const &monitor);
-# else
-	VKFW_NODISCARD typename ResultValueType<char const *>::type getMonitorName(Monitor const &monitor);
-# endif
 #endif
 
 	// To be implemented.
@@ -1432,12 +1445,10 @@ namespace VKFW_NAMESPACE {
 	VKFW_NODISCARD GLFWwindow *createWindow(size_t width, size_t height, char const *title,
 											GLFWmonitor *monitor = nullptr, GLFWwindow *share = nullptr);
 	VKFW_NODISCARD Result destroyWindow(GLFWwindow *window);
-#else VKFW_DISABLE_ENHANCED_MODE
+#else
 	VKFW_NODISCARD typename ResultValueType<Window>::type
 		createWindow(size_t width, size_t height, char const *title,
 					 Monitor monitor = nullptr, Window share = nullptr);
-	VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type
-		destroyWindow(GLFWwindow *window);
 # ifndef VKFW_NO_SMART_HANDLE
 	using UniqueWindow = UniqueHandle<Window>;
 	VKFW_NODISCARD typename ResultValueType<UniqueWindow>::type
@@ -1557,7 +1568,7 @@ template <> struct VULKAN_HPP_NAMESPACE::FlagTraits<VKFW_NAMESPACE::ModifierKeyB
 };
 #ifndef VKFW_NO_SMART_HANDLE
 template<> struct VKFW_NAMESPACE::CustomDestroy<VKFW_NAMESPACE::Instance> {
-	void destroy(Instance &instance) { if (instance) glfwTerminate(); }
+	VKFW_INLINE void destroy(Instance &instance) { static_cast<void>(instance.destroy()); }
 };
 template<> class VULKAN_HPP_NAMESPACE::UniqueHandleTraits<VKFW_NAMESPACE::Instance, VULKAN_HPP_DEFAULT_DISPATCHER_TYPE> {
 public:
@@ -1565,7 +1576,7 @@ public:
 };
 
 template<> struct VKFW_NAMESPACE::CustomDestroy<VKFW_NAMESPACE::Window> {
-	void destroy(Window &window) { window.destroy(); }
+	VKFW_INLINE void destroy(Window &window) { static_cast<void>(window.destroy()); }
 };
 template<> class VULKAN_HPP_NAMESPACE::UniqueHandleTraits<VKFW_NAMESPACE::Window, VULKAN_HPP_DEFAULT_DISPATCHER_TYPE> {
 public:
@@ -1573,7 +1584,7 @@ public:
 };
 
 template<> struct VKFW_NAMESPACE::CustomDestroy<VKFW_NAMESPACE::Cursor> {
-	void destroy(Cursor &cursor) { cursor.destroy(); }
+	VKFW_INLINE void destroy(Cursor &cursor) { static_cast<void>(cursor.destroy()); }
 };
 template<> class VULKAN_HPP_NAMESPACE::UniqueHandleTraits<VKFW_NAMESPACE::Cursor, VULKAN_HPP_DEFAULT_DISPATCHER_TYPE> {
 public:
@@ -1583,7 +1594,8 @@ public:
 
 namespace VKFW_NAMESPACE {
 #ifndef VKFW_DISABLE_ENHANCED_MODE
-	VKFW_NODISCARD VKFW_INLINE typename ResultValueType<void>::type Monitor::getPos(int *xpos, int *ypos) const {
+	VKFW_NODISCARD_WHEN_NO_EXCEPTIONS VKFW_INLINE typename ResultValueType<void>::type
+		Monitor::getPos(int *xpos, int *ypos) const {
 		glfwGetMonitorPos(m_monitor, xpos, ypos);
 		return createResultValue(getError(), VKFW_NAMESPACE_STRING"::Monitor::getPos");
 	}
@@ -1603,8 +1615,8 @@ namespace VKFW_NAMESPACE {
 		return createResultValue(getError(), output, VKFW_NAMESPACE_STRING"::Monitor::getPosY");
 	}
 
-	VKFW_NODISCARD VKFW_INLINE typename ResultValueType<void>::type Monitor::getWorkarea(int *xpos, int *ypos,
-																						 size_t *width, size_t *height) const {
+	VKFW_NODISCARD_WHEN_NO_EXCEPTIONS VKFW_INLINE typename ResultValueType<void>::type
+		Monitor::getWorkarea(int *xpos, int *ypos, size_t *width, size_t *height) const {
 		int temp_width, temp_height;
 		glfwGetMonitorWorkarea(m_monitor, xpos, ypos, &temp_width, &temp_height);
 		Result result = getError();
@@ -1617,10 +1629,12 @@ namespace VKFW_NAMESPACE {
 		}
 		return createResultValue(result, VKFW_NAMESPACE_STRING"::Monitor::getWorkarea");
 	}
-	VKFW_NODISCARD VKFW_INLINE typename ResultValueType<std::tuple<int, int, size_t, size_t>>::type Monitor::getWorkarea() const {
+	VKFW_NODISCARD VKFW_INLINE typename ResultValueType<std::tuple<int, int, size_t, size_t>>::type 
+		Monitor::getWorkarea() const {
 		std::tuple<int, int, size_t, size_t> output;
 		int temp_width, temp_height;
-		glfwGetMonitorWorkarea(m_monitor, &std::get<0>(output), &std::get<1>(output), &temp_width, &temp_height);
+		glfwGetMonitorWorkarea(m_monitor, &std::get<0>(output), &std::get<1>(output), 
+							   &temp_width, &temp_height);
 		Result result = getError();
 		if (check(result)) {
 			std::get<2>(output) = temp_width;
@@ -1631,7 +1645,8 @@ namespace VKFW_NAMESPACE {
 		}
 		return createResultValue(result, output, VKFW_NAMESPACE_STRING"::Monitor::getWorkarea");
 	}
-	VKFW_NODISCARD VKFW_INLINE typename ResultValueType<std::tuple<int, int>>::type Monitor::getWorkareaPos() const {
+	VKFW_NODISCARD VKFW_INLINE typename ResultValueType<std::tuple<int, int>>::type 
+		Monitor::getWorkareaPos() const {
 		std::tuple<int, int> output;
 		glfwGetMonitorWorkarea(m_monitor, &std::get<0>(output), &std::get<1>(output), nullptr, nullptr);
 		return createResultValue(getError(), output, VKFW_NAMESPACE_STRING"::Monitor::getWorkareaPos");
@@ -1646,7 +1661,8 @@ namespace VKFW_NAMESPACE {
 		glfwGetMonitorWorkarea(m_monitor, nullptr, &output, nullptr, nullptr);
 		return createResultValue(getError(), output, VKFW_NAMESPACE_STRING"::Monitor::getWorkareaPosY");
 	}
-	VKFW_NODISCARD VKFW_INLINE typename ResultValueType<std::tuple<size_t, size_t>>::type Monitor::getWorkareaSize() const {
+	VKFW_NODISCARD VKFW_INLINE typename ResultValueType<std::tuple<size_t, size_t>>::type 
+		Monitor::getWorkareaSize() const {
 		std::tuple<size_t, size_t> output;
 		int temp_width, temp_height;
 		glfwGetMonitorWorkarea(m_monitor, nullptr, nullptr, &temp_width, &temp_height);
@@ -1683,7 +1699,8 @@ namespace VKFW_NAMESPACE {
 		return createResultValue(result, output, VKFW_NAMESPACE_STRING"::Monitor::getWorkareaHeight");
 	}
 
-	VKFW_NODISCARD VKFW_INLINE typename ResultValueType<void>::type Monitor::getPhysicalSize(size_t *widthMM, size_t *heightMM) const {
+	VKFW_NODISCARD_WHEN_NO_EXCEPTIONS VKFW_INLINE typename ResultValueType<void>::type 
+		Monitor::getPhysicalSize(size_t *widthMM, size_t *heightMM) const {
 		int temp_width, temp_height;
 		glfwGetMonitorPhysicalSize(m_monitor, &temp_width, &temp_height);
 		Result result = getError();
@@ -1696,7 +1713,8 @@ namespace VKFW_NAMESPACE {
 		}
 		return createResultValue(result, VKFW_NAMESPACE_STRING"::Monitor::getPhysicalSize");
 	}
-	VKFW_NODISCARD VKFW_INLINE typename ResultValueType<std::tuple<size_t, size_t>>::type Monitor::getPhysicalSize() const {
+	VKFW_NODISCARD VKFW_INLINE typename ResultValueType<std::tuple<size_t, size_t>>::type 
+		Monitor::getPhysicalSize() const {
 		std::tuple<size_t, size_t> output;
 		int temp_width, temp_height;
 		glfwGetMonitorPhysicalSize(m_monitor, &temp_width, &temp_height);
@@ -1733,11 +1751,13 @@ namespace VKFW_NAMESPACE {
 		return createResultValue(result, output, VKFW_NAMESPACE_STRING"::Monitor::getPhysicalHeight");
 	}
 
-	VKFW_NODISCARD VKFW_INLINE typename ResultValueType<void>::type Monitor::getContentScale(float *xscale, float *yscale) const {
+	VKFW_NODISCARD_WHEN_NO_EXCEPTIONS VKFW_INLINE typename ResultValueType<void>::type 
+		Monitor::getContentScale(float *xscale, float *yscale) const {
 		glfwGetMonitorContentScale(m_monitor, xscale, yscale);
 		return createResultValue(getError(), VKFW_NAMESPACE_STRING"::Monitor::getContentScale");
 	}
-	VKFW_NODISCARD VKFW_INLINE typename ResultValueType<std::tuple<float, float>>::type Monitor::getContentScale() const {
+	VKFW_NODISCARD VKFW_INLINE typename ResultValueType<std::tuple<float, float>>::type 
+		Monitor::getContentScale() const {
 		std::tuple<float, float> output;
 		glfwGetMonitorContentScale(m_monitor, &std::get<0>(output), &std::get<1>(output));
 		return createResultValue(getError(), output, VKFW_NAMESPACE_STRING"::Monitor::getContentScale");
@@ -1755,18 +1775,35 @@ namespace VKFW_NAMESPACE {
 
 # if 17 <= VKFW_CPP_VERSION
 	VKFW_NODISCARD VKFW_INLINE typename ResultValueType<std::string_view>::type Monitor::getName() const {
+		std::string_view output = glfwGetMonitorName(m_monitor);
 # else
 	VKFW_NODISCARD VKFW_INLINE typename ResultValueType<char const *>::type Monitor::getName() const {
+		char const *output = glfwGetMonitorName(m_monitor);
 # endif
-		auto *output = glfwGetMonitorName(m_monitor);
 		return createResultValue(getError(), output, VKFW_NAMESPACE_STRING"::Monitor::getName");
 	}
 #endif
 
 #ifndef VKFW_DISABLE_ENHANCED_MODE
+	VKFW_NODISCARD_WHEN_NO_EXCEPTIONS VKFW_INLINE typename ResultValueType<void>::type Instance::destroy() {
+		if (m_state) {
+			glfwTerminate();
+			m_state = false;
+			return createResultValue(getError(), VKFW_NAMESPACE_STRING"::Instance::destroy");
+		} else
+			return createResultValue(Result::VKFW_ENUMERATOR(Success), VKFW_NAMESPACE_STRING"::Instance::destroy");
+	}
 	VKFW_NODISCARD_WHEN_NO_EXCEPTIONS VKFW_INLINE typename ResultValueType<void>::type Window::destroy() {
-		glfwDestroyWindow(m_window); m_window = nullptr;
-		return createResultValue(getError(), VKFW_NAMESPACE_STRING"::init");
+		if (m_window) {
+			glfwDestroyWindow(m_window);
+			m_window = nullptr;
+			return createResultValue(getError(), VKFW_NAMESPACE_STRING"::Window::destroy");
+		} else
+			return createResultValue(Result::VKFW_ENUMERATOR(Success), VKFW_NAMESPACE_STRING"::Window::destroy");
+	}
+	VKFW_NODISCARD_WHEN_NO_EXCEPTIONS VKFW_INLINE typename ResultValueType<void>::type Cursor::destroy() {
+		// Empty for now!!
+		return createResultValue(Result::VKFW_ENUMERATOR(Success), VKFW_NAMESPACE_STRING"::Cursor::destroy");
 	}
 #endif
 
@@ -1811,7 +1848,7 @@ namespace VKFW_NAMESPACE {
 	VKFW_NODISCARD VKFW_INLINE Result terminate() {
 		glfwTerminate();
 		return getError();
-	}
+}
 #else
 	VKFW_NODISCARD_WHEN_NO_EXCEPTIONS VKFW_INLINE typename ResultValueType<void>::type init(InitHints hints) {
 		Result result = setInitHints(hints);
@@ -1827,7 +1864,7 @@ namespace VKFW_NAMESPACE {
 		return createResultValue(getError(), VKFW_NAMESPACE_STRING"::terminate");
 	}
 # ifndef VKFW_NO_SMART_HANDLE
-	VKFW_NODISCARD_WHEN_NO_EXCEPTIONS VKFW_INLINE typename ResultValueType<VKFW_NAMESPACE::UniqueInstance>::type
+	VKFW_NODISCARD VKFW_INLINE typename ResultValueType<VKFW_NAMESPACE::UniqueInstance>::type
 		initUnique(InitHints hints) {
 		Instance instance;
 
@@ -1858,7 +1895,8 @@ namespace VKFW_NAMESPACE {
 		glfwGetMonitorPos(monitor, xpos, ypos);
 		return getError();
 	}
-	VKFW_NODISCARD VKFW_INLINE Result getMonitorWorkarea(GLFWmonitor *monitor, int *xpos, int *ypos, size_t *width, size_t *height) {
+	VKFW_NODISCARD VKFW_INLINE Result getMonitorWorkarea(GLFWmonitor *monitor, int *xpos, int *ypos, 
+														 size_t *width, size_t *height) {
 		int temp_width, temp_height;
 		glfwGetMonitorWorkarea(monitor, xpos, ypos, &temp_width, &temp_height);
 		Result result = getError();
@@ -1871,7 +1909,8 @@ namespace VKFW_NAMESPACE {
 		}
 		return result;
 	}
-	VKFW_NODISCARD VKFW_INLINE Result getMonitorPhysicalSize(GLFWmonitor *monitor, size_t *widthMM, size_t *heightMM) {
+	VKFW_NODISCARD VKFW_INLINE Result getMonitorPhysicalSize(GLFWmonitor *monitor, 
+															 size_t *widthMM, size_t *heightMM) {
 		int temp_width, temp_height;
 		glfwGetMonitorPhysicalSize(monitor, &temp_width, &temp_height);
 		Result result = getError();
@@ -1884,7 +1923,8 @@ namespace VKFW_NAMESPACE {
 		}
 		return result;
 	}
-	VKFW_NODISCARD VKFW_INLINE Result getMonitorContentScale(GLFWmonitor *monitor, float *xscale, float *yscale) {
+	VKFW_NODISCARD VKFW_INLINE Result getMonitorContentScale(GLFWmonitor *monitor, 
+															 float *xscale, float *yscale) {
 		glfwGetMonitorContentScale(monitor, xscale, yscale);
 		return getError();
 	}
@@ -1910,49 +1950,6 @@ namespace VKFW_NAMESPACE {
 		Monitor monitor = glfwGetPrimaryMonitor();
 		return createResultValue(getError(), monitor, VKFW_NAMESPACE_STRING"::getPrimaryMonitor");
 	}
-	VKFW_NODISCARD VKFW_INLINE typename ResultValueType<void>::type getMonitorPos(Monitor const &monitor, int *xpos, int *ypos) {
-		glfwGetMonitorPos(monitor, xpos, ypos);
-		return createResultValue(getError(), VKFW_NAMESPACE_STRING"::getMonitorPos");
-	}
-	VKFW_NODISCARD VKFW_INLINE typename ResultValueType<void>::type getMonitorWorkarea(Monitor const &monitor, int *xpos, int *ypos, size_t *width, size_t *height) {
-		int temp_width, temp_height;
-		glfwGetMonitorWorkarea(monitor, xpos, ypos, &temp_width, &temp_height);
-		Result result = getError();
-		if (check(result)) {
-			*width = temp_width;
-			*height = temp_height;
-		} else {
-			*width = 0u;
-			*height = 0u;
-		}
-		return createResultValue(result, VKFW_NAMESPACE_STRING"::getMonitorWorkarea");
-	}
-	VKFW_NODISCARD VKFW_INLINE typename ResultValueType<void>::type getMonitorPhysicalSize(Monitor const &monitor, size_t *widthMM, size_t *heightMM) {
-		int temp_width, temp_height;
-		glfwGetMonitorPhysicalSize(monitor, &temp_width, &temp_height);
-		Result result = getError();
-		if (check(result)) {
-			*widthMM = temp_width;
-			*heightMM = temp_height;
-		} else {
-			*widthMM = 0u;
-			*heightMM = 0u;
-		}
-		return createResultValue(result, VKFW_NAMESPACE_STRING"::getMonitorPhysicalSize");
-	}
-	VKFW_NODISCARD VKFW_INLINE typename ResultValueType<void>::type getMonitorContentScale(Monitor const &monitor, float *xscale, float *yscale) {
-		glfwGetMonitorContentScale(monitor, xscale, yscale);
-		return createResultValue(getError(), VKFW_NAMESPACE_STRING"::getMonitorPhysicalSize");
-	}
-# if 17 <= VKFW_CPP_VERSION
-	VKFW_NODISCARD VKFW_INLINE typename ResultValueType<std::string_view>::type getMonitorName(Monitor const &monitor) {
-		std::string_view output = glfwGetMonitorName(monitor);
-# else
-	VKFW_NODISCARD typename ResultValueType<char const *>::type getMonitorName(Monitor const &monitor) {
-		char const *output = glfwGetMonitorName(monitor);
-# endif
-		return createResultValue(getError(), output, VKFW_NAMESPACE_STRING"::getMonitorPhysicalSize");
-	}
 #endif
 
 #ifdef VKFW_DISABLE_ENHANCED_MODE
@@ -1968,20 +1965,16 @@ namespace VKFW_NAMESPACE {
 	VKFW_NODISCARD VKFW_INLINE typename ResultValueType<Window>::type
 		createWindow(size_t width, size_t height, char const *title,
 					 Monitor monitor, Window share) {
-		Window window = glfwCreateWindow(static_cast<int>(width), static_cast<int>(height), title, monitor, share);
+		Window window = glfwCreateWindow(static_cast<int>(width), static_cast<int>(height), 
+										 title, monitor, share);
 		return createResultValue(getError(), window, VKFW_NAMESPACE_STRING"::createWindow");
-	}
-	VKFW_NODISCARD_WHEN_NO_EXCEPTIONS VKFW_INLINE typename ResultValueType<void>::type
-		destroyWindow(GLFWwindow *window) {
-
-		glfwDestroyWindow(window);
-		return createResultValue(getError(), VKFW_NAMESPACE_STRING"::destroyWindow");
 	}
 # ifndef VKFW_NO_SMART_HANDLE
 	VKFW_NODISCARD VKFW_INLINE typename ResultValueType<UniqueWindow>::type
 		createWindowUnique(size_t width, size_t height, char const *title,
 						   Monitor monitor, Window share) {
-		Window window = glfwCreateWindow(static_cast<int>(width), static_cast<int>(height), title, monitor, share);
+		Window window = glfwCreateWindow(static_cast<int>(width), static_cast<int>(height), 
+										 title, monitor, share);
 		return createResultValueUnique(getError(), window, VKFW_NAMESPACE_STRING"::createWindowUnique");
 	}
 # endif
