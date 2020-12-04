@@ -437,7 +437,7 @@ namespace VKFW_NAMESPACE {
 		VKFW_ENUMERATOR(CocoaChdirResources) = GLFW_COCOA_CHDIR_RESOURCES, // MacOS specific
 		VKFW_ENUMERATOR(CocoaMenubar) = GLFW_COCOA_MENUBAR // MacOS specific
 	};
-	enum class Hint {
+	enum class WindowHint {
 
 		// Window Hints
 		VKFW_ENUMERATOR(Focused) = GLFW_FOCUSED,
@@ -475,7 +475,7 @@ namespace VKFW_NAMESPACE {
 		VKFW_ENUMERATOR(ClientAPI) = GLFW_CLIENT_API,
 		VKFW_ENUMERATOR(ContextVersionMajor) = GLFW_CONTEXT_VERSION_MAJOR,
 		VKFW_ENUMERATOR(ContextVersionMinor) = GLFW_CONTEXT_VERSION_MINOR,
-		VKFW_ENUMERATOR(ContextRevision) = GLFW_CONTEXT_REVISION,
+		//VKFW_ENUMERATOR(ContextRevision) = GLFW_CONTEXT_REVISION,
 		VKFW_ENUMERATOR(ContextRobustness) = GLFW_CONTEXT_ROBUSTNESS,
 		VKFW_ENUMERATOR(OpenGLForwardCompatibility) = GLFW_OPENGL_FORWARD_COMPAT,
 		VKFW_ENUMERATOR(OpenGLDebugContext) = GLFW_OPENGL_DEBUG_CONTEXT,
@@ -554,7 +554,7 @@ namespace VKFW_NAMESPACE {
 		VKFW_ENUMERATOR(Flush) = GLFW_RELEASE_BEHAVIOR_FLUSH,
 		VKFW_ENUMERATOR(None) = GLFW_RELEASE_BEHAVIOR_NONE
 	};
-	enum class ContextAPI {
+	enum class ContextCreationAPI {
 		VKFW_ENUMERATOR(Native) = GLFW_NATIVE_CONTEXT_API,
 		VKFW_ENUMERATOR(EGL) = GLFW_EGL_CONTEXT_API,
 		VKFW_ENUMERATOR(OSMESA) = GLFW_OSMESA_CONTEXT_API
@@ -571,8 +571,11 @@ namespace VKFW_NAMESPACE {
 		VKFW_ENUMERATOR(Connected) = GLFW_CONNECTED,
 		VKFW_ENUMERATOR(Disconnected) = GLFW_DISCONNECTED
 	};
-	enum class DontCare {
-		VKFW_ENUMERATOR(DontCare) = GLFW_DONT_CARE
+	enum DontCare : unsigned {
+		DontCare = unsigned(GLFW_DONT_CARE)
+#ifndef VKFW_NO_LEADING_e_IN_ENUMS
+		, eDontCare = unsigned(GLFW_DONT_CARE)
+#endif
 	};
 
 	enum class ModifierKeyBits {
@@ -1129,6 +1132,12 @@ namespace VKFW_NAMESPACE {
 		VKFW_INLINE VKFW_CONSTEXPR Optional(Nullopt) : m_has_value(false) {}
 		VKFW_INLINE VKFW_CONSTEXPR Optional(value_type const &t) : m_has_value(true), m_value(t) {}
 		VKFW_INLINE VKFW_CONSTEXPR Optional(value_type &&t) : m_has_value(true), m_value(std::move(t)) {}
+		template <typename convertible_value_type, 
+			typename = std::enable_if<std::is_convertible<convertible_value_type, value_type>::value>::type
+		> VKFW_INLINE VKFW_CONSTEXPR Optional(convertible_value_type const &t) : m_has_value(true), m_value(value_type{ t }) {}
+		template <typename convertible_value_type, 
+			typename = std::enable_if<std::is_convertible<convertible_value_type, value_type>::value>::type
+		> VKFW_INLINE VKFW_CONSTEXPR Optional(convertible_value_type &&t) : m_has_value(true), m_value(value_type{ std::move(t) }) {}
 		template<class U> VKFW_INLINE VKFW_CONSTEXPR Optional(Optional<U> const &another)
 			: m_has_value(another.m_has_value), m_value(another.m_value) {}
 		template<class U> VKFW_INLINE VKFW_CONSTEXPR Optional(Optional<U> &&another)
@@ -1368,8 +1377,8 @@ namespace VKFW_NAMESPACE {
 	};
 	template <InitializationHint hint> using BooleanInitializationHint = InitializationHintType<bool, hint>;
 	struct InitHints {
-	public:
 # ifndef VKFW_NO_STRUCT_CONSTRUCTORS
+	public:
 		VKFW_CONSTEXPR InitHints(
 			BooleanInitializationHint<InitializationHint::VKFW_ENUMERATOR(JoystickHatButtons)> joystickHatButtons_ = nullopt,
 			BooleanInitializationHint<InitializationHint::VKFW_ENUMERATOR(CocoaChdirResources)> cocoaChdirResources_ = nullopt,
@@ -1403,6 +1412,257 @@ namespace VKFW_NAMESPACE {
 		return result;
 	}
 #endif
+
+	VKFW_INLINE Result defaultWindowHints() {
+		glfwDefaultWindowHints();
+		return getError();
+	}
+	template <WindowHint hint_name, typename hint_type>
+	Result windowHint(hint_type const &value);
+#ifndef VKFW_DISABLE_ENHANCED_MODE
+	template <typename Type, WindowHint hint> class WindowHintType : public HintType<Type> {
+	public: using HintType<Type>::HintType;
+	};
+	template <WindowHint hint> using BooleanWindowHint = WindowHintType<bool, hint>;
+	template <WindowHint hint> using UnsignedWindowHint = WindowHintType<unsigned, hint>;
+# ifdef VKFW_HAS_STRING_VIEW
+	template <WindowHint hint> using StringWindowHint = WindowHintType<std::string_view, hint>;
+# else
+	template <WindowHint hint> using StringWindowHint = WindowHintType<std::string, hint>;
+# endif
+
+	struct WindowHints {
+# ifndef VKFW_NO_STRUCT_CONSTRUCTORS
+	public:
+		VKFW_CONSTEXPR WindowHints(
+			BooleanWindowHint<WindowHint::VKFW_ENUMERATOR(Resizable)> resizable_ = nullopt,
+			BooleanWindowHint<WindowHint::VKFW_ENUMERATOR(Visible)> visible_ = nullopt,
+			BooleanWindowHint<WindowHint::VKFW_ENUMERATOR(Decorated)> decorated_ = nullopt,
+			BooleanWindowHint<WindowHint::VKFW_ENUMERATOR(Focused)> focused_ = nullopt,
+			BooleanWindowHint<WindowHint::VKFW_ENUMERATOR(AutoIconify)> autoIconify_ = nullopt,
+			BooleanWindowHint<WindowHint::VKFW_ENUMERATOR(Floating)> floating_ = nullopt,
+			BooleanWindowHint<WindowHint::VKFW_ENUMERATOR(Maximized)> maximized_ = nullopt,
+			BooleanWindowHint<WindowHint::VKFW_ENUMERATOR(CenterCursor)> centerCursor_ = nullopt,
+			BooleanWindowHint<WindowHint::VKFW_ENUMERATOR(TransparentFramebuffer)> transparentFramebuffer_ = nullopt,
+			BooleanWindowHint<WindowHint::VKFW_ENUMERATOR(FocusOnShow)> focusOnShow_ = nullopt,
+			BooleanWindowHint<WindowHint::VKFW_ENUMERATOR(ScaleToMonitor)> scaleToMonitor_ = nullopt,
+			UnsignedWindowHint<WindowHint::VKFW_ENUMERATOR(RedBits)> redBits_ = nullopt,
+			UnsignedWindowHint<WindowHint::VKFW_ENUMERATOR(GreenBits)> greenBits_ = nullopt,
+			UnsignedWindowHint<WindowHint::VKFW_ENUMERATOR(BlueBits)> blueBits_ = nullopt,
+			UnsignedWindowHint<WindowHint::VKFW_ENUMERATOR(AlphaBits)> alphaBits_ = nullopt,
+			UnsignedWindowHint<WindowHint::VKFW_ENUMERATOR(DepthBits)> depthBits_ = nullopt,
+			UnsignedWindowHint<WindowHint::VKFW_ENUMERATOR(StencilBits)> stencilBits_ = nullopt,
+			UnsignedWindowHint<WindowHint::VKFW_ENUMERATOR(AccumulationRedBits)> accumulationRedBits_ = nullopt,
+			UnsignedWindowHint<WindowHint::VKFW_ENUMERATOR(AccumulationGreenBits)> accumulationGreenBits_ = nullopt,
+			UnsignedWindowHint<WindowHint::VKFW_ENUMERATOR(AccumulationBlueBits)> accumulationBlueBits_ = nullopt,
+			UnsignedWindowHint<WindowHint::VKFW_ENUMERATOR(AccumulationAlphaBits)> accumulationAlphaBits_ = nullopt,
+			UnsignedWindowHint<WindowHint::VKFW_ENUMERATOR(AuxiliaryBuffers)> auxiliaryBuffers_ = nullopt,
+			UnsignedWindowHint<WindowHint::VKFW_ENUMERATOR(Samples)> samples_ = nullopt,
+			UnsignedWindowHint<WindowHint::VKFW_ENUMERATOR(RefreshRate)> refreshRate_ = nullopt,
+			BooleanWindowHint<WindowHint::VKFW_ENUMERATOR(StereoscopicRendering)> stereo_ = nullopt,
+			BooleanWindowHint<WindowHint::VKFW_ENUMERATOR(SRGBCapable)> srgbCapable_ = nullopt,
+			BooleanWindowHint<WindowHint::VKFW_ENUMERATOR(DoubleBuffer)> doubleBuffer_ = nullopt,
+			WindowHintType<ClientAPI, WindowHint::VKFW_ENUMERATOR(ClientAPI)> clientAPI_ = ClientAPI::VKFW_ENUMERATOR(None),
+			WindowHintType<ContextCreationAPI, WindowHint::VKFW_ENUMERATOR(ContextCreationAPI)> contextAPI_ = nullopt,
+			UnsignedWindowHint<WindowHint::VKFW_ENUMERATOR(ContextVersionMajor)> contextVersionMajor_ = nullopt,
+			UnsignedWindowHint<WindowHint::VKFW_ENUMERATOR(ContextVersionMinor)> contextVersionMinor_ = nullopt,
+			WindowHintType<ContextRobustness, WindowHint::VKFW_ENUMERATOR(ContextRobustness)> contextRobustness_ = nullopt,
+			WindowHintType<ContextReleaseBehavior, WindowHint::VKFW_ENUMERATOR(ContextReleaseBehavior)> contextReleaseBehavior_ = nullopt,
+			BooleanWindowHint<WindowHint::VKFW_ENUMERATOR(ContextNoError)> contextNoError_ = nullopt,
+			BooleanWindowHint<WindowHint::VKFW_ENUMERATOR(OpenGLForwardCompatibility)> openGLForwardCompatibility_ = nullopt,
+			BooleanWindowHint<WindowHint::VKFW_ENUMERATOR(OpenGLDebugContext)> openGLDebugContext_ = nullopt,
+			WindowHintType<OpenGLProfile, WindowHint::VKFW_ENUMERATOR(OpenGLProfile)> openGLProfile_ = nullopt,
+			BooleanWindowHint<WindowHint::VKFW_ENUMERATOR(CocoaRetinaFramebuffer)> cocoaRetinaFramebuffer_ = nullopt,
+			StringWindowHint<WindowHint::VKFW_ENUMERATOR(CocoaFrameName)> cocoaFrameName_ = nullopt,
+			BooleanWindowHint<WindowHint::VKFW_ENUMERATOR(CocoaGraphicsSwitching)> cocoaGraphicsSwitching_ = nullopt,
+			StringWindowHint<WindowHint::VKFW_ENUMERATOR(X11ClassName)> x11ClassName_ = nullopt,
+			StringWindowHint<WindowHint::VKFW_ENUMERATOR(X11InstanceName)> x11InstanceName_ = nullopt
+		) VKFW_NOEXCEPT
+			: resizable(resizable_)
+			, visible(visible_)
+			, decorated(decorated_)
+			, focused(focused_)
+			, autoIconify(autoIconify_)
+			, floating(floating_)
+			, maximized(maximized_)
+			, centerCursor(centerCursor_)
+			, transparentFramebuffer(transparentFramebuffer_)
+			, focusOnShow(focusOnShow_)
+			, scaleToMonitor(scaleToMonitor_)
+			, redBits(redBits_)
+			, greenBits(greenBits_)
+			, blueBits(blueBits_)
+			, alphaBits(alphaBits_)
+			, depthBits(depthBits_)
+			, stencilBits(stencilBits_)
+			, accumulationRedBits(accumulationRedBits_)
+			, accumulationGreenBits(accumulationGreenBits_)
+			, accumulationBlueBits(accumulationBlueBits_)
+			, accumulationAlphaBits(accumulationAlphaBits_)
+			, auxiliaryBuffers(auxiliaryBuffers_)
+			, samples(samples_)
+			, refreshRate(refreshRate_)
+			, stereo(stereo_)
+			, srgbCapable(srgbCapable_)
+			, doubleBuffer(doubleBuffer_)
+			, clientAPI(clientAPI_)
+			, contextAPI(contextAPI_)
+			, contextVersionMajor(contextVersionMajor_)
+			, contextVersionMinor(contextVersionMinor_)
+			, contextRobustness(contextRobustness_)
+			, contextReleaseBehavior(contextReleaseBehavior_)
+			, contextNoError(contextNoError_)
+			, openGLForwardCompatibility(openGLForwardCompatibility_)
+			, openGLDebugContext(openGLDebugContext_)
+			, openGLProfile(openGLProfile_)
+			, cocoaRetinaFramebuffer(cocoaRetinaFramebuffer_)
+			, cocoaFrameName(cocoaFrameName_)
+			, cocoaGraphicsSwitching(cocoaGraphicsSwitching_)
+			, x11ClassName(x11ClassName_)
+			, x11InstanceName(x11InstanceName_) {}
+# endif
+	public:
+		BooleanWindowHint<WindowHint::VKFW_ENUMERATOR(Resizable)>
+			resizable = nullopt;
+		BooleanWindowHint<WindowHint::VKFW_ENUMERATOR(Visible)>
+			visible = nullopt;
+		BooleanWindowHint<WindowHint::VKFW_ENUMERATOR(Decorated)>
+			decorated = nullopt;
+		BooleanWindowHint<WindowHint::VKFW_ENUMERATOR(Focused)>
+			focused = nullopt;
+		BooleanWindowHint<WindowHint::VKFW_ENUMERATOR(AutoIconify)>
+			autoIconify = nullopt;
+		BooleanWindowHint<WindowHint::VKFW_ENUMERATOR(Floating)>
+			floating = nullopt;
+		BooleanWindowHint<WindowHint::VKFW_ENUMERATOR(Maximized)>
+			maximized = nullopt;
+		BooleanWindowHint<WindowHint::VKFW_ENUMERATOR(CenterCursor)>
+			centerCursor = nullopt;
+		BooleanWindowHint<WindowHint::VKFW_ENUMERATOR(TransparentFramebuffer)>
+			transparentFramebuffer = nullopt;
+		BooleanWindowHint<WindowHint::VKFW_ENUMERATOR(FocusOnShow)>
+			focusOnShow = nullopt;
+		BooleanWindowHint<WindowHint::VKFW_ENUMERATOR(ScaleToMonitor)>
+			scaleToMonitor = nullopt;
+		UnsignedWindowHint<WindowHint::VKFW_ENUMERATOR(RedBits)>
+			redBits = nullopt;
+		UnsignedWindowHint<WindowHint::VKFW_ENUMERATOR(GreenBits)>
+			greenBits = nullopt;
+		UnsignedWindowHint<WindowHint::VKFW_ENUMERATOR(BlueBits)>
+			blueBits = nullopt;
+		UnsignedWindowHint<WindowHint::VKFW_ENUMERATOR(AlphaBits)>
+			alphaBits = nullopt;
+		UnsignedWindowHint<WindowHint::VKFW_ENUMERATOR(DepthBits)>
+			depthBits = nullopt;
+		UnsignedWindowHint<WindowHint::VKFW_ENUMERATOR(StencilBits)>
+			stencilBits = nullopt;
+		UnsignedWindowHint<WindowHint::VKFW_ENUMERATOR(AccumulationRedBits)>
+			accumulationRedBits = nullopt;
+		UnsignedWindowHint<WindowHint::VKFW_ENUMERATOR(AccumulationGreenBits)>
+			accumulationGreenBits = nullopt;
+		UnsignedWindowHint<WindowHint::VKFW_ENUMERATOR(AccumulationBlueBits)>
+			accumulationBlueBits = nullopt;
+		UnsignedWindowHint<WindowHint::VKFW_ENUMERATOR(AccumulationAlphaBits)>
+			accumulationAlphaBits = nullopt;
+		UnsignedWindowHint<WindowHint::VKFW_ENUMERATOR(AuxiliaryBuffers)>
+			auxiliaryBuffers = nullopt;
+		UnsignedWindowHint<WindowHint::VKFW_ENUMERATOR(Samples)>
+			samples = nullopt;
+		UnsignedWindowHint<WindowHint::VKFW_ENUMERATOR(RefreshRate)>
+			refreshRate = nullopt;
+		BooleanWindowHint<WindowHint::VKFW_ENUMERATOR(StereoscopicRendering)>
+			stereo = nullopt;
+		BooleanWindowHint<WindowHint::VKFW_ENUMERATOR(SRGBCapable)>
+			srgbCapable = nullopt;
+		BooleanWindowHint<WindowHint::VKFW_ENUMERATOR(DoubleBuffer)>
+			doubleBuffer = nullopt;
+		WindowHintType<ClientAPI, WindowHint::VKFW_ENUMERATOR(ClientAPI)>
+			clientAPI = ClientAPI::VKFW_ENUMERATOR(None);
+		WindowHintType<ContextCreationAPI, WindowHint::VKFW_ENUMERATOR(ContextCreationAPI)>
+			contextAPI = nullopt;
+		UnsignedWindowHint<WindowHint::VKFW_ENUMERATOR(ContextVersionMajor)>
+			contextVersionMajor = nullopt;
+		UnsignedWindowHint<WindowHint::VKFW_ENUMERATOR(ContextVersionMinor)>
+			contextVersionMinor = nullopt;
+		WindowHintType<ContextRobustness, WindowHint::VKFW_ENUMERATOR(ContextRobustness)>
+			contextRobustness = nullopt;
+		WindowHintType<ContextReleaseBehavior, WindowHint::VKFW_ENUMERATOR(ContextReleaseBehavior)>
+			contextReleaseBehavior = nullopt;
+		BooleanWindowHint<WindowHint::VKFW_ENUMERATOR(ContextNoError)>
+			contextNoError = nullopt;
+		BooleanWindowHint<WindowHint::VKFW_ENUMERATOR(OpenGLForwardCompatibility)>
+			openGLForwardCompatibility = nullopt;
+		BooleanWindowHint<WindowHint::VKFW_ENUMERATOR(OpenGLDebugContext)>
+			openGLDebugContext = nullopt;
+		WindowHintType<OpenGLProfile, WindowHint::VKFW_ENUMERATOR(OpenGLProfile)>
+			openGLProfile = nullopt;
+		BooleanWindowHint<WindowHint::VKFW_ENUMERATOR(CocoaRetinaFramebuffer)>
+			cocoaRetinaFramebuffer = nullopt;
+		StringWindowHint<WindowHint::VKFW_ENUMERATOR(CocoaFrameName)>
+			cocoaFrameName = nullopt;
+		BooleanWindowHint<WindowHint::VKFW_ENUMERATOR(CocoaGraphicsSwitching)>
+			cocoaGraphicsSwitching = nullopt;
+		StringWindowHint<WindowHint::VKFW_ENUMERATOR(X11ClassName)>
+			x11ClassName = nullopt;
+		StringWindowHint<WindowHint::VKFW_ENUMERATOR(X11InstanceName)>
+			x11InstanceName = nullopt;
+	};
+	template<typename Type, WindowHint hint_name>
+	Result setWindowHint(WindowHintType<Type, hint_name> const &hint) {
+		if (hint.has_value()) {
+			windowHint<hint_name>(hint.value());
+			return getError();
+		} else
+			return Result::VKFW_ENUMERATOR(Success);
+	}
+	VKFW_INLINE Result setWindowHints(WindowHints hints) {
+		Result result = Result::VKFW_ENUMERATOR(Success);
+		if (!check(result = setWindowHint(hints.resizable))) return result;
+		if (!check(result = setWindowHint(hints.visible))) return result;
+		if (!check(result = setWindowHint(hints.decorated))) return result;
+		if (!check(result = setWindowHint(hints.focused))) return result;
+		if (!check(result = setWindowHint(hints.autoIconify))) return result;
+		if (!check(result = setWindowHint(hints.floating))) return result;
+		if (!check(result = setWindowHint(hints.maximized))) return result;
+		if (!check(result = setWindowHint(hints.centerCursor))) return result;
+		if (!check(result = setWindowHint(hints.transparentFramebuffer))) return result;
+		if (!check(result = setWindowHint(hints.focusOnShow))) return result;
+		if (!check(result = setWindowHint(hints.scaleToMonitor))) return result;
+		if (!check(result = setWindowHint(hints.redBits))) return result;
+		if (!check(result = setWindowHint(hints.greenBits))) return result;
+		if (!check(result = setWindowHint(hints.blueBits))) return result;
+		if (!check(result = setWindowHint(hints.alphaBits))) return result;
+		if (!check(result = setWindowHint(hints.depthBits))) return result;
+		if (!check(result = setWindowHint(hints.stencilBits))) return result;
+		if (!check(result = setWindowHint(hints.accumulationRedBits))) return result;
+		if (!check(result = setWindowHint(hints.accumulationGreenBits))) return result;
+		if (!check(result = setWindowHint(hints.accumulationBlueBits))) return result;
+		if (!check(result = setWindowHint(hints.accumulationAlphaBits))) return result;
+		if (!check(result = setWindowHint(hints.auxiliaryBuffers))) return result;
+		if (!check(result = setWindowHint(hints.samples))) return result;
+		if (!check(result = setWindowHint(hints.refreshRate))) return result;
+		if (!check(result = setWindowHint(hints.stereo))) return result;
+		if (!check(result = setWindowHint(hints.srgbCapable))) return result;
+		if (!check(result = setWindowHint(hints.doubleBuffer))) return result;
+		if (!check(result = setWindowHint(hints.clientAPI))) return result;
+		if (!check(result = setWindowHint(hints.contextAPI))) return result;
+		if (!check(result = setWindowHint(hints.contextVersionMajor))) return result;
+		if (!check(result = setWindowHint(hints.contextVersionMinor))) return result;
+		if (!check(result = setWindowHint(hints.contextRobustness))) return result;
+		if (!check(result = setWindowHint(hints.contextReleaseBehavior))) return result;
+		if (!check(result = setWindowHint(hints.contextNoError))) return result;
+		if (!check(result = setWindowHint(hints.openGLForwardCompatibility))) return result;
+		if (!check(result = setWindowHint(hints.openGLDebugContext))) return result;
+		if (!check(result = setWindowHint(hints.openGLProfile))) return result;
+		if (!check(result = setWindowHint(hints.cocoaRetinaFramebuffer))) return result;
+		if (!check(result = setWindowHint(hints.cocoaFrameName))) return result;
+		if (!check(result = setWindowHint(hints.cocoaGraphicsSwitching))) return result;
+		if (!check(result = setWindowHint(hints.x11ClassName))) return result;
+		if (!check(result = setWindowHint(hints.x11InstanceName))) return result;
+		return result;
+	}
+#endif
+
 #ifdef VKFW_DISABLE_ENHANCED_MODE
 	VKFW_NODISCARD Result init();
 	VKFW_NODISCARD Result terminate();
@@ -1692,6 +1952,336 @@ namespace VKFW_NAMESPACE {
 					 static_cast<int>(value));
 		return getError();
 	}
+
+	template<> VKFW_INLINE Result windowHint<WindowHint::VKFW_ENUMERATOR(Resizable), Boolean>(Boolean const &value) {
+		glfwWindowHint(static_cast<int>(WindowHint::VKFW_ENUMERATOR(Resizable)),
+					   static_cast<int>(value));
+		return getError();
+	}
+	template<> VKFW_INLINE Result windowHint<WindowHint::VKFW_ENUMERATOR(Resizable), bool>(bool const &value) {
+		glfwWindowHint(static_cast<int>(WindowHint::VKFW_ENUMERATOR(Resizable)),
+					   static_cast<int>(value));
+		return getError();
+	}
+	template<> VKFW_INLINE Result windowHint<WindowHint::VKFW_ENUMERATOR(Visible), Boolean>(Boolean const &value) {
+		glfwWindowHint(static_cast<int>(WindowHint::VKFW_ENUMERATOR(Visible)),
+					   static_cast<int>(value));
+		return getError();
+	}
+	template<> VKFW_INLINE Result windowHint<WindowHint::VKFW_ENUMERATOR(Visible), bool>(bool const &value) {
+		glfwWindowHint(static_cast<int>(WindowHint::VKFW_ENUMERATOR(Visible)),
+					   static_cast<int>(value));
+		return getError();
+	}
+	template<> VKFW_INLINE Result windowHint<WindowHint::VKFW_ENUMERATOR(Decorated), Boolean>(Boolean const &value) {
+		glfwWindowHint(static_cast<int>(WindowHint::VKFW_ENUMERATOR(Decorated)),
+					   static_cast<int>(value));
+		return getError();
+	}
+	template<> VKFW_INLINE Result windowHint<WindowHint::VKFW_ENUMERATOR(Decorated), bool>(bool const &value) {
+		glfwWindowHint(static_cast<int>(WindowHint::VKFW_ENUMERATOR(Decorated)),
+					   static_cast<int>(value));
+		return getError();
+	}
+	template<> VKFW_INLINE Result windowHint<WindowHint::VKFW_ENUMERATOR(Focused), Boolean>(Boolean const &value) {
+		glfwWindowHint(static_cast<int>(WindowHint::VKFW_ENUMERATOR(Focused)),
+					   static_cast<int>(value));
+		return getError();
+	}
+	template<> VKFW_INLINE Result windowHint<WindowHint::VKFW_ENUMERATOR(Focused), bool>(bool const &value) {
+		glfwWindowHint(static_cast<int>(WindowHint::VKFW_ENUMERATOR(Focused)),
+					   static_cast<int>(value));
+		return getError();
+	}
+	template<> VKFW_INLINE Result windowHint<WindowHint::VKFW_ENUMERATOR(AutoIconify), Boolean>(Boolean const &value) {
+		glfwWindowHint(static_cast<int>(WindowHint::VKFW_ENUMERATOR(AutoIconify)),
+					   static_cast<int>(value));
+		return getError();
+	}
+	template<> VKFW_INLINE Result windowHint<WindowHint::VKFW_ENUMERATOR(AutoIconify), bool>(bool const &value) {
+		glfwWindowHint(static_cast<int>(WindowHint::VKFW_ENUMERATOR(AutoIconify)),
+					   static_cast<int>(value));
+		return getError();
+	}
+	template<> VKFW_INLINE Result windowHint<WindowHint::VKFW_ENUMERATOR(Floating), Boolean>(Boolean const &value) {
+		glfwWindowHint(static_cast<int>(WindowHint::VKFW_ENUMERATOR(Floating)),
+					   static_cast<int>(value));
+		return getError();
+	}
+	template<> VKFW_INLINE Result windowHint<WindowHint::VKFW_ENUMERATOR(Floating), bool>(bool const &value) {
+		glfwWindowHint(static_cast<int>(WindowHint::VKFW_ENUMERATOR(Floating)),
+					   static_cast<int>(value));
+		return getError();
+	}
+	template<> VKFW_INLINE Result windowHint<WindowHint::VKFW_ENUMERATOR(Maximized), Boolean>(Boolean const &value) {
+		glfwWindowHint(static_cast<int>(WindowHint::VKFW_ENUMERATOR(Maximized)),
+					   static_cast<int>(value));
+		return getError();
+	}
+	template<> VKFW_INLINE Result windowHint<WindowHint::VKFW_ENUMERATOR(Maximized), bool>(bool const &value) {
+		glfwWindowHint(static_cast<int>(WindowHint::VKFW_ENUMERATOR(Maximized)),
+					   static_cast<int>(value));
+		return getError();
+	}
+	template<> VKFW_INLINE Result windowHint<WindowHint::VKFW_ENUMERATOR(CenterCursor), Boolean>(Boolean const &value) {
+		glfwWindowHint(static_cast<int>(WindowHint::VKFW_ENUMERATOR(CenterCursor)),
+					   static_cast<int>(value));
+		return getError();
+	}
+	template<> VKFW_INLINE Result windowHint<WindowHint::VKFW_ENUMERATOR(CenterCursor), bool>(bool const &value) {
+		glfwWindowHint(static_cast<int>(WindowHint::VKFW_ENUMERATOR(CenterCursor)),
+					   static_cast<int>(value));
+		return getError();
+	}
+	template<> VKFW_INLINE Result windowHint<WindowHint::VKFW_ENUMERATOR(TransparentFramebuffer), Boolean>(Boolean const &value) {
+		glfwWindowHint(static_cast<int>(WindowHint::VKFW_ENUMERATOR(TransparentFramebuffer)),
+					   static_cast<int>(value));
+		return getError();
+	}
+	template<> VKFW_INLINE Result windowHint<WindowHint::VKFW_ENUMERATOR(TransparentFramebuffer), bool>(bool const &value) {
+		glfwWindowHint(static_cast<int>(WindowHint::VKFW_ENUMERATOR(TransparentFramebuffer)),
+					   static_cast<int>(value));
+		return getError();
+	}
+	template<> VKFW_INLINE Result windowHint<WindowHint::VKFW_ENUMERATOR(FocusOnShow), Boolean>(Boolean const &value) {
+		glfwWindowHint(static_cast<int>(WindowHint::VKFW_ENUMERATOR(FocusOnShow)),
+					   static_cast<int>(value));
+		return getError();
+	}
+	template<> VKFW_INLINE Result windowHint<WindowHint::VKFW_ENUMERATOR(FocusOnShow), bool>(bool const &value) {
+		glfwWindowHint(static_cast<int>(WindowHint::VKFW_ENUMERATOR(FocusOnShow)),
+					   static_cast<int>(value));
+		return getError();
+	}
+	template<> VKFW_INLINE Result windowHint<WindowHint::VKFW_ENUMERATOR(ScaleToMonitor), Boolean>(Boolean const &value) {
+		glfwWindowHint(static_cast<int>(WindowHint::VKFW_ENUMERATOR(ScaleToMonitor)),
+					   static_cast<int>(value));
+		return getError();
+	}
+	template<> VKFW_INLINE Result windowHint<WindowHint::VKFW_ENUMERATOR(ScaleToMonitor), bool>(bool const &value) {
+		glfwWindowHint(static_cast<int>(WindowHint::VKFW_ENUMERATOR(ScaleToMonitor)),
+					   static_cast<int>(value));
+		return getError();
+	}
+	template<> VKFW_INLINE Result windowHint<WindowHint::VKFW_ENUMERATOR(RedBits), unsigned>(unsigned const &value) {
+		glfwWindowHint(static_cast<int>(WindowHint::VKFW_ENUMERATOR(RedBits)),
+					   static_cast<int>(value));
+		return getError();
+	}
+	template<> VKFW_INLINE Result windowHint<WindowHint::VKFW_ENUMERATOR(GreenBits), unsigned>(unsigned const &value) {
+		glfwWindowHint(static_cast<int>(WindowHint::VKFW_ENUMERATOR(GreenBits)),
+					   static_cast<int>(value));
+		return getError();
+	}
+	template<> VKFW_INLINE Result windowHint<WindowHint::VKFW_ENUMERATOR(BlueBits), unsigned>(unsigned const &value) {
+		glfwWindowHint(static_cast<int>(WindowHint::VKFW_ENUMERATOR(BlueBits)),
+					   static_cast<int>(value));
+		return getError();
+	}
+	template<> VKFW_INLINE Result windowHint<WindowHint::VKFW_ENUMERATOR(AlphaBits), unsigned>(unsigned const &value) {
+		glfwWindowHint(static_cast<int>(WindowHint::VKFW_ENUMERATOR(AlphaBits)),
+					   static_cast<int>(value));
+		return getError();
+	}
+	template<> VKFW_INLINE Result windowHint<WindowHint::VKFW_ENUMERATOR(DepthBits), unsigned>(unsigned const &value) {
+		glfwWindowHint(static_cast<int>(WindowHint::VKFW_ENUMERATOR(DepthBits)),
+					   static_cast<int>(value));
+		return getError();
+	}
+	template<> VKFW_INLINE Result windowHint<WindowHint::VKFW_ENUMERATOR(StencilBits), unsigned>(unsigned const &value) {
+		glfwWindowHint(static_cast<int>(WindowHint::VKFW_ENUMERATOR(StencilBits)),
+					   static_cast<int>(value));
+		return getError();
+	}
+	template<> VKFW_INLINE Result windowHint<WindowHint::VKFW_ENUMERATOR(AccumulationRedBits), unsigned>(unsigned const &value) {
+		glfwWindowHint(static_cast<int>(WindowHint::VKFW_ENUMERATOR(AccumulationRedBits)),
+					   static_cast<int>(value));
+		return getError();
+	}
+	template<> VKFW_INLINE Result windowHint<WindowHint::VKFW_ENUMERATOR(AccumulationGreenBits), unsigned>(unsigned const &value) {
+		glfwWindowHint(static_cast<int>(WindowHint::VKFW_ENUMERATOR(AccumulationGreenBits)),
+					   static_cast<int>(value));
+		return getError();
+	}
+	template<> VKFW_INLINE Result windowHint<WindowHint::VKFW_ENUMERATOR(AccumulationBlueBits), unsigned>(unsigned const &value) {
+		glfwWindowHint(static_cast<int>(WindowHint::VKFW_ENUMERATOR(AccumulationBlueBits)),
+					   static_cast<int>(value));
+		return getError();
+	}
+	template<> VKFW_INLINE Result windowHint<WindowHint::VKFW_ENUMERATOR(AccumulationAlphaBits), unsigned>(unsigned const &value) {
+		glfwWindowHint(static_cast<int>(WindowHint::VKFW_ENUMERATOR(AccumulationAlphaBits)),
+					   static_cast<int>(value));
+		return getError();
+	}
+	template<> VKFW_INLINE Result windowHint<WindowHint::VKFW_ENUMERATOR(AuxiliaryBuffers), unsigned>(unsigned const &value) {
+		glfwWindowHint(static_cast<int>(WindowHint::VKFW_ENUMERATOR(AuxiliaryBuffers)),
+					   static_cast<int>(value));
+		return getError();
+	}
+	template<> VKFW_INLINE Result windowHint<WindowHint::VKFW_ENUMERATOR(Samples), unsigned>(unsigned const &value) {
+		glfwWindowHint(static_cast<int>(WindowHint::VKFW_ENUMERATOR(Samples)),
+					   static_cast<int>(value));
+		return getError();
+	}
+	template<> VKFW_INLINE Result windowHint<WindowHint::VKFW_ENUMERATOR(RefreshRate), unsigned>(unsigned const &value) {
+		glfwWindowHint(static_cast<int>(WindowHint::VKFW_ENUMERATOR(RefreshRate)),
+					   static_cast<int>(value));
+		return getError();
+	}
+	template<> VKFW_INLINE Result windowHint<WindowHint::VKFW_ENUMERATOR(StereoscopicRendering), Boolean>(Boolean const &value) {
+		glfwWindowHint(static_cast<int>(WindowHint::VKFW_ENUMERATOR(StereoscopicRendering)),
+					   static_cast<int>(value));
+		return getError();
+	}
+	template<> VKFW_INLINE Result windowHint<WindowHint::VKFW_ENUMERATOR(StereoscopicRendering), bool>(bool const &value) {
+		glfwWindowHint(static_cast<int>(WindowHint::VKFW_ENUMERATOR(StereoscopicRendering)),
+					   static_cast<int>(value));
+		return getError();
+	}
+	template<> VKFW_INLINE Result windowHint<WindowHint::VKFW_ENUMERATOR(SRGBCapable), Boolean>(Boolean const &value) {
+		glfwWindowHint(static_cast<int>(WindowHint::VKFW_ENUMERATOR(SRGBCapable)),
+					   static_cast<int>(value));
+		return getError();
+	}
+	template<> VKFW_INLINE Result windowHint<WindowHint::VKFW_ENUMERATOR(SRGBCapable), bool>(bool const &value) {
+		glfwWindowHint(static_cast<int>(WindowHint::VKFW_ENUMERATOR(SRGBCapable)),
+					   static_cast<int>(value));
+		return getError();
+	}
+	template<> VKFW_INLINE Result windowHint<WindowHint::VKFW_ENUMERATOR(DoubleBuffer), Boolean>(Boolean const &value) {
+		glfwWindowHint(static_cast<int>(WindowHint::VKFW_ENUMERATOR(DoubleBuffer)),
+					   static_cast<int>(value));
+		return getError();
+	}
+	template<> VKFW_INLINE Result windowHint<WindowHint::VKFW_ENUMERATOR(DoubleBuffer), bool>(bool const &value) {
+		glfwWindowHint(static_cast<int>(WindowHint::VKFW_ENUMERATOR(DoubleBuffer)),
+					   static_cast<int>(value));
+		return getError();
+	}
+	template<> VKFW_INLINE Result windowHint<WindowHint::VKFW_ENUMERATOR(ClientAPI), ClientAPI>(ClientAPI const &value) {
+		glfwWindowHint(static_cast<int>(WindowHint::VKFW_ENUMERATOR(ClientAPI)),
+					   static_cast<int>(value));
+		return getError();
+	}
+	template<> VKFW_INLINE Result windowHint<WindowHint::VKFW_ENUMERATOR(ContextCreationAPI), ContextCreationAPI>(ContextCreationAPI const &value) {
+		glfwWindowHint(static_cast<int>(WindowHint::VKFW_ENUMERATOR(ContextCreationAPI)),
+					   static_cast<int>(value));
+		return getError();
+	}
+	template<> VKFW_INLINE Result windowHint<WindowHint::VKFW_ENUMERATOR(ContextVersionMajor), unsigned>(unsigned const &value) {
+		glfwWindowHint(static_cast<int>(WindowHint::VKFW_ENUMERATOR(ContextVersionMajor)),
+					   static_cast<int>(value));
+		return getError();
+	}
+	template<> VKFW_INLINE Result windowHint<WindowHint::VKFW_ENUMERATOR(ContextVersionMinor), unsigned>(unsigned const &value) {
+		glfwWindowHint(static_cast<int>(WindowHint::VKFW_ENUMERATOR(ContextVersionMinor)),
+					   static_cast<int>(value));
+		return getError();
+	}
+	template<> VKFW_INLINE Result windowHint<WindowHint::VKFW_ENUMERATOR(ContextRobustness), ContextRobustness>(ContextRobustness const &value) {
+		glfwWindowHint(static_cast<int>(WindowHint::VKFW_ENUMERATOR(ContextRobustness)),
+					   static_cast<int>(value));
+		return getError();
+	}
+	template<> VKFW_INLINE Result windowHint<WindowHint::VKFW_ENUMERATOR(ContextReleaseBehavior), ContextReleaseBehavior>(ContextReleaseBehavior const &value) {
+		glfwWindowHint(static_cast<int>(WindowHint::VKFW_ENUMERATOR(ContextReleaseBehavior)),
+					   static_cast<int>(value));
+		return getError();
+	}
+	template<> VKFW_INLINE Result windowHint<WindowHint::VKFW_ENUMERATOR(ContextNoError), Boolean>(Boolean const &value) {
+		glfwWindowHint(static_cast<int>(WindowHint::VKFW_ENUMERATOR(ContextNoError)),
+					   static_cast<int>(value));
+		return getError();
+	}
+	template<> VKFW_INLINE Result windowHint<WindowHint::VKFW_ENUMERATOR(ContextNoError), bool>(bool const &value) {
+		glfwWindowHint(static_cast<int>(WindowHint::VKFW_ENUMERATOR(ContextNoError)),
+					   static_cast<int>(value));
+		return getError();
+	}
+	template<> VKFW_INLINE Result windowHint<WindowHint::VKFW_ENUMERATOR(OpenGLForwardCompatibility), Boolean>(Boolean const &value) {
+		glfwWindowHint(static_cast<int>(WindowHint::VKFW_ENUMERATOR(OpenGLForwardCompatibility)),
+					   static_cast<int>(value));
+		return getError();
+	}
+	template<> VKFW_INLINE Result windowHint<WindowHint::VKFW_ENUMERATOR(OpenGLForwardCompatibility), bool>(bool const &value) {
+		glfwWindowHint(static_cast<int>(WindowHint::VKFW_ENUMERATOR(OpenGLForwardCompatibility)),
+					   static_cast<int>(value));
+		return getError();
+	}
+	template<> VKFW_INLINE Result windowHint<WindowHint::VKFW_ENUMERATOR(OpenGLDebugContext), Boolean>(Boolean const &value) {
+		glfwWindowHint(static_cast<int>(WindowHint::VKFW_ENUMERATOR(OpenGLDebugContext)),
+					   static_cast<int>(value));
+		return getError();
+	}
+	template<> VKFW_INLINE Result windowHint<WindowHint::VKFW_ENUMERATOR(OpenGLDebugContext), bool>(bool const &value) {
+		glfwWindowHint(static_cast<int>(WindowHint::VKFW_ENUMERATOR(OpenGLDebugContext)),
+					   static_cast<int>(value));
+		return getError();
+	}
+	template<> VKFW_INLINE Result windowHint<WindowHint::VKFW_ENUMERATOR(OpenGLProfile), OpenGLProfile>(OpenGLProfile const &value) {
+		glfwWindowHint(static_cast<int>(WindowHint::VKFW_ENUMERATOR(OpenGLProfile)),
+					   static_cast<int>(value));
+		return getError();
+	}
+	template<> VKFW_INLINE Result windowHint<WindowHint::VKFW_ENUMERATOR(CocoaRetinaFramebuffer), Boolean>(Boolean const &value) {
+		glfwWindowHint(static_cast<int>(WindowHint::VKFW_ENUMERATOR(CocoaRetinaFramebuffer)),
+					   static_cast<int>(value));
+		return getError();
+	}
+	template<> VKFW_INLINE Result windowHint<WindowHint::VKFW_ENUMERATOR(CocoaRetinaFramebuffer), bool>(bool const &value) {
+		glfwWindowHint(static_cast<int>(WindowHint::VKFW_ENUMERATOR(CocoaRetinaFramebuffer)),
+					   static_cast<int>(value));
+		return getError();
+	}
+#ifdef VKFW_HAS_STRING_VIEW
+	template<> VKFW_INLINE Result windowHint<WindowHint::VKFW_ENUMERATOR(CocoaFrameName), std::string_view>(std::string_view const &value) {
+		glfwWindowHintString(static_cast<int>(WindowHint::VKFW_ENUMERATOR(CocoaFrameName)),
+							 value.data());
+		return getError();
+	}
+#else
+	template<> VKFW_INLINE Result windowHint<WindowHint::VKFW_ENUMERATOR(CocoaFrameName), std::string>(std::string const &value) {
+		glfwWindowHintString(static_cast<int>(WindowHint::VKFW_ENUMERATOR(CocoaFrameName)),
+							 value.c_str());
+		return getError();
+	}
+#endif
+	template<> VKFW_INLINE Result windowHint<WindowHint::VKFW_ENUMERATOR(CocoaGraphicsSwitching), Boolean>(Boolean const &value) {
+		glfwWindowHint(static_cast<int>(WindowHint::VKFW_ENUMERATOR(CocoaGraphicsSwitching)),
+					   static_cast<int>(value));
+		return getError();
+	}
+	template<> VKFW_INLINE Result windowHint<WindowHint::VKFW_ENUMERATOR(CocoaGraphicsSwitching), bool>(bool const &value) {
+		glfwWindowHint(static_cast<int>(WindowHint::VKFW_ENUMERATOR(CocoaGraphicsSwitching)),
+					   static_cast<int>(value));
+		return getError();
+	}
+#ifdef VKFW_HAS_STRING_VIEW
+	template<> VKFW_INLINE Result windowHint<WindowHint::VKFW_ENUMERATOR(X11ClassName), std::string_view>(std::string_view const &value) {
+		glfwWindowHintString(static_cast<int>(WindowHint::VKFW_ENUMERATOR(X11ClassName)),
+							 value.data());
+		return getError();
+	}
+#else
+	template<> VKFW_INLINE Result windowHint<WindowHint::VKFW_ENUMERATOR(X11ClassName), std::string>(std::string const &value) {
+		glfwWindowHintString(static_cast<int>(WindowHint::VKFW_ENUMERATOR(X11ClassName)),
+							 value.c_str());
+		return getError();
+	}
+#endif
+#ifdef VKFW_HAS_STRING_VIEW
+	template<> VKFW_INLINE Result windowHint<WindowHint::VKFW_ENUMERATOR(X11InstanceName), std::string_view>(std::string_view const &value) {
+		glfwWindowHintString(static_cast<int>(WindowHint::VKFW_ENUMERATOR(X11InstanceName)),
+							 value.data());
+		return getError();
+	}
+#else
+	template<> VKFW_INLINE Result windowHint<WindowHint::VKFW_ENUMERATOR(X11InstanceName), std::string>(std::string const &value) {
+		glfwWindowHintString(static_cast<int>(WindowHint::VKFW_ENUMERATOR(X11InstanceName)),
+							 value.c_str());
+		return getError();
+	}
+#endif
 
 #ifdef VKFW_DISABLE_ENHANCED_MODE
 	VKFW_NODISCARD VKFW_INLINE Result init() {
