@@ -1567,6 +1567,59 @@ namespace VKFW_NAMESPACE {
 		> VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type
 			set(typename AttributeTraits<attribute>::type const &new_value) const;
 
+
+		VKFW_INLINE GLFWwindowposfun setPosCallback(GLFWwindowposfun callback) {
+			return glfwSetWindowPosCallback(m_window, callback);
+		}
+		VKFW_INLINE GLFWwindowsizefun setSizeCallback(GLFWwindowsizefun callback) {
+			return glfwSetWindowSizeCallback(m_window, callback);
+		}
+		VKFW_INLINE GLFWwindowclosefun setCloseCallback(GLFWwindowclosefun callback) {
+			return glfwSetWindowCloseCallback(m_window, callback);
+		}
+		VKFW_INLINE GLFWwindowrefreshfun setRefreshCallback(GLFWwindowrefreshfun callback) {
+			return glfwSetWindowRefreshCallback(m_window, callback);
+		}
+		VKFW_INLINE GLFWwindowfocusfun setFocusCallback(GLFWwindowfocusfun callback) {
+			return glfwSetWindowFocusCallback(m_window, callback);
+		}
+		VKFW_INLINE GLFWwindowiconifyfun setIconifyCallback(GLFWwindowiconifyfun callback) {
+			return glfwSetWindowIconifyCallback(m_window, callback);
+		}
+		VKFW_INLINE GLFWwindowmaximizefun setMaximizeCallback(GLFWwindowmaximizefun callback) {
+			return glfwSetWindowMaximizeCallback(m_window, callback);
+		}
+		VKFW_INLINE GLFWframebuffersizefun setFramebufferSizeCallback(GLFWframebuffersizefun callback) {
+			return glfwSetFramebufferSizeCallback(m_window, callback);
+		}
+		VKFW_INLINE GLFWwindowcontentscalefun setContentScaleCallback(GLFWwindowcontentscalefun callback) {
+			return glfwSetWindowContentScaleCallback(m_window, callback);
+		}
+		VKFW_INLINE GLFWkeyfun setKeyCallback(GLFWkeyfun callback) {
+			return glfwSetKeyCallback(m_window, callback);
+		}
+		VKFW_INLINE GLFWcharfun setCharCallback(GLFWcharfun callback) {
+			return glfwSetCharCallback(m_window, callback);
+		}
+		VKFW_INLINE GLFWcharmodsfun setCharModsCallback(GLFWcharmodsfun callback) {
+			return glfwSetCharModsCallback(m_window, callback);
+		}
+		VKFW_INLINE GLFWmousebuttonfun setMouseButtonCallback(GLFWmousebuttonfun callback) {
+			return glfwSetMouseButtonCallback(m_window, callback);
+		}
+		VKFW_INLINE GLFWcursorposfun setCursorPosCallback(GLFWcursorposfun callback) {
+			return glfwSetCursorPosCallback(m_window, callback);
+		}
+		VKFW_INLINE GLFWcursorenterfun setCursorEnterCallback(GLFWcursorenterfun callback) {
+			return glfwSetCursorEnterCallback(m_window, callback);
+		}
+		VKFW_INLINE GLFWscrollfun setScrollCallback(GLFWscrollfun callback) {
+			return glfwSetScrollCallback(m_window, callback);
+		}
+		VKFW_INLINE GLFWdropfun setDropCallback(GLFWdropfun callback) {
+			return glfwSetDropCallback(m_window, callback);
+		}
+
 	private:
 		GLFWwindow *m_window;
 	};
@@ -1612,9 +1665,6 @@ namespace VKFW_NAMESPACE {
 
 	VKFW_INLINE Result getError(char const **description = nullptr) {
 		return static_cast<Result>(glfwGetError(description));
-	}
-	VKFW_INLINE GLFWerrorfun setErrorCallback(GLFWerrorfun callback) {
-		return glfwSetErrorCallback(callback);
 	}
 
 	template <InitializationHint hint>
@@ -2076,19 +2126,66 @@ namespace VKFW_NAMESPACE {
 	}
 #endif
 
+
+	VKFW_INLINE GLFWerrorfun setErrorCallback(GLFWerrorfun callback) {
+		return glfwSetErrorCallback(callback);
+	}
+	VKFW_INLINE GLFWwindowposfun setWindowPosCallback(GLFWwindow *window, GLFWwindowposfun callback) {
+		return glfwSetWindowPosCallback(window, callback);
+	}
+	VKFW_INLINE GLFWwindowsizefun setWindowSizeCallback(GLFWwindow *window, GLFWwindowsizefun callback) {
+		return glfwSetWindowSizeCallback(window, callback);
+	}
+	VKFW_INLINE GLFWwindowclosefun setWindowCloseCallback(GLFWwindow *window, GLFWwindowclosefun callback) {
+		return glfwSetWindowCloseCallback(window, callback);
+	}
+	VKFW_INLINE GLFWwindowrefreshfun setWindowRefreshCallback(GLFWwindow *window, GLFWwindowrefreshfun callback) {
+		return glfwSetWindowRefreshCallback(window, callback);
+	}
+	VKFW_INLINE GLFWwindowfocusfun setWindowFocusCallback(GLFWwindow *window, GLFWwindowfocusfun callback) {
+		return glfwSetWindowFocusCallback(window, callback);
+	}
+	VKFW_INLINE GLFWwindowiconifyfun setWindowIconifyCallback(GLFWwindow *window, GLFWwindowiconifyfun callback) {
+		return glfwSetWindowIconifyCallback(window, callback);
+	}
+	VKFW_INLINE GLFWwindowmaximizefun setWindowMaximizeCallback(GLFWwindow *window, GLFWwindowmaximizefun callback) {
+		return glfwSetWindowMaximizeCallback(window, callback);
+	}
+	VKFW_INLINE GLFWframebuffersizefun setFramebufferSizeCallback(GLFWwindow *window, GLFWframebuffersizefun callback) {
+		return glfwSetFramebufferSizeCallback(window, callback);
+	}
+	VKFW_INLINE GLFWwindowcontentscalefun setWindowContentScaleCallback(GLFWwindow *window, GLFWwindowcontentscalefun callback) {
+		return glfwSetWindowContentScaleCallback(window, callback);
+	}
+	VKFW_INLINE GLFWkeyfun setKeyCallback(GLFWwindow *window, GLFWkeyfun callback) {
+		return glfwSetKeyCallback(window, callback);
+	}
+	VKFW_INLINE GLFWcharfun setCharCallback(GLFWwindow *window, GLFWcharfun callback) {
+		return glfwSetCharCallback(window, callback);
+	}
+	VKFW_INLINE GLFWcharmodsfun setCharModsCallback(GLFWwindow *window, GLFWcharmodsfun callback) {
+		return glfwSetCharModsCallback(window, callback);
+	}
+	VKFW_INLINE GLFWmousebuttonfun setMouseButtonCallback(GLFWwindow *window, GLFWmousebuttonfun callback) {
+		return glfwSetMouseButtonCallback(window, callback);
+	}
+	VKFW_INLINE GLFWcursorposfun setCursorPosCallback(GLFWwindow *window, GLFWcursorposfun callback) {
+		return glfwSetCursorPosCallback(window, callback);
+	}
+	VKFW_INLINE GLFWcursorenterfun setCursorEnterCallback(GLFWwindow *window, GLFWcursorenterfun callback) {
+		return glfwSetCursorEnterCallback(window, callback);
+	}
+	VKFW_INLINE GLFWscrollfun setScrollCallback(GLFWwindow *window, GLFWscrollfun callback) {
+		return glfwSetScrollCallback(window, callback);
+	}
+	VKFW_INLINE GLFWdropfun setDropCallback(GLFWwindow *window, GLFWdropfun callback) {
+		return glfwSetDropCallback(window, callback);
+	}
+
 	// To be implemented
 	// void glfwSetWindowIcon(GLFWwindow *window, int count, GLFWimage const *images);
 	// void glfwSetWindowUserPointer(GLFWwindow *window, void *pointer);
 	// void *glfwGetWindowUserPointer(GLFWwindow *window);
-	// GLFWwindowposfun glfwSetWindowPosCallback(GLFWwindow *window, GLFWwindowposfun callback);
-	// GLFWwindowsizefun glfwSetWindowSizeCallback(GLFWwindow *window, GLFWwindowsizefun callback);
-	// GLFWwindowclosefun glfwSetWindowCloseCallback(GLFWwindow *window, GLFWwindowclosefun callback);
-	// GLFWwindowrefreshfun glfwSetWindowRefreshCallback(GLFWwindow *window, GLFWwindowrefreshfun callback);
-	// GLFWwindowfocusfun glfwSetWindowFocusCallback(GLFWwindow *window, GLFWwindowfocusfun callback);
-	// GLFWwindowiconifyfun glfwSetWindowIconifyCallback(GLFWwindow *window, GLFWwindowiconifyfun callback);
-	// GLFWwindowmaximizefun glfwSetWindowMaximizeCallback(GLFWwindow *window, GLFWwindowmaximizefun callback);
-	// GLFWframebuffersizefun glfwSetFramebufferSizeCallback(GLFWwindow *window, GLFWframebuffersizefun callback);
-	// GLFWwindowcontentscalefun glfwSetWindowContentScaleCallback(GLFWwindow *window, GLFWwindowcontentscalefun callback);
 	// void glfwPollEvents(void);
 	// void glfwWaitEvents(void);
 	// void glfwWaitEventsTimeout(double timeout);
@@ -2106,14 +2203,6 @@ namespace VKFW_NAMESPACE {
 	// GLFWcursor *glfwCreateStandardCursor(int shape);
 	// void glfwDestroyCursor(GLFWcursor *cursor);
 	// void glfwSetCursor(GLFWwindow *window, GLFWcursor *cursor);
-	// GLFWkeyfun glfwSetKeyCallback(GLFWwindow *window, GLFWkeyfun callback);
-	// GLFWcharfun glfwSetCharCallback(GLFWwindow *window, GLFWcharfun callback);
-	// GLFWcharmodsfun glfwSetCharModsCallback(GLFWwindow *window, GLFWcharmodsfun callback);
-	// GLFWmousebuttonfun glfwSetMouseButtonCallback(GLFWwindow *window, GLFWmousebuttonfun callback);
-	// GLFWcursorposfun glfwSetCursorPosCallback(GLFWwindow *window, GLFWcursorposfun callback);
-	// GLFWcursorenterfun glfwSetCursorEnterCallback(GLFWwindow *window, GLFWcursorenterfun callback);
-	// GLFWscrollfun glfwSetScrollCallback(GLFWwindow *window, GLFWscrollfun callback);
-	// GLFWdropfun glfwSetDropCallback(GLFWwindow *window, GLFWdropfun callback);
 
 	// To be implemented
 	// int glfwJoystickPresent(int jid);
