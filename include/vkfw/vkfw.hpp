@@ -58,6 +58,7 @@
 #include <string>
 #include <system_error>
 #include <tuple>
+#include <vector>
 
 #include <GLFW/glfw3.h>
 //#ifndef VKFW_NO_INCLUDE_VULKAN_HPP
@@ -85,7 +86,10 @@
 # include <algorithm>
 # include <iterator>
 # include <memory>
-# include <vector>
+#endif
+
+#ifndef VKFW_NO_STD_FUNCTION_CALLBACKS
+# include <functional>
 #endif
 
 #ifndef VKFW_ASSERT
@@ -1277,6 +1281,9 @@ namespace VKFW_NAMESPACE {
 		void destroy(T &t) { static_assert("Cannot delete an object without a specified deleter."); }
 	};
 #endif
+#ifndef VKFW_NO_STD_FUNCTION_CALLBACKS
+	struct DynamicCallbackStorage;
+#endif
 
 	struct Nullopt {};
 	VKFW_CONSTEXPR Nullopt nullopt = {};
@@ -1567,7 +1574,7 @@ namespace VKFW_NAMESPACE {
 		> VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type
 			set(typename AttributeTraits<attribute>::type const &new_value) const;
 
-
+# ifdef VKFW_NO_STD_FUNCTION_CALLBACKS
 		VKFW_INLINE GLFWwindowposfun setPosCallback(GLFWwindowposfun callback) {
 			return glfwSetWindowPosCallback(m_window, callback);
 		}
@@ -1619,6 +1626,14 @@ namespace VKFW_NAMESPACE {
 		VKFW_INLINE GLFWdropfun setDropCallback(GLFWdropfun callback) {
 			return glfwSetDropCallback(m_window, callback);
 		}
+# else
+		VKFW_NODISCARD VKFW_INLINE DynamicCallbackStorage *callbacks() const {
+			return reinterpret_cast<DynamicCallbackStorage *>(glfwGetWindowUserPointer(m_window));
+		}
+# endif
+		VKFW_NODISCARD typename ResultValueType<void *>::type getUserPointer() const;
+		VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type 
+			setUserPointer(void *pointer) const;
 
 	private:
 		GLFWwindow *m_window;
@@ -1665,6 +1680,9 @@ namespace VKFW_NAMESPACE {
 
 	VKFW_INLINE Result getError(char const **description = nullptr) {
 		return static_cast<Result>(glfwGetError(description));
+	}
+	VKFW_INLINE GLFWerrorfun setErrorCallback(GLFWerrorfun callback) {
+		return glfwSetErrorCallback(callback);
 	}
 
 	template <InitializationHint hint>
@@ -2124,12 +2142,7 @@ namespace VKFW_NAMESPACE {
 	set(GLFWwindow *window, typename AttributeTraits<attribute>::type const &new_value) {
 		return setWindowAttribute<attribute>(window, new_value);
 	}
-#endif
-
-
-	VKFW_INLINE GLFWerrorfun setErrorCallback(GLFWerrorfun callback) {
-		return glfwSetErrorCallback(callback);
-	}
+# ifdef VKFW_NO_STD_FUNCTION_CALLBACKS
 	VKFW_INLINE GLFWwindowposfun setWindowPosCallback(GLFWwindow *window, GLFWwindowposfun callback) {
 		return glfwSetWindowPosCallback(window, callback);
 	}
@@ -2181,11 +2194,18 @@ namespace VKFW_NAMESPACE {
 	VKFW_INLINE GLFWdropfun setDropCallback(GLFWwindow *window, GLFWdropfun callback) {
 		return glfwSetDropCallback(window, callback);
 	}
+# else
+	VKFW_NODISCARD VKFW_INLINE DynamicCallbackStorage *accessWindowCallbacks(GLFWwindow *window) {
+		return reinterpret_cast<DynamicCallbackStorage *>(glfwGetWindowUserPointer(window));
+	}
+# endif
+	VKFW_NODISCARD typename ResultValueType<void *>::type getWindowUserPointer(GLFWwindow *window);
+	VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type
+		setWindowUserPointer(GLFWwindow *window, void *pointer);
+#endif
 
 	// To be implemented
 	// void glfwSetWindowIcon(GLFWwindow *window, int count, GLFWimage const *images);
-	// void glfwSetWindowUserPointer(GLFWwindow *window, void *pointer);
-	// void *glfwGetWindowUserPointer(GLFWwindow *window);
 	// void glfwPollEvents(void);
 	// void glfwWaitEvents(void);
 	// void glfwWaitEventsTimeout(double timeout);
@@ -2239,6 +2259,45 @@ namespace VKFW_NAMESPACE {
 	// VkResult glfwCreateWindowSurface(VkInstance instance, GLFWwindow *window, VkAllocationCallbacks const *allocator, VkSurfaceKHR *surface);
 }
 
+#ifndef VKFW_NO_STD_FUNCTION_CALLBACKS
+namespace VKFW_NAMESPACE {
+	struct DynamicCallbackStorage {
+#ifdef VKFW_DISABLE_ENHANCED_MODE
+		friend void *VKFW_NAMESPACE::getWindowUserPointer(GLFWwindow *window);
+		friend void VKFW_NAMESPACE::setWindowUserPointer(GLFWwindow *window, void *pointer);
+		using window_type = GLFWwindow *;
+#else
+		friend class Window;
+		using window_type = Window const &;
+#endif
+	private:
+		void *user_ptr = nullptr;
+	public:
+		std::function<void(window_type, int, int)> on_window_move;
+		std::function<void(window_type, size_t, size_t)> on_window_resize;
+		std::function<void(window_type)> on_window_close;
+		std::function<void(window_type)> on_window_refresh;
+		std::function<void(window_type, bool)> on_window_focus;
+		std::function<void(window_type, bool)> on_window_iconify;
+		std::function<void(window_type, bool)> on_window_maximize;
+		std::function<void(window_type, size_t, size_t)> on_framebuffer_resize;
+		std::function<void(window_type, float, float)> on_window_content_scale_change;
+		std::function<void(window_type, MouseButton, MouseButtonAction, ModifierKeyFlags)> 
+			on_mouse_button;
+		std::function<void(window_type, double, double)> on_cursor_move;
+		std::function<void(window_type, bool)> on_cursor_enter;
+		std::function<void(window_type, double, double)> on_scroll;
+		std::function<void(window_type, Key, int32_t, KeyAction, ModifierKeyFlags)> on_key;
+		std::function<void(window_type, uint32_t)> on_character;
+# ifdef VKFW_HAS_STRING_VIEW
+		std::function<void(window_type, std::vector<std::string_view>)> on_drop;
+# else
+		std::function<void(window_type, std::vector<char const *>)> on_drop;
+# endif
+	};
+}
+#endif
+
 template <> struct VULKAN_HPP_NAMESPACE::FlagTraits<VKFW_NAMESPACE::ModifierKeyBits> {
 	enum : VkFlags {
 		allFlags = VkFlags(VKFW_NAMESPACE::ModifierKeyBits::VKFW_ENUMERATOR(Shift))
@@ -2287,6 +2346,10 @@ namespace VKFW_NAMESPACE {
 	}
 	VKFW_NODISCARD_WHEN_NO_EXCEPTIONS VKFW_INLINE typename ResultValueType<void>::type Window::destroy() {
 		if (m_window) {
+# ifndef VKFW_NO_STD_FUNCTION_CALLBACKS
+			auto *ptr = reinterpret_cast<DynamicCallbackStorage*>(glfwGetWindowUserPointer(m_window));
+			if (ptr) delete ptr;
+# endif
 			glfwDestroyWindow(m_window);
 			m_window = nullptr;
 			return createResultValue(getError(), VKFW_NAMESPACE_STRING"::Window::destroy");
@@ -2771,6 +2834,105 @@ namespace VKFW_NAMESPACE {
 		return getError();
 	}
 #else
+	VKFW_INLINE void setup_DynamicCallbackStorage(GLFWwindow *window_ptr) {
+		if (window_ptr) {
+			glfwSetWindowUserPointer(window_ptr, new DynamicCallbackStorage{});
+			glfwSetWindowPosCallback(window_ptr, [](GLFWwindow *window, int xpos, int ypos) {
+				auto *ptr = reinterpret_cast<DynamicCallbackStorage *>(glfwGetWindowUserPointer(window));
+				if (ptr && ptr->on_window_move) 
+					ptr->on_window_move(window, xpos, ypos);
+			});
+			glfwSetWindowSizeCallback(window_ptr, [](GLFWwindow *window, int width, int height) {
+				auto *ptr = reinterpret_cast<DynamicCallbackStorage *>(glfwGetWindowUserPointer(window));
+				if (ptr && ptr->on_window_resize) 
+					ptr->on_window_resize(window, static_cast<size_t>(width), static_cast<size_t>(height));
+			});
+			glfwSetWindowCloseCallback(window_ptr, [](GLFWwindow *window) {
+				auto *ptr = reinterpret_cast<DynamicCallbackStorage *>(glfwGetWindowUserPointer(window));
+				if (ptr && ptr->on_window_close) 
+					ptr->on_window_close(window);
+			});
+			glfwSetWindowRefreshCallback(window_ptr, [](GLFWwindow *window) {
+				auto *ptr = reinterpret_cast<DynamicCallbackStorage *>(glfwGetWindowUserPointer(window));
+				if (ptr && ptr->on_window_refresh) 
+					ptr->on_window_refresh(window);
+			});
+			glfwSetWindowFocusCallback(window_ptr, [](GLFWwindow *window, int focused) {
+				auto *ptr = reinterpret_cast<DynamicCallbackStorage *>(glfwGetWindowUserPointer(window));
+				if (ptr && ptr->on_window_focus) 
+					ptr->on_window_focus(window, static_cast<bool>(focused));
+			});
+			glfwSetWindowIconifyCallback(window_ptr, [](GLFWwindow *window, int iconified) {
+				auto *ptr = reinterpret_cast<DynamicCallbackStorage *>(glfwGetWindowUserPointer(window));
+				if (ptr && ptr->on_window_iconify) 
+					ptr->on_window_iconify(window, static_cast<bool>(iconified));
+			});
+			glfwSetWindowMaximizeCallback(window_ptr, [](GLFWwindow *window, int maximized) {
+				auto *ptr = reinterpret_cast<DynamicCallbackStorage *>(glfwGetWindowUserPointer(window));
+				if (ptr && ptr->on_window_maximize) 
+					ptr->on_window_maximize(window, static_cast<bool>(maximized));
+			});
+			glfwSetFramebufferSizeCallback(window_ptr, [](GLFWwindow *window, int width, int height) {
+				auto *ptr = reinterpret_cast<DynamicCallbackStorage *>(glfwGetWindowUserPointer(window));
+				if (ptr && ptr->on_framebuffer_resize)
+					ptr->on_framebuffer_resize(window, static_cast<size_t>(width), 
+											   static_cast<size_t>(height));
+			});
+			glfwSetWindowContentScaleCallback(window_ptr, [](GLFWwindow *window, float xscale, float yscale) {
+				auto *ptr = reinterpret_cast<DynamicCallbackStorage *>(glfwGetWindowUserPointer(window));
+				if (ptr && ptr->on_window_content_scale_change)
+					ptr->on_window_content_scale_change(window, xscale, yscale);
+			});
+			glfwSetMouseButtonCallback(window_ptr, [](GLFWwindow *window, int button, int action, int mods) {
+				auto *ptr = reinterpret_cast<DynamicCallbackStorage *>(glfwGetWindowUserPointer(window));
+				if (ptr && ptr->on_mouse_button)
+					ptr->on_mouse_button(window, static_cast<MouseButton>(button), 
+										 static_cast<MouseButtonAction>(action),
+										 static_cast<ModifierKeyFlags>(mods));
+			});
+			glfwSetCursorPosCallback(window_ptr, [](GLFWwindow *window, double xpos, double ypos) {
+				auto *ptr = reinterpret_cast<DynamicCallbackStorage *>(glfwGetWindowUserPointer(window));
+				if (ptr && ptr->on_cursor_move)
+					ptr->on_cursor_move(window, xpos, ypos);
+			});
+			glfwSetCursorEnterCallback(window_ptr, [](GLFWwindow *window, int entered) {
+				auto *ptr = reinterpret_cast<DynamicCallbackStorage *>(glfwGetWindowUserPointer(window));
+				if (ptr && ptr->on_cursor_enter)
+					ptr->on_cursor_enter(window, static_cast<bool>(entered));
+			});
+			glfwSetScrollCallback(window_ptr, [](GLFWwindow *window, double xoffset, double yoffset) {
+				auto *ptr = reinterpret_cast<DynamicCallbackStorage *>(glfwGetWindowUserPointer(window));
+				if (ptr && ptr->on_scroll)
+					ptr->on_scroll(window, xoffset, yoffset);
+			});
+			glfwSetKeyCallback(window_ptr, [](GLFWwindow *window, int key, int scancode, int action, int mods) {
+				auto *ptr = reinterpret_cast<DynamicCallbackStorage *>(glfwGetWindowUserPointer(window));
+				if (ptr && ptr->on_key)
+					ptr->on_key(window, static_cast<Key>(key), scancode,
+								static_cast<KeyAction>(action),
+								static_cast<ModifierKeyFlags>(mods));
+			});
+			glfwSetCharCallback(window_ptr, [](GLFWwindow *window, unsigned int codepoint) {
+				auto *ptr = reinterpret_cast<DynamicCallbackStorage *>(glfwGetWindowUserPointer(window));
+				if (ptr && ptr->on_character)
+					ptr->on_character(window, codepoint);
+			});
+			glfwSetDropCallback(window_ptr, [](GLFWwindow *window, int path_count, char const *paths[]) {
+				auto *ptr = reinterpret_cast<DynamicCallbackStorage *>(glfwGetWindowUserPointer(window));
+				if (ptr && ptr->on_drop) {
+#   ifdef VKFW_HAS_STRING_VIEW
+					std::vector<std::string_view> output;
+					output.reserve(path_count);
+					std::transform(paths, paths + path_count, std::back_inserter(output),
+								   [](char const *path) { return std::string_view{ path }; });
+					ptr->on_drop(window, std::move(output));
+#   else
+					ptr->on_drop(window, std::vector<char const *>(paths, paths + path_count));
+#   endif
+				}
+			});
+		}
+	}
 	VKFW_NODISCARD VKFW_INLINE typename ResultValueType<Window>::type
 	createWindow(size_t width, size_t height, char const *title, WindowHints hints,
 				 Monitor monitor, Window share, bool reset_hints) {
@@ -2786,6 +2948,9 @@ namespace VKFW_NAMESPACE {
 
 		output = glfwCreateWindow(static_cast<int>(width), static_cast<int>(height),
 								  title, monitor, share);
+# ifndef VKFW_NO_STD_FUNCTION_CALLBACKS
+		setup_DynamicCallbackStorage(output);
+# endif
 		return createResultValue(getError(), output, VKFW_NAMESPACE_STRING"::createWindow");
 	}
 # ifndef VKFW_NO_SMART_HANDLE
@@ -2804,6 +2969,9 @@ namespace VKFW_NAMESPACE {
 
 		output = glfwCreateWindow(static_cast<int>(width), static_cast<int>(height),
 								  title, monitor, share);
+# ifndef VKFW_NO_STD_FUNCTION_CALLBACKS
+		setup_DynamicCallbackStorage(output);
+# endif
 		return createResultValueUnique(getError(), output, VKFW_NAMESPACE_STRING"::createWindowUnique");
 	}
 # endif
@@ -2947,6 +3115,24 @@ namespace VKFW_NAMESPACE {
 		glfwSetWindowAttrib(window, static_cast<int>(attribute), static_cast<int>(new_value));
 		return createResultValue(getError(), VKFW_NAMESPACE_STRING"::setWindowAttribute");
 	}
+
+	VKFW_NODISCARD VKFW_INLINE void *getWindowUserPointer(GLFWwindow *window) {
+# ifdef VKFW_NO_STD_FUNCTION_CALLBACKS
+		return glfwGetWindowUserPointer(window);
+# else
+		return accessWindowCallbacks(window)->user_ptr;
+# endif
+	}
+
+	VKFW_NODISCARD_WHEN_NO_EXCEPTIONS VKFW_INLINE typename ResultValueType<void>::type
+	setWindowUserPointer(GLFWwindow *window, void *pointer) {
+# ifdef VKFW_NO_STD_FUNCTION_CALLBACKS
+		glfwSetWindowUserPointer(m_window, ptr);
+# else
+		accessWindowCallbacks(window)->user_ptr = pointer;
+# endif
+	}
+
 #else
 	VKFW_NODISCARD VKFW_INLINE typename ResultValueType<bool>::type Window::shouldClose() const {
 		auto output = static_cast<bool>(glfwWindowShouldClose(m_window));
@@ -3349,6 +3535,27 @@ namespace VKFW_NAMESPACE {
 	Window::set(typename AttributeTraits<attribute>::type const &new_value) const {
 		glfwSetWindowAttrib(m_window, static_cast<int>(attribute), static_cast<int>(new_value));
 		return createResultValue(getError(), VKFW_NAMESPACE_STRING"::Window::set");
+	}
+
+	VKFW_NODISCARD VKFW_INLINE typename ResultValueType<void *>::type 
+	Window::getUserPointer() const {
+# ifdef VKFW_NO_STD_FUNCTION_CALLBACKS
+		auto *output = glfwGetWindowUserPointer(m_window);
+		return createResultValue(getError(), output, VKFW_NAMESPACE_STRING"::Window::getUserPointer");
+# else
+		auto *output = callbacks()->user_ptr;
+		return createResultValue(getError(), output, VKFW_NAMESPACE_STRING"::Window::getUserPointer");
+# endif
+	}
+	VKFW_NODISCARD_WHEN_NO_EXCEPTIONS VKFW_INLINE typename ResultValueType<void>::type
+	Window::setUserPointer(void *pointer) const {
+# ifdef VKFW_NO_STD_FUNCTION_CALLBACKS
+		glfwSetWindowUserPointer(m_window, ptr);
+		return createResultValue(getError(), VKFW_NAMESPACE_STRING"::Window::setUserPointer");
+# else
+		callbacks()->user_ptr = pointer;
+		return createResultValue(getError(), VKFW_NAMESPACE_STRING"::Window::setUserPointer");
+# endif
 	}
 #endif
 }
