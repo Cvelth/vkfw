@@ -84,6 +84,7 @@
 # endif
 #else
 # include <algorithm>
+# include <chrono>
 # include <iterator>
 # include <memory>
 #endif
@@ -541,14 +542,14 @@ namespace VKFW_NAMESPACE {
 		VKFW_ENUMERATOR(Core) = GLFW_OPENGL_CORE_PROFILE,
 		VKFW_ENUMERATOR(Compatibility) = GLFW_OPENGL_COMPAT_PROFILE
 	};
-	enum class Unknown {
+	enum class InputMode {
 		VKFW_ENUMERATOR(Cursor) = GLFW_CURSOR,
 		VKFW_ENUMERATOR(StickyKeys) = GLFW_STICKY_KEYS,
 		VKFW_ENUMERATOR(StickyMouseButtons) = GLFW_STICKY_MOUSE_BUTTONS,
 		VKFW_ENUMERATOR(LockKeyModifiers) = GLFW_LOCK_KEY_MODS,
 		VKFW_ENUMERATOR(RawMouseMotion) = GLFW_RAW_MOUSE_MOTION
 	};
-	enum class CursorVisibility {
+	enum class CursorMode {
 		VKFW_ENUMERATOR(Normal) = GLFW_CURSOR_NORMAL,
 		VKFW_ENUMERATOR(Hidden) = GLFW_CURSOR_HIDDEN,
 		VKFW_ENUMERATOR(Disabled) = GLFW_CURSOR_DISABLED
@@ -1034,6 +1035,18 @@ namespace VKFW_NAMESPACE {
 		: std::false_type { using type = bool; };
 	template<> struct AttributeTraits<Attribute::VKFW_ENUMERATOR(ContextCreationAPI)>
 		: std::false_type { using type = ContextCreationAPI; };
+		
+	template <InputMode mode> struct InputModeTraits;
+	template<> struct InputModeTraits<InputMode::VKFW_ENUMERATOR(Cursor)>
+		{ using type = CursorMode; };
+	template<> struct InputModeTraits<InputMode::VKFW_ENUMERATOR(StickyKeys)>
+		{ using type = bool; };
+	template<> struct InputModeTraits<InputMode::VKFW_ENUMERATOR(StickyMouseButtons)>
+		{ using type = bool; };
+	template<> struct InputModeTraits<InputMode::VKFW_ENUMERATOR(LockKeyModifiers)>
+		{ using type = bool; };
+	template<> struct InputModeTraits<InputMode::VKFW_ENUMERATOR(RawMouseMotion)>
+		{ using type = bool; };
 #endif
 }
 
@@ -1565,6 +1578,15 @@ namespace VKFW_NAMESPACE {
 			setMonitor(Monitor const &monitor, std::tuple<int, int> pos,
 					   std::tuple<size_t, size_t> size, size_t refreshRate);
 
+# ifdef VKFW_HAS_SPAN
+		VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type
+			setIcon(std::span<GLFWimage> images);
+# endif
+		VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type
+			setIcon(std::vector<GLFWimage> images);
+		VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type
+			setIcon(size_t image_count, GLFWimage *images);
+
 		template <Attribute attribute>
 		VKFW_NODISCARD typename ResultValueType<typename AttributeTraits<attribute>::type>::type
 			get() const;
@@ -1573,6 +1595,14 @@ namespace VKFW_NAMESPACE {
 			typename = typename std::enable_if<AttributeTraits<attribute>::value>::type
 		> VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type
 			set(typename AttributeTraits<attribute>::type const &new_value) const;
+
+		template <InputMode mode>
+		VKFW_NODISCARD typename ResultValueType<typename InputModeTraits<mode>::type>::type
+			get() const;
+
+		template <InputMode mode> 
+		VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type
+			set(typename InputModeTraits<mode>::type const &new_value) const;
 
 # ifdef VKFW_NO_STD_FUNCTION_CALLBACKS
 		VKFW_INLINE GLFWwindowposfun setPosCallback(GLFWwindowposfun callback) {
@@ -2123,6 +2153,12 @@ namespace VKFW_NAMESPACE {
 	void setWindowMonitor(GLFWwindow *window, GLFWmonitor *monitor, int xpos, int ypos,
 						  size_t width, size_t height, size_t refreshRate);
 
+# ifdef VKFW_HAS_SPAN
+	void setWindowIcon(std::span<GLFWimage> images);
+# endif
+	void setWindowIcon(GLFWwindow *window, std::vector<GLFWimage> images);
+	void setWindowIcon(GLFWwindow *window, int count, GLFWimage const *images);
+
 	template <Attribute attribute>
 	VKFW_NODISCARD typename ResultValueType<typename AttributeTraits<attribute>::type>::type
 		getWindowAttribute(GLFWwindow *window);
@@ -2142,6 +2178,24 @@ namespace VKFW_NAMESPACE {
 	set(GLFWwindow *window, typename AttributeTraits<attribute>::type const &new_value) {
 		return setWindowAttribute<attribute>(window, new_value);
 	}
+
+	template <InputMode mode>
+	VKFW_NODISCARD typename ResultValueType<typename InputModeTraits<mode>::type>::type
+		getInputMode(GLFWwindow *window);
+	template <InputMode mode> VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type
+		setInputMode(GLFWwindow *window, typename InputModeTraits<mode>::type const &new_value);
+
+	template <InputMode mode>
+	VKFW_NODISCARD VKFW_INLINE typename ResultValueType<typename InputModeTraits<mode>::type>::type
+	get(GLFWwindow *window) { 
+		return getInputMode<mode>(window);
+	}
+	template <InputMode mode>
+	VKFW_NODISCARD_WHEN_NO_EXCEPTIONS VKFW_INLINE typename ResultValueType<void>::type
+	set(GLFWwindow *window, typename InputModeTraits<mode>::type const &new_value) {
+		return setInputMode<mode>(window, new_value);
+	}
+
 # ifdef VKFW_NO_STD_FUNCTION_CALLBACKS
 	VKFW_INLINE GLFWwindowposfun setWindowPosCallback(GLFWwindow *window, GLFWwindowposfun callback) {
 		return glfwSetWindowPosCallback(window, callback);
@@ -2204,14 +2258,22 @@ namespace VKFW_NAMESPACE {
 		setWindowUserPointer(GLFWwindow *window, void *pointer);
 #endif
 
-	// To be implemented
-	// void glfwSetWindowIcon(GLFWwindow *window, int count, GLFWimage const *images);
-	// void glfwPollEvents(void);
-	// void glfwWaitEvents(void);
-	// void glfwWaitEventsTimeout(double timeout);
-	// void glfwPostEmptyEvent(void);
-	// int glfwGetInputMode(GLFWwindow *window, int mode);
-	// void glfwSetInputMode(GLFWwindow *window, int mode, int value);
+#ifdef VKFW_DISABLE_ENHANCED_MODE
+	void pollEvents();
+	void waitEvents();
+	void waitEventsTimeout(double timeout);
+	void postEmptyEvent();
+#else
+	VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type pollEvents();
+	VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type waitEvents();
+	VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type 
+		waitEventsTimeout(double timeout);
+	VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type 
+		waitEventsTimeout(std::chrono::duration<double> timeout);
+	VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type
+		postEmptyEvent();
+#endif
+	// To be implementedAdd
 	// int glfwRawMouseMotionSupported(void);
 	// char const *glfwGetKeyName(int key, int scancode);
 	// int glfwGetKeyScancode(int key);
@@ -3101,6 +3163,18 @@ namespace VKFW_NAMESPACE {
 							 static_cast<int>(refreshRate));
 	}
 
+# ifdef VKFW_HAS_SPAN
+	VKFW_INLINE void setWindowIcon(GLFWwindow *window, std::span<GLFWimage> images) {
+		glfwSetWindowIcon(window, static_cast<int>(images.size()), images.data());
+	}
+# endif
+	VKFW_INLINE void setWindowIcon(GLFWwindow *window, std::vector<GLFWimage> images) {
+		glfwSetWindowIcon(window, static_cast<int>(images.size()), images.data());
+	}
+	VKFW_INLINE void setWindowIcon(GLFWwindow *window, int image_count, GLFWimage const *images) {
+		glfwSetWindowIcon(window, static_cast<int>(image_count), images);
+	}
+
 	template <Attribute attribute>
 	VKFW_NODISCARD VKFW_INLINE typename ResultValueType<typename AttributeTraits<attribute>::type>::type
 	getWindowAttribute(GLFWwindow *window) {
@@ -3537,6 +3611,22 @@ namespace VKFW_NAMESPACE {
 		return createResultValue(getError(), VKFW_NAMESPACE_STRING"::Window::set");
 	}
 
+	template <InputMode mode>
+	VKFW_NODISCARD typename ResultValueType<typename InputModeTraits<mode>::type>::type
+	Window::get() const {
+		auto output = static_cast<typename InputModeTraits<mode>::type>(
+			glfwGetInputMode(m_window, static_cast<int>(mode))
+		);
+		return createResultValue(getError(), output, VKFW_NAMESPACE_STRING"::Window::get");
+	}
+
+	template <InputMode mode>
+	VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type
+	Window::set(typename InputModeTraits<mode>::type const &new_value) const {
+		glfwSetInputMode(m_window, static_cast<int>(mode), static_cast<int>(new_value));
+		return createResultValue(getError(), VKFW_NAMESPACE_STRING"::Window::set");
+	}
+
 	VKFW_NODISCARD VKFW_INLINE typename ResultValueType<void *>::type 
 	Window::getUserPointer() const {
 # ifdef VKFW_NO_STD_FUNCTION_CALLBACKS
@@ -3556,6 +3646,54 @@ namespace VKFW_NAMESPACE {
 		callbacks()->user_ptr = pointer;
 		return createResultValue(getError(), VKFW_NAMESPACE_STRING"::Window::setUserPointer");
 # endif
+	}
+
+# ifdef VKFW_HAS_SPAN
+	VKFW_NODISCARD_WHEN_NO_EXCEPTIONS VKFW_INLINE typename ResultValueType<void>::type
+	Window::setIcon(std::span<GLFWimage> images) {
+		glfwSetWindowIcon(m_window, static_cast<int>(images.size()), images.data());
+	}
+# endif
+	VKFW_NODISCARD_WHEN_NO_EXCEPTIONS VKFW_INLINE typename ResultValueType<void>::type
+	Window::setIcon(std::vector<GLFWimage> images) {
+		glfwSetWindowIcon(m_window, static_cast<int>(images.size()), images.data());
+	}
+	VKFW_NODISCARD_WHEN_NO_EXCEPTIONS VKFW_INLINE typename ResultValueType<void>::type
+	Window::setIcon(size_t image_count, GLFWimage *images) {
+		glfwSetWindowIcon(m_window, static_cast<int>(image_count), images);
+	}
+#endif
+
+#ifdef VKFW_DISABLE_ENHANCED_MODE
+	VKFW_INLINE void pollEvents() { glfwPollEvents(); }
+	VKFW_INLINE void waitEvents() { glfwWaitEvents(); }
+	VKFW_INLINE void waitEventsTimeout(double timeout) { glfwWaitEventsTimeout(timeout); }
+	VKFW_INLINE void postEmptyEvent() { glfwPostEmptyEvent(); }
+#else
+	VKFW_NODISCARD_WHEN_NO_EXCEPTIONS VKFW_INLINE typename ResultValueType<void>::type 
+	pollEvents() {
+		glfwPollEvents();
+		return createResultValue(getError(), VKFW_NAMESPACE_STRING"::pollEvents");
+	}
+	VKFW_NODISCARD_WHEN_NO_EXCEPTIONS VKFW_INLINE typename ResultValueType<void>::type 
+	waitEvents() {
+		glfwWaitEvents();
+		return createResultValue(getError(), VKFW_NAMESPACE_STRING"::waitEvents");
+	}
+	VKFW_NODISCARD_WHEN_NO_EXCEPTIONS VKFW_INLINE typename ResultValueType<void>::type
+	waitEventsTimeout(double timeout) {
+		glfwWaitEventsTimeout(timeout);
+		return createResultValue(getError(), VKFW_NAMESPACE_STRING"::waitEventsTimeout");
+	}
+	VKFW_NODISCARD_WHEN_NO_EXCEPTIONS VKFW_INLINE typename ResultValueType<void>::type
+	waitEventsTimeout(std::chrono::duration<double> timeout) {
+		glfwWaitEventsTimeout(timeout.count());
+		return createResultValue(getError(), VKFW_NAMESPACE_STRING"::waitEventsTimeout");
+	}
+	VKFW_NODISCARD_WHEN_NO_EXCEPTIONS VKFW_INLINE typename ResultValueType<void>::type
+	postEmptyEvent() {
+		glfwPostEmptyEvent();
+		return createResultValue(getError(), VKFW_NAMESPACE_STRING"::postEmptyEvent");
 	}
 #endif
 }
