@@ -70,11 +70,12 @@
 # include <version>
 #endif
 
-#if 17 <= VKFW_CPP_VERSION
+#if !defined(VKFW_NO_STRING_VIEW) && 17 <= VKFW_CPP_VERSION
 # include <string_view>
 # define VKFW_HAS_STRING_VIEW
 #endif
-#if 20 <= VKFW_CPP_VERSION && defined(__cpp_lib_span) && defined(__has_include) && 202002L <= __cpp_lib_span && __has_include( <span> )
+#if !defined(VKFW_NO_SPAN) && 20 <= VKFW_CPP_VERSION && defined(__cpp_lib_span) \
+	&& defined(__has_include) && 202002L <= __cpp_lib_span && __has_include( <span> )
 # include <span>
 # define VKFW_HAS_SPAN
 #endif
@@ -883,7 +884,7 @@ namespace VKFW_NAMESPACE {
 
 #ifndef VKFW_NO_ENHANCED_MODE
 	template <InitializationHint hint> struct InitializationHintTraits;
-	template<> struct InitializationHintTraits<InitializationHint::VKFW_ENUMERATOR(JoystickHatButtons)> 
+	template<> struct InitializationHintTraits<InitializationHint::VKFW_ENUMERATOR(JoystickHatButtons)>
 		: std::true_type { using type = bool; };
 	template<> struct InitializationHintTraits<InitializationHint::VKFW_ENUMERATOR(CocoaChdirResources)>
 		: std::true_type { using type = bool; };
@@ -891,90 +892,90 @@ namespace VKFW_NAMESPACE {
 		: std::true_type { using type = bool; };
 
 	template <WindowHint hint> struct WindowHintTraits;
-	template<> struct WindowHintTraits<WindowHint::VKFW_ENUMERATOR(Focused)> 
+	template<> struct WindowHintTraits<WindowHint::VKFW_ENUMERATOR(Focused)>
 		{ using type = bool; };
-	template<> struct WindowHintTraits<WindowHint::VKFW_ENUMERATOR(Resizable)> 
+	template<> struct WindowHintTraits<WindowHint::VKFW_ENUMERATOR(Resizable)>
 		{ using type = bool; };
-	template<> struct WindowHintTraits<WindowHint::VKFW_ENUMERATOR(Visible)> 
+	template<> struct WindowHintTraits<WindowHint::VKFW_ENUMERATOR(Visible)>
 		{ using type = bool; };
-	template<> struct WindowHintTraits<WindowHint::VKFW_ENUMERATOR(Decorated)> 
+	template<> struct WindowHintTraits<WindowHint::VKFW_ENUMERATOR(Decorated)>
 		{ using type = bool; };
-	template<> struct WindowHintTraits<WindowHint::VKFW_ENUMERATOR(AutoIconify)> 
+	template<> struct WindowHintTraits<WindowHint::VKFW_ENUMERATOR(AutoIconify)>
 		{ using type = bool; };
-	template<> struct WindowHintTraits<WindowHint::VKFW_ENUMERATOR(Floating)> 
+	template<> struct WindowHintTraits<WindowHint::VKFW_ENUMERATOR(Floating)>
 		{ using type = bool; };
-	template<> struct WindowHintTraits<WindowHint::VKFW_ENUMERATOR(Maximized)> 
+	template<> struct WindowHintTraits<WindowHint::VKFW_ENUMERATOR(Maximized)>
 		{ using type = bool; };
-	template<> struct WindowHintTraits<WindowHint::VKFW_ENUMERATOR(CenterCursor)> 
+	template<> struct WindowHintTraits<WindowHint::VKFW_ENUMERATOR(CenterCursor)>
 		{ using type = bool; };
-	template<> struct WindowHintTraits<WindowHint::VKFW_ENUMERATOR(TransparentFramebuffer)> 
+	template<> struct WindowHintTraits<WindowHint::VKFW_ENUMERATOR(TransparentFramebuffer)>
 		{ using type = bool; };
-	template<> struct WindowHintTraits<WindowHint::VKFW_ENUMERATOR(FocusOnShow)> 
+	template<> struct WindowHintTraits<WindowHint::VKFW_ENUMERATOR(FocusOnShow)>
 		{ using type = bool; };
-	template<> struct WindowHintTraits<WindowHint::VKFW_ENUMERATOR(RedBits)> 
+	template<> struct WindowHintTraits<WindowHint::VKFW_ENUMERATOR(RedBits)>
 		{ using type = unsigned; };
-	template<> struct WindowHintTraits<WindowHint::VKFW_ENUMERATOR(GreenBits)> 
+	template<> struct WindowHintTraits<WindowHint::VKFW_ENUMERATOR(GreenBits)>
 		{ using type = unsigned; };
-	template<> struct WindowHintTraits<WindowHint::VKFW_ENUMERATOR(BlueBits)> 
+	template<> struct WindowHintTraits<WindowHint::VKFW_ENUMERATOR(BlueBits)>
 		{ using type = unsigned; };
-	template<> struct WindowHintTraits<WindowHint::VKFW_ENUMERATOR(AlphaBits)> 
+	template<> struct WindowHintTraits<WindowHint::VKFW_ENUMERATOR(AlphaBits)>
 		{ using type = unsigned; };
-	template<> struct WindowHintTraits<WindowHint::VKFW_ENUMERATOR(DepthBits)> 
+	template<> struct WindowHintTraits<WindowHint::VKFW_ENUMERATOR(DepthBits)>
 		{ using type = unsigned; };
-	template<> struct WindowHintTraits<WindowHint::VKFW_ENUMERATOR(StencilBits)> 
+	template<> struct WindowHintTraits<WindowHint::VKFW_ENUMERATOR(StencilBits)>
 		{ using type = unsigned; };
-	template<> struct WindowHintTraits<WindowHint::VKFW_ENUMERATOR(AccumulationRedBits)> 
+	template<> struct WindowHintTraits<WindowHint::VKFW_ENUMERATOR(AccumulationRedBits)>
 		{ using type = unsigned; };
-	template<> struct WindowHintTraits<WindowHint::VKFW_ENUMERATOR(AccumulationGreenBits)> 
+	template<> struct WindowHintTraits<WindowHint::VKFW_ENUMERATOR(AccumulationGreenBits)>
 		{ using type = unsigned; };
-	template<> struct WindowHintTraits<WindowHint::VKFW_ENUMERATOR(AccumulationBlueBits)> 
+	template<> struct WindowHintTraits<WindowHint::VKFW_ENUMERATOR(AccumulationBlueBits)>
 		{ using type = unsigned; };
-	template<> struct WindowHintTraits<WindowHint::VKFW_ENUMERATOR(AccumulationAlphaBits)> 
+	template<> struct WindowHintTraits<WindowHint::VKFW_ENUMERATOR(AccumulationAlphaBits)>
 		{ using type = unsigned; };
-	template<> struct WindowHintTraits<WindowHint::VKFW_ENUMERATOR(AuxiliaryBuffers)> 
+	template<> struct WindowHintTraits<WindowHint::VKFW_ENUMERATOR(AuxiliaryBuffers)>
 		{ using type = unsigned; };
-	template<> struct WindowHintTraits<WindowHint::VKFW_ENUMERATOR(StereoscopicRendering)> 
+	template<> struct WindowHintTraits<WindowHint::VKFW_ENUMERATOR(StereoscopicRendering)>
 		{ using type = bool; };
-	template<> struct WindowHintTraits<WindowHint::VKFW_ENUMERATOR(Samples)> 
+	template<> struct WindowHintTraits<WindowHint::VKFW_ENUMERATOR(Samples)>
 		{ using type = unsigned; };
-	template<> struct WindowHintTraits<WindowHint::VKFW_ENUMERATOR(SRGBCapable)> 
+	template<> struct WindowHintTraits<WindowHint::VKFW_ENUMERATOR(SRGBCapable)>
 		{ using type = bool; };
-	template<> struct WindowHintTraits<WindowHint::VKFW_ENUMERATOR(RefreshRate)> 
+	template<> struct WindowHintTraits<WindowHint::VKFW_ENUMERATOR(RefreshRate)>
 		{ using type = unsigned; };
-	template<> struct WindowHintTraits<WindowHint::VKFW_ENUMERATOR(ScaleToMonitor)> 
+	template<> struct WindowHintTraits<WindowHint::VKFW_ENUMERATOR(ScaleToMonitor)>
 		{ using type = bool; };
-	template<> struct WindowHintTraits<WindowHint::VKFW_ENUMERATOR(DoubleBuffer)> 
+	template<> struct WindowHintTraits<WindowHint::VKFW_ENUMERATOR(DoubleBuffer)>
 		{ using type = bool; };
-	template<> struct WindowHintTraits<WindowHint::VKFW_ENUMERATOR(ClientAPI)> 
+	template<> struct WindowHintTraits<WindowHint::VKFW_ENUMERATOR(ClientAPI)>
 		{ using type = ClientAPI; };
-	template<> struct WindowHintTraits<WindowHint::VKFW_ENUMERATOR(ContextVersionMajor)> 
+	template<> struct WindowHintTraits<WindowHint::VKFW_ENUMERATOR(ContextVersionMajor)>
 		{ using type = unsigned; };
-	template<> struct WindowHintTraits<WindowHint::VKFW_ENUMERATOR(ContextVersionMinor)> 
+	template<> struct WindowHintTraits<WindowHint::VKFW_ENUMERATOR(ContextVersionMinor)>
 		{ using type = unsigned; };
-	template<> struct WindowHintTraits<WindowHint::VKFW_ENUMERATOR(ContextRobustness)> 
+	template<> struct WindowHintTraits<WindowHint::VKFW_ENUMERATOR(ContextRobustness)>
 		{ using type = ContextRobustness; };
-	template<> struct WindowHintTraits<WindowHint::VKFW_ENUMERATOR(OpenGLForwardCompatibility)> 
+	template<> struct WindowHintTraits<WindowHint::VKFW_ENUMERATOR(OpenGLForwardCompatibility)>
 		{ using type = bool; };
-	template<> struct WindowHintTraits<WindowHint::VKFW_ENUMERATOR(OpenGLDebugContext)> 
+	template<> struct WindowHintTraits<WindowHint::VKFW_ENUMERATOR(OpenGLDebugContext)>
 		{ using type = bool; };
-	template<> struct WindowHintTraits<WindowHint::VKFW_ENUMERATOR(OpenGLProfile)> 
+	template<> struct WindowHintTraits<WindowHint::VKFW_ENUMERATOR(OpenGLProfile)>
 		{ using type = OpenGLProfile; };
-	template<> struct WindowHintTraits<WindowHint::VKFW_ENUMERATOR(ContextReleaseBehavior)> 
+	template<> struct WindowHintTraits<WindowHint::VKFW_ENUMERATOR(ContextReleaseBehavior)>
 		{ using type = ContextReleaseBehavior; };
-	template<> struct WindowHintTraits<WindowHint::VKFW_ENUMERATOR(ContextNoError)> 
+	template<> struct WindowHintTraits<WindowHint::VKFW_ENUMERATOR(ContextNoError)>
 		{ using type = bool; };
-	template<> struct WindowHintTraits<WindowHint::VKFW_ENUMERATOR(ContextCreationAPI)> 
+	template<> struct WindowHintTraits<WindowHint::VKFW_ENUMERATOR(ContextCreationAPI)>
 		{ using type = ContextCreationAPI; };
-	template<> struct WindowHintTraits<WindowHint::VKFW_ENUMERATOR(CocoaRetinaFramebuffer)> 
+	template<> struct WindowHintTraits<WindowHint::VKFW_ENUMERATOR(CocoaRetinaFramebuffer)>
 		{ using type = bool; };
-	template<> struct WindowHintTraits<WindowHint::VKFW_ENUMERATOR(CocoaFrameName)> { 
+	template<> struct WindowHintTraits<WindowHint::VKFW_ENUMERATOR(CocoaFrameName)> {
 #ifdef VKFW_HAS_STRING_VIEW
 		using type = std::string_view;
 #else
 		using type = char const *;
 #endif
 	};
-	template<> struct WindowHintTraits<WindowHint::VKFW_ENUMERATOR(CocoaGraphicsSwitching)> 
+	template<> struct WindowHintTraits<WindowHint::VKFW_ENUMERATOR(CocoaGraphicsSwitching)>
 		{ using type = bool; };
 	template<> struct WindowHintTraits<WindowHint::VKFW_ENUMERATOR(X11ClassName)> {
 #ifdef VKFW_HAS_STRING_VIEW
@@ -1637,7 +1638,7 @@ namespace VKFW_NAMESPACE {
 		VKFW_NODISCARD typename ResultValueType<typename InputModeTraits<mode>::type>::type
 			get() const;
 
-		template <InputMode mode> 
+		template <InputMode mode>
 		VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type
 			set(typename InputModeTraits<mode>::type const &new_value) const;
 
@@ -1699,7 +1700,7 @@ namespace VKFW_NAMESPACE {
 		}
 # endif
 		VKFW_NODISCARD typename ResultValueType<void *>::type getUserPointer() const;
-		VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type 
+		VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type
 			setUserPointer(void *pointer) const;
 
 		VKFW_NODISCARD typename ResultValueType<bool>::type getKey(Key key);
@@ -1716,6 +1717,11 @@ namespace VKFW_NAMESPACE {
 
 		VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type
 			setCursor(Cursor const &cursor) const;
+
+		VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type
+			makeContextCurrent();
+		VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type
+			swapBuffers();
 
 	private:
 		GLFWwindow *m_window;
@@ -2183,8 +2189,8 @@ namespace VKFW_NAMESPACE {
 
 	template <Attribute attribute>
 	VKFW_INLINE VKFW_NODISCARD typename ResultValueType<typename AttributeTraits<attribute>::type>::type
-	get(GLFWwindow *window) { 
-		return getWindowAttribute<attribute>(window); 
+	get(GLFWwindow *window) {
+		return getWindowAttribute<attribute>(window);
 	}
 	template <Attribute attribute,
 		typename = typename std::enable_if<AttributeTraits<attribute>::value>::type
@@ -2201,7 +2207,7 @@ namespace VKFW_NAMESPACE {
 
 	template <InputMode mode>
 	VKFW_INLINE VKFW_NODISCARD typename ResultValueType<typename InputModeTraits<mode>::type>::type
-	get(GLFWwindow *window) { 
+	get(GLFWwindow *window) {
 		return getInputMode<mode>(window);
 	}
 	template <InputMode mode>
@@ -2283,6 +2289,12 @@ namespace VKFW_NAMESPACE {
 	void waitEvents();
 	void waitEventsTimeout(double timeout);
 	void postEmptyEvent();
+
+	void makeContextCurrent(GLFWwindow *window);
+	VKFW_NODISCARD GLFWwindow *getCurrentContext();
+	void swapBuffers(GLFWwindow *window);
+	void swapInterval(int interval);
+
 	VKFW_NODISCARD bool rawMouseMotionSupported();
 
 # ifdef VKFW_HAS_STRING_VIEW
@@ -2294,12 +2306,16 @@ namespace VKFW_NAMESPACE {
 #else
 	VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type pollEvents();
 	VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type waitEvents();
-	VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type 
+	VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type
 		waitEventsTimeout(double timeout);
-	VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type 
+	VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type
 		waitEventsTimeout(std::chrono::duration<double> timeout);
 	VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type
 		postEmptyEvent();
+
+	VKFW_NODISCARD typename ResultValueType<Window>::type getCurrentContext();
+	VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type swapInterval(int interval);
+
 	VKFW_NODISCARD typename ResultValueType<bool>::type rawMouseMotionSupported();
 
 # ifdef VKFW_HAS_STRING_VIEW
@@ -2315,9 +2331,9 @@ namespace VKFW_NAMESPACE {
 	VKFW_NODISCARD GLFWcursor *createStandardCursor(CursorShape shape);
 	VKFW_NODISCARD Result destroyCursor(GLFWcursor *cursor);
 #else
-	VKFW_NODISCARD typename ResultValueType<Cursor>::type 
+	VKFW_NODISCARD typename ResultValueType<Cursor>::type
 		createCursor(GLFWimage const &image, int xhot, int yhot);
-	VKFW_NODISCARD typename ResultValueType<Cursor>::type 
+	VKFW_NODISCARD typename ResultValueType<Cursor>::type
 		createStandardCursor(CursorShape shape);
 # ifndef VKFW_NO_SMART_HANDLE
 	using UniqueCursor = UniqueHandle<Cursor>;
@@ -2327,6 +2343,47 @@ namespace VKFW_NAMESPACE {
 		createStandardCursorUnique(CursorShape shape);
 # endif
 #endif
+
+#ifdef VKFW_DISABLE_ENHANCED_MODE
+# ifdef VKFW_HAS_STRING_VIEW
+	void setClipboardString(std::string_view string);
+	std::string_view getClipboardString();
+# else
+	void setClipboardString(char const *string);
+	char const *getClipboardString();
+# endif
+
+	double getTime();
+	void setTime(double time);
+	uint64_t getTimerValue();
+	uint64_t getTimerFrequency();
+#else
+# ifdef VKFW_HAS_STRING_VIEW
+	VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type
+		setClipboardString(std::string_view string);
+	VKFW_NODISCARD typename ResultValueType<std::string_view>::type getClipboardString();
+# else
+	VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type
+		setClipboardString(char const *string);
+	VKFW_NODISCARD typename ResultValueType<char const *>::type getClipboardString();
+# endif
+
+	VKFW_NODISCARD typename ResultValueType<double>::type getTime();
+	VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type setTime(double time);
+	VKFW_NODISCARD typename ResultValueType<uint64_t>::type getTimerValue();
+	VKFW_NODISCARD typename ResultValueType<uint64_t>::type getTimerFrequency();
+#endif
+
+	// To be implemented
+	// int glfwExtensionSupported(char const *extension);
+	// GLFWglproc glfwGetProcAddress(char const *procname);
+	// int glfwVulkanSupported(void);
+	// char const **glfwGetRequiredInstanceExtensions(uint32_t *count);
+
+	// To be implemented
+	// GLFWvkproc glfwGetInstanceProcAddress(VkInstance instance, char const *procname);
+	// int glfwGetPhysicalDevicePresentationSupport(VkInstance instance, VkPhysicalDevice device, uint32_t queuefamily);
+	// VkResult glfwCreateWindowSurface(VkInstance instance, GLFWwindow *window, VkAllocationCallbacks const *allocator, VkSurfaceKHR *surface);
 
 	// To be implemented
 	// int glfwJoystickPresent(int jid);
@@ -2342,25 +2399,6 @@ namespace VKFW_NAMESPACE {
 	// int glfwUpdateGamepadMappings(char const *string);
 	// char const *glfwGetGamepadName(int jid);
 	// int glfwGetGamepadState(int jid, GLFWgamepadstate *state);
-	// void glfwSetClipboardString(GLFWwindow *window, char const *string);
-	// char const *glfwGetClipboardString(GLFWwindow *window);
-	// double glfwGetTime(void);
-	// void glfwSetTime(double time);
-	// uint64_t glfwGetTimerValue(void);
-	// uint64_t glfwGetTimerFrequency(void);
-	// void glfwMakeContextCurrent(GLFWwindow *window);
-	// GLFWwindow *glfwGetCurrentContext(void);
-	// void glfwSwapBuffers(GLFWwindow *window);
-	// void glfwSwapInterval(int interval);
-	// int glfwExtensionSupported(char const *extension);
-	// GLFWglproc glfwGetProcAddress(char const *procname);
-	// int glfwVulkanSupported(void);
-	// char const **glfwGetRequiredInstanceExtensions(uint32_t *count);
-
-	// To be implemented
-	// GLFWvkproc glfwGetInstanceProcAddress(VkInstance instance, char const *procname);
-	// int glfwGetPhysicalDevicePresentationSupport(VkInstance instance, VkPhysicalDevice device, uint32_t queuefamily);
-	// VkResult glfwCreateWindowSurface(VkInstance instance, GLFWwindow *window, VkAllocationCallbacks const *allocator, VkSurfaceKHR *surface);
 }
 
 #ifndef VKFW_NO_STD_FUNCTION_CALLBACKS
@@ -2386,7 +2424,7 @@ namespace VKFW_NAMESPACE {
 		std::function<void(window_type, bool)> on_window_maximize;
 		std::function<void(window_type, size_t, size_t)> on_framebuffer_resize;
 		std::function<void(window_type, float, float)> on_window_content_scale_change;
-		std::function<void(window_type, MouseButton, MouseButtonAction, ModifierKeyFlags)> 
+		std::function<void(window_type, MouseButton, MouseButtonAction, ModifierKeyFlags)>
 			on_mouse_button;
 		std::function<void(window_type, double, double)> on_cursor_move;
 		std::function<void(window_type, bool)> on_cursor_enter;
@@ -2870,7 +2908,10 @@ namespace VKFW_NAMESPACE {
 # ifdef VKFW_HAS_STRING_VIEW
 	VKFW_INLINE VKFW_NODISCARD typename ResultValueType<std::string_view>::type
 	Monitor::getName() const {
-		std::string_view output = glfwGetMonitorName(m_monitor);
+		char const *tmp = glfwGetMonitorName(m_monitor);
+		std::string_view output;
+		if (tmp)
+			output = tmp;
 # else
 	VKFW_INLINE VKFW_NODISCARD typename ResultValueType<char const *>::type
 	Monitor::getName() const {
@@ -2943,43 +2984,43 @@ namespace VKFW_NAMESPACE {
 			glfwSetWindowUserPointer(window_ptr, new DynamicCallbackStorage{});
 			glfwSetWindowPosCallback(window_ptr, [](GLFWwindow *window, int xpos, int ypos) {
 				auto *ptr = reinterpret_cast<DynamicCallbackStorage *>(glfwGetWindowUserPointer(window));
-				if (ptr && ptr->on_window_move) 
+				if (ptr && ptr->on_window_move)
 					ptr->on_window_move(window, xpos, ypos);
 			});
 			glfwSetWindowSizeCallback(window_ptr, [](GLFWwindow *window, int width, int height) {
 				auto *ptr = reinterpret_cast<DynamicCallbackStorage *>(glfwGetWindowUserPointer(window));
-				if (ptr && ptr->on_window_resize) 
+				if (ptr && ptr->on_window_resize)
 					ptr->on_window_resize(window, static_cast<size_t>(width), static_cast<size_t>(height));
 			});
 			glfwSetWindowCloseCallback(window_ptr, [](GLFWwindow *window) {
 				auto *ptr = reinterpret_cast<DynamicCallbackStorage *>(glfwGetWindowUserPointer(window));
-				if (ptr && ptr->on_window_close) 
+				if (ptr && ptr->on_window_close)
 					ptr->on_window_close(window);
 			});
 			glfwSetWindowRefreshCallback(window_ptr, [](GLFWwindow *window) {
 				auto *ptr = reinterpret_cast<DynamicCallbackStorage *>(glfwGetWindowUserPointer(window));
-				if (ptr && ptr->on_window_refresh) 
+				if (ptr && ptr->on_window_refresh)
 					ptr->on_window_refresh(window);
 			});
 			glfwSetWindowFocusCallback(window_ptr, [](GLFWwindow *window, int focused) {
 				auto *ptr = reinterpret_cast<DynamicCallbackStorage *>(glfwGetWindowUserPointer(window));
-				if (ptr && ptr->on_window_focus) 
+				if (ptr && ptr->on_window_focus)
 					ptr->on_window_focus(window, static_cast<bool>(focused));
 			});
 			glfwSetWindowIconifyCallback(window_ptr, [](GLFWwindow *window, int iconified) {
 				auto *ptr = reinterpret_cast<DynamicCallbackStorage *>(glfwGetWindowUserPointer(window));
-				if (ptr && ptr->on_window_iconify) 
+				if (ptr && ptr->on_window_iconify)
 					ptr->on_window_iconify(window, static_cast<bool>(iconified));
 			});
 			glfwSetWindowMaximizeCallback(window_ptr, [](GLFWwindow *window, int maximized) {
 				auto *ptr = reinterpret_cast<DynamicCallbackStorage *>(glfwGetWindowUserPointer(window));
-				if (ptr && ptr->on_window_maximize) 
+				if (ptr && ptr->on_window_maximize)
 					ptr->on_window_maximize(window, static_cast<bool>(maximized));
 			});
 			glfwSetFramebufferSizeCallback(window_ptr, [](GLFWwindow *window, int width, int height) {
 				auto *ptr = reinterpret_cast<DynamicCallbackStorage *>(glfwGetWindowUserPointer(window));
 				if (ptr && ptr->on_framebuffer_resize)
-					ptr->on_framebuffer_resize(window, static_cast<size_t>(width), 
+					ptr->on_framebuffer_resize(window, static_cast<size_t>(width),
 											   static_cast<size_t>(height));
 			});
 			glfwSetWindowContentScaleCallback(window_ptr, [](GLFWwindow *window, float xscale, float yscale) {
@@ -2990,7 +3031,7 @@ namespace VKFW_NAMESPACE {
 			glfwSetMouseButtonCallback(window_ptr, [](GLFWwindow *window, int button, int action, int mods) {
 				auto *ptr = reinterpret_cast<DynamicCallbackStorage *>(glfwGetWindowUserPointer(window));
 				if (ptr && ptr->on_mouse_button)
-					ptr->on_mouse_button(window, static_cast<MouseButton>(button), 
+					ptr->on_mouse_button(window, static_cast<MouseButton>(button),
 										 static_cast<MouseButtonAction>(action),
 										 static_cast<ModifierKeyFlags>(mods));
 			});
@@ -3064,7 +3105,7 @@ namespace VKFW_NAMESPACE {
 		Window output;
 		if (reset_hints) {
 			Result result = defaultWindowHints();
-			if (!check(result)) 
+			if (!check(result))
 				return createResultValueUnique(result, output, VKFW_NAMESPACE_STRING"::defaultWindowHints");
 		}
 		Result result = setWindowHints(std::move(hints));
@@ -3225,8 +3266,8 @@ namespace VKFW_NAMESPACE {
 		);
 		return createResultValue(getError(), output, VKFW_NAMESPACE_STRING"::getWindowAttribute");
 	}
-	template <Attribute attribute, typename> 
-	VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type
+	template <Attribute attribute, typename>
+	VKFW_INLINE VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type
 	setWindowAttribute(GLFWwindow *window, typename AttributeTraits<attribute>::type const &new_value) {
 		glfwSetWindowAttrib(window, static_cast<int>(attribute), static_cast<int>(new_value));
 		return createResultValue(getError(), VKFW_NAMESPACE_STRING"::setWindowAttribute");
@@ -3253,18 +3294,18 @@ namespace VKFW_NAMESPACE {
 		return glfwGetKey(window, static_cast<int>(key))
 			== static_cast<int>(KeyAction::VKFW_ENUMERATOR(Press));
 	}
-	VKFW_NODISCARD bool getMouseButton(GLFWwindow *window, MouseButton button) {
+	VKFW_INLINE VKFW_NODISCARD bool getMouseButton(GLFWwindow *window, MouseButton button) {
 		return glfwGetKey(window, static_cast<int>(button))
 			== static_cast<int>(MouseButtonAction::VKFW_ENUMERATOR(Press));
 	}
-	void getCursorPos(GLFWwindow *window, double *xpos, double *ypos) {
+	VKFW_INLINE void getCursorPos(GLFWwindow *window, double *xpos, double *ypos) {
 		glfwGetCursorPos(window, xpos, ypos);
 	}
-	void setCursorPos(GLFWwindow *window, double xpos, double ypos) {
+	VKFW_INLINE void setCursorPos(GLFWwindow *window, double xpos, double ypos) {
 		glfwSetCursorPos(window, xpos, ypos);
 	}
 
-	void setCursor(GLFWwindow *window, GLFWcursor *cursor) {
+	VKFW_INLINE void setCursor(GLFWwindow *window, GLFWcursor *cursor) {
 		glfwSetCursor(window, cursor);
 	}
 #else
@@ -3664,15 +3705,15 @@ namespace VKFW_NAMESPACE {
 		);
 		return createResultValue(getError(), output, VKFW_NAMESPACE_STRING"::Window::get");
 	}
-	template <Attribute attribute, typename> 
-	VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type
+	template <Attribute attribute, typename>
+	VKFW_INLINE VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type
 	Window::set(typename AttributeTraits<attribute>::type const &new_value) const {
 		glfwSetWindowAttrib(m_window, static_cast<int>(attribute), static_cast<int>(new_value));
 		return createResultValue(getError(), VKFW_NAMESPACE_STRING"::Window::set");
 	}
 
 	template <InputMode mode>
-	VKFW_NODISCARD typename ResultValueType<typename InputModeTraits<mode>::type>::type
+	VKFW_INLINE VKFW_NODISCARD typename ResultValueType<typename InputModeTraits<mode>::type>::type
 	Window::get() const {
 		auto output = static_cast<typename InputModeTraits<mode>::type>(
 			glfwGetInputMode(m_window, static_cast<int>(mode))
@@ -3681,13 +3722,13 @@ namespace VKFW_NAMESPACE {
 	}
 
 	template <InputMode mode>
-	VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type
+	VKFW_INLINE VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type
 	Window::set(typename InputModeTraits<mode>::type const &new_value) const {
 		glfwSetInputMode(m_window, static_cast<int>(mode), static_cast<int>(new_value));
 		return createResultValue(getError(), VKFW_NAMESPACE_STRING"::Window::set");
 	}
 
-	VKFW_INLINE VKFW_NODISCARD typename ResultValueType<void *>::type 
+	VKFW_INLINE VKFW_NODISCARD typename ResultValueType<void *>::type
 	Window::getUserPointer() const {
 # ifdef VKFW_NO_STD_FUNCTION_CALLBACKS
 		auto *output = glfwGetWindowUserPointer(m_window);
@@ -3727,11 +3768,11 @@ namespace VKFW_NAMESPACE {
 	}
 
 	VKFW_INLINE VKFW_NODISCARD typename ResultValueType<bool>::type Window::getKey(Key key) {
-		bool output = glfwGetKey(m_window, static_cast<int>(key)) 
+		bool output = glfwGetKey(m_window, static_cast<int>(key))
 			== static_cast<int>(KeyAction::VKFW_ENUMERATOR(Press));
 		return createResultValue(getError(), output, VKFW_NAMESPACE_STRING"::Window::getKey");
 	}
-	VKFW_INLINE VKFW_NODISCARD typename ResultValueType<bool>::type 
+	VKFW_INLINE VKFW_NODISCARD typename ResultValueType<bool>::type
 	Window::getMouseButton(MouseButton button) {
 		bool output = glfwGetMouseButton(m_window, static_cast<int>(button))
 			== static_cast<int>(MouseButtonAction::VKFW_ENUMERATOR(Press));
@@ -3743,19 +3784,19 @@ namespace VKFW_NAMESPACE {
 		glfwGetCursorPos(m_window, xpos, ypos);
 		return createResultValue(getError(), VKFW_NAMESPACE_STRING"::Window::getCursorPos");
 	}
-	VKFW_INLINE VKFW_NODISCARD typename ResultValueType<std::tuple<double, double>>::type 
+	VKFW_INLINE VKFW_NODISCARD typename ResultValueType<std::tuple<double, double>>::type
 	Window::getCursorPos() const {
 		std::tuple<double, double> output;
 		glfwGetCursorPos(m_window, &std::get<0>(output), &std::get<1>(output));
 		return createResultValue(getError(), output, VKFW_NAMESPACE_STRING"::Window::getCursorPos");
 	}
-	VKFW_INLINE VKFW_NODISCARD typename ResultValueType<double>::type 
+	VKFW_INLINE VKFW_NODISCARD typename ResultValueType<double>::type
 	Window::getCursorPosX() const {
 		double output;
 		glfwGetCursorPos(m_window, &output, nullptr);
 		return createResultValue(getError(), output, VKFW_NAMESPACE_STRING"::Window::getCursorPosX");
 	}
-	VKFW_INLINE VKFW_NODISCARD typename ResultValueType<double>::type 
+	VKFW_INLINE VKFW_NODISCARD typename ResultValueType<double>::type
 	Window::getCursorPosY() const {
 		double output;
 		glfwGetCursorPos(m_window, nullptr, &output);
@@ -3768,10 +3809,21 @@ namespace VKFW_NAMESPACE {
 		return createResultValue(getError(), VKFW_NAMESPACE_STRING"::Window::setCursorPos");
 	}
 
-	VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type
+	VKFW_INLINE VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type
 	Window::setCursor(Cursor const &cursor) const {
 		glfwSetCursor(m_window, cursor);
 		return createResultValue(getError(), VKFW_NAMESPACE_STRING"::Window::setCursorPos");
+	}
+
+	VKFW_INLINE VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type
+	Window::makeContextCurrent() {
+		glfwMakeContextCurrent(m_window);
+		return createResultValue(getError(), VKFW_NAMESPACE_STRING"::Window::makeContextCurrent");
+	}
+	VKFW_INLINE VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type
+	Window::swapBuffers() {
+		glfwSwapBuffers(m_window);
+		return createResultValue(getError(), VKFW_NAMESPACE_STRING"::Window::swapBuffers");
 	}
 #endif
 
@@ -3780,6 +3832,12 @@ namespace VKFW_NAMESPACE {
 	VKFW_INLINE void waitEvents() { glfwWaitEvents(); }
 	VKFW_INLINE void waitEventsTimeout(double timeout) { glfwWaitEventsTimeout(timeout); }
 	VKFW_INLINE void postEmptyEvent() { glfwPostEmptyEvent(); }
+
+	VKFW_INLINE void makeContextCurrent(GLFWwindow *window) { glfwMakeContextCurrent(window); }
+	VKFW_INLINE VKFW_NODISCARD GLFWwindow *getCurrentContext() { return glfwGetCurrentContext(); }
+	VKFW_INLINE void swapBuffers(GLFWwindow *window) { glfwSwapBuffers(window); }
+	VKFW_INLINE void swapInterval(int interval) { glfwSwapInterval(interval); }
+
 	VKFW_INLINE VKFW_NODISCARD bool rawMouseMotionSupported() {
 		return static_cast<bool>(glfwRawMouseMotionSupported());
 	}
@@ -3798,12 +3856,12 @@ namespace VKFW_NAMESPACE {
 		return glfwGetKeyScancode(static_cast<int>(key));
 	}
 #else
-	VKFW_INLINE VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type 
+	VKFW_INLINE VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type
 	pollEvents() {
 		glfwPollEvents();
 		return createResultValue(getError(), VKFW_NAMESPACE_STRING"::pollEvents");
 	}
-	VKFW_INLINE VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type 
+	VKFW_INLINE VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type
 	waitEvents() {
 		glfwWaitEvents();
 		return createResultValue(getError(), VKFW_NAMESPACE_STRING"::waitEvents");
@@ -3823,20 +3881,31 @@ namespace VKFW_NAMESPACE {
 		glfwPostEmptyEvent();
 		return createResultValue(getError(), VKFW_NAMESPACE_STRING"::postEmptyEvent");
 	}
+
+	VKFW_INLINE VKFW_NODISCARD typename ResultValueType<Window>::type getCurrentContext() {
+		Window output = glfwGetCurrentContext();
+		return createResultValue(getError(), output, VKFW_NAMESPACE_STRING"::getCurrentContext");
+	}
+	VKFW_INLINE VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type
+	swapInterval(int interval) {
+		glfwSwapInterval(interval);
+		return createResultValue(getError(), VKFW_NAMESPACE_STRING"::swapInterval");
+	}
+
 	VKFW_INLINE VKFW_NODISCARD typename ResultValueType<bool>::type rawMouseMotionSupported() {
 		bool output = static_cast<bool>(glfwRawMouseMotionSupported());
 		return createResultValue(getError(), output, VKFW_NAMESPACE_STRING"::rawMouseMotionSupported");
 	}
 
 # ifdef VKFW_HAS_STRING_VIEW
-	VKFW_INLINE VKFW_NODISCARD typename ResultValueType<std::string_view>::type 
+	VKFW_INLINE VKFW_NODISCARD typename ResultValueType<std::string_view>::type
 	getKeyName(Key key, int32_t scancode) {
 		char const *tmp = glfwGetKeyName(static_cast<int>(key), static_cast<int>(scancode));
 		std::string_view output;
 		if (tmp)
 			output = tmp;
 # else
-	VKFW_INLINE VKFW_NODISCARD typename ResultValueType<char const *>::type 
+	VKFW_INLINE VKFW_NODISCARD typename ResultValueType<char const *>::type
 	getKeyName(Key key, int32_t scancode) {
 		char const *output = glfwGetKeyName(static_cast<int>(key), static_cast<int>(scancode));
 # endif
@@ -3849,13 +3918,13 @@ namespace VKFW_NAMESPACE {
 #endif
 
 #ifdef VKFW_DISABLE_ENHANCED_MODE
-	VKFW_NODISCARD GLFWcursor *createCursor(GLFWimage const *image, int xhot, int yhot) {
+	VKFW_INLINE VKFW_NODISCARD GLFWcursor *createCursor(GLFWimage const *image, int xhot, int yhot) {
 		return glfwCreateCursor(image, xhot, yhot);
 	}
-	VKFW_NODISCARD GLFWcursor *createStandardCursor(CursorShape shape) {
+	VKFW_INLINE VKFW_NODISCARD GLFWcursor *createStandardCursor(CursorShape shape) {
 		return glfwCreateStandardCursor(static_cast<int>(shape));
 	}
-	VKFW_NODISCARD Result destroyCursor(GLFWcursor *cursor) {
+	VKFW_INLINE VKFW_NODISCARD Result destroyCursor(GLFWcursor *cursor) {
 		glfwDestroyCursor(cursor);
 		return getError();
 	}
@@ -3882,5 +3951,68 @@ namespace VKFW_NAMESPACE {
 		return createResultValueUnique(getError(), output, VKFW_NAMESPACE_STRING"::createStandardCursorUnique");
 	}
 # endif
+#endif
+
+#ifdef VKFW_DISABLE_ENHANCED_MODE
+# ifdef VKFW_HAS_STRING_VIEW
+	VKFW_INLINE void setClipboardString(std::string_view string) { 
+		glfwSetClipboardString(nullptr, string.data());
+	}
+	VKFW_INLINE std::string_view getClipboardString() {
+		char const *tmp = glfwGetClipboardString(nullptr);
+		return tmp ? std::string_view(tmp) : std::string_view();
+	}
+# else
+	VKFW_INLINE void setClipboardString(char const *string) { glfwSetClipboardString(nullptr, string); }
+	VKFW_INLINE char const *getClipboardString() { return glfwGetClipboardString(nullptr); }
+# endif
+
+	VKFW_INLINE double getTime() { return glfwGetTime(); }
+	VKFW_INLINE void setTime(double time) { glfwSetTime(time); }
+	VKFW_INLINE uint64_t getTimerValue() { return glfwGetTimerValue(); }
+	VKFW_INLINE uint64_t getTimerFrequency() { return glfwGetTimerFrequency(); }
+#else
+# ifdef VKFW_HAS_STRING_VIEW
+	VKFW_INLINE VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type
+	setClipboardString(std::string_view string) {
+		glfwSetClipboardString(nullptr, string.data());
+		return createResultValue(getError(), VKFW_NAMESPACE_STRING"::setClipboardString");
+	}
+	VKFW_INLINE VKFW_NODISCARD typename ResultValueType<std::string_view>::type getClipboardString() {
+		char const *tmp = glfwGetClipboardString(nullptr);
+		std::string_view output;
+		if (tmp)
+			output = tmp;
+		return createResultValue(getError(), output, VKFW_NAMESPACE_STRING"::getClipboardString");
+	}
+# else
+	VKFW_INLINE VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type
+	setClipboardString(char const *string) {
+		glfwSetClipboardString(nullptr, string);
+		return createResultValue(getError(), VKFW_NAMESPACE_STRING"::setClipboardString");
+	}
+	VKFW_INLINE VKFW_NODISCARD typename ResultValueType<char const *>::type getClipboardString() {
+		char const *output = glfwGetClipboardString(nullptr);
+		return createResultValue(getError(), output, VKFW_NAMESPACE_STRING"::getClipboardString");
+	}
+# endif
+
+	VKFW_INLINE VKFW_NODISCARD typename ResultValueType<double>::type getTime() {
+		double output = glfwGetTime();
+		return createResultValue(getError(), output, VKFW_NAMESPACE_STRING"::getTime");
+	}
+	VKFW_INLINE VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type 
+	setTime(double time) {
+		glfwSetTime(time);
+		return createResultValue(getError(), VKFW_NAMESPACE_STRING"::setTime");
+	}
+	VKFW_INLINE VKFW_NODISCARD typename ResultValueType<uint64_t>::type getTimerValue() {
+		uint64_t output = glfwGetTimerValue();
+		return createResultValue(getError(), output, VKFW_NAMESPACE_STRING"::getTimerValue");
+	}
+	VKFW_INLINE VKFW_NODISCARD typename ResultValueType<uint64_t>::type getTimerFrequency() {
+		uint64_t output = glfwGetTimerFrequency();
+		return createResultValue(getError(), output, VKFW_NAMESPACE_STRING"::getTimerFrequency");
+	}
 #endif
 }
