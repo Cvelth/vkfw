@@ -55,6 +55,7 @@
 #endif
 
 // Standard library includes go here!
+#include <cstdint>
 #include <string>
 #include <system_error>
 #include <tuple>
@@ -1460,6 +1461,42 @@ namespace VKFW_NAMESPACE {
 		GLFWmonitor *m_monitor;
 	};
 
+	class Cursor {
+	public:
+		using CType = GLFWcursor;
+	public:
+		VKFW_INLINE VKFW_CONSTEXPR Cursor() VKFW_NOEXCEPT : m_cursor(nullptr) {}
+		VKFW_INLINE VKFW_CONSTEXPR Cursor(std::nullptr_t) VKFW_NOEXCEPT : m_cursor(nullptr) {}
+		VKFW_INLINE VKFW_CONSTEXPR Cursor(GLFWcursor *cursor) VKFW_NOEXCEPT : m_cursor(cursor) {}
+		VKFW_INLINE VKFW_CONSTEXPR Cursor(Cursor const &another) VKFW_NOEXCEPT : m_cursor(another.m_cursor) {}
+		VKFW_INLINE VKFW_CONSTEXPR_14 Cursor(Cursor &&another) VKFW_NOEXCEPT : m_cursor(another.m_cursor) { another.m_cursor = nullptr; }
+		VKFW_INLINE VKFW_CONSTEXPR_14 Cursor operator=(Cursor const &another) VKFW_NOEXCEPT {
+			m_cursor = another.m_cursor; return *this;
+		}
+		VKFW_INLINE VKFW_CONSTEXPR_14 Cursor operator=(Cursor &&another) VKFW_NOEXCEPT {
+			m_cursor = another.m_cursor; another.m_cursor = nullptr; return *this;
+		}
+		VKFW_INLINE VKFW_CONSTEXPR_14 Cursor &operator=(GLFWcursor *cursor) VKFW_NOEXCEPT {
+			m_cursor = cursor; return *this;
+		}
+		VKFW_INLINE VKFW_CONSTEXPR_14 Cursor &operator=(std::nullptr_t) VKFW_NOEXCEPT {
+			m_cursor = nullptr; return *this;
+		}
+		VKFW_INLINE VKFW_CONSTEXPR operator GLFWcursor *() const VKFW_NOEXCEPT { return m_cursor; }
+		VKFW_INLINE VKFW_CONSTEXPR explicit operator bool() const VULKAN_HPP_NOEXCEPT { return m_cursor != nullptr; }
+		VKFW_INLINE VKFW_CONSTEXPR bool operator!() const VULKAN_HPP_NOEXCEPT { return m_cursor == nullptr; }
+# if defined(VKFW_HAS_SPACESHIP_OPERATOR)
+		auto operator<=>(Cursor const &) const = default;
+# else
+		bool operator==(Cursor const &another) const VKFW_NOEXCEPT { return m_cursor == another.m_cursor; }
+		bool operator!=(Cursor const &another) const VKFW_NOEXCEPT { return !operator==(another); }
+# endif
+		VKFW_INLINE VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type destroy();
+
+	private:
+		GLFWcursor *m_cursor;
+	};
+
 	class Window {
 	public:
 		using CType = GLFWwindow;
@@ -1677,46 +1714,11 @@ namespace VKFW_NAMESPACE {
 		VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type
 			setCursorPos(double xpos, double ypos) const;
 
+		VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type
+			setCursor(Cursor const &cursor) const;
+
 	private:
 		GLFWwindow *m_window;
-	};
-
-	class Cursor {
-	public:
-		using CType = GLFWcursor;
-	public:
-		VKFW_INLINE VKFW_CONSTEXPR Cursor() VKFW_NOEXCEPT : m_cursor(nullptr) {}
-		VKFW_INLINE VKFW_CONSTEXPR Cursor(std::nullptr_t) VKFW_NOEXCEPT : m_cursor(nullptr) {}
-		VKFW_INLINE VKFW_CONSTEXPR Cursor(GLFWcursor *cursor) VKFW_NOEXCEPT : m_cursor(cursor) {}
-		VKFW_INLINE VKFW_CONSTEXPR Cursor(Cursor const &another) VKFW_NOEXCEPT : m_cursor(another.m_cursor) {}
-		VKFW_INLINE VKFW_CONSTEXPR_14 Cursor(Cursor &&another) VKFW_NOEXCEPT : m_cursor(another.m_cursor) { another.m_cursor = nullptr; }
-		VKFW_INLINE VKFW_CONSTEXPR_14 Cursor operator=(Cursor const &another) VKFW_NOEXCEPT {
-			m_cursor = another.m_cursor; return *this;
-		}
-		VKFW_INLINE VKFW_CONSTEXPR_14 Cursor operator=(Cursor &&another) VKFW_NOEXCEPT {
-			m_cursor = another.m_cursor; another.m_cursor = nullptr; return *this;
-		}
-		VKFW_INLINE VKFW_CONSTEXPR_14 Cursor &operator=(GLFWcursor *cursor) VKFW_NOEXCEPT {
-			m_cursor = cursor; return *this;
-		}
-		VKFW_INLINE VKFW_CONSTEXPR_14 Cursor &operator=(std::nullptr_t) VKFW_NOEXCEPT {
-			m_cursor = nullptr; return *this;
-		}
-		VKFW_INLINE VKFW_CONSTEXPR operator GLFWcursor *() const VKFW_NOEXCEPT { return m_cursor; }
-		VKFW_INLINE VKFW_CONSTEXPR explicit operator bool() const VULKAN_HPP_NOEXCEPT { return m_cursor != nullptr; }
-		VKFW_INLINE VKFW_CONSTEXPR bool operator!() const VULKAN_HPP_NOEXCEPT { return m_cursor == nullptr; }
-# if defined(VKFW_HAS_SPACESHIP_OPERATOR)
-		auto operator<=>(Cursor const &) const = default;
-# else
-		bool operator==(Cursor const &another) const VKFW_NOEXCEPT { return m_cursor == another.m_cursor; }
-		bool operator!=(Cursor const &another) const VKFW_NOEXCEPT { return !operator==(another); }
-# endif
-		VKFW_INLINE VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type destroy();
-
-		// Member functions go here.
-
-	private:
-		GLFWcursor *m_cursor;
 	};
 #endif
 
@@ -2273,6 +2275,7 @@ namespace VKFW_NAMESPACE {
 	VKFW_NODISCARD bool getMouseButton(GLFWwindow *window, MouseButton button);
 	void getCursorPos(GLFWwindow *window, double *xpos, double *ypos);
 	void setCursorPos(GLFWwindow *window, double xpos, double ypos);
+	void setCursor(GLFWwindow *window, GLFWcursor *cursor);
 #endif
 
 #ifdef VKFW_DISABLE_ENHANCED_MODE
@@ -2306,11 +2309,24 @@ namespace VKFW_NAMESPACE {
 # endif
 	VKFW_NODISCARD typename ResultValueType<int>::type getKeyScancode(Key key);
 #endif
-	// To be implemented
-	// GLFWcursor *glfwCreateCursor(GLFWimage const *image, int xhot, int yhot);
-	// GLFWcursor *glfwCreateStandardCursor(int shape);
-	// void glfwDestroyCursor(GLFWcursor *cursor);
-	// void glfwSetCursor(GLFWwindow *window, GLFWcursor *cursor);
+
+#ifdef VKFW_DISABLE_ENHANCED_MODE
+	VKFW_NODISCARD GLFWcursor *createCursor(GLFWimage const *image, int xhot, int yhot);
+	VKFW_NODISCARD GLFWcursor *createStandardCursor(CursorShape shape);
+	VKFW_NODISCARD Result destroyCursor(GLFWcursor *cursor);
+#else
+	VKFW_NODISCARD typename ResultValueType<Cursor>::type 
+		createCursor(GLFWimage const &image, int xhot, int yhot);
+	VKFW_NODISCARD typename ResultValueType<Cursor>::type 
+		createStandardCursor(CursorShape shape);
+# ifndef VKFW_NO_SMART_HANDLE
+	using UniqueCursor = UniqueHandle<Cursor>;
+	VKFW_NODISCARD typename ResultValueType<UniqueCursor>::type
+		createCursorUnique(GLFWimage const &image, int xhot, int yhot);
+	VKFW_NODISCARD typename ResultValueType<UniqueCursor>::type
+		createStandardCursorUnique(CursorShape shape);
+# endif
+#endif
 
 	// To be implemented
 	// int glfwJoystickPresent(int jid);
@@ -2445,7 +2461,7 @@ namespace VKFW_NAMESPACE {
 			return createResultValue(Result::VKFW_ENUMERATOR(Success), VKFW_NAMESPACE_STRING"::Window::destroy");
 	}
 	VKFW_INLINE VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type Cursor::destroy() {
-		// Empty for now!!
+		glfwDestroyCursor(m_cursor); m_cursor = nullptr;
 		return createResultValue(Result::VKFW_ENUMERATOR(Success), VKFW_NAMESPACE_STRING"::Cursor::destroy");
 	}
 #endif
@@ -3248,6 +3264,9 @@ namespace VKFW_NAMESPACE {
 		glfwSetCursorPos(window, xpos, ypos);
 	}
 
+	void setCursor(GLFWwindow *window, GLFWcursor *cursor) {
+		glfwSetCursor(window, cursor);
+	}
 #else
 	VKFW_INLINE VKFW_NODISCARD typename ResultValueType<bool>::type Window::shouldClose() const {
 		auto output = static_cast<bool>(glfwWindowShouldClose(m_window));
@@ -3748,6 +3767,12 @@ namespace VKFW_NAMESPACE {
 		glfwSetCursorPos(m_window, xpos, ypos);
 		return createResultValue(getError(), VKFW_NAMESPACE_STRING"::Window::setCursorPos");
 	}
+
+	VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type
+	Window::setCursor(Cursor const &cursor) const {
+		glfwSetCursor(m_window, cursor);
+		return createResultValue(getError(), VKFW_NAMESPACE_STRING"::Window::setCursorPos");
+	}
 #endif
 
 #ifdef VKFW_DISABLE_ENHANCED_MODE
@@ -3821,5 +3846,41 @@ namespace VKFW_NAMESPACE {
 		int32_t output = static_cast<int32_t>(glfwGetKeyScancode(static_cast<int>(key)));
 		return createResultValue(getError(), output, VKFW_NAMESPACE_STRING"::rawMouseMotionSupported");
 	}
+#endif
+
+#ifdef VKFW_DISABLE_ENHANCED_MODE
+	VKFW_NODISCARD GLFWcursor *createCursor(GLFWimage const *image, int xhot, int yhot) {
+		return glfwCreateCursor(image, xhot, yhot);
+	}
+	VKFW_NODISCARD GLFWcursor *createStandardCursor(CursorShape shape) {
+		return glfwCreateStandardCursor(static_cast<int>(shape));
+	}
+	VKFW_NODISCARD Result destroyCursor(GLFWcursor *cursor) {
+		glfwDestroyCursor(cursor);
+		return getError();
+	}
+#else
+	VKFW_INLINE VKFW_NODISCARD typename ResultValueType<Cursor>::type
+	createCursor(GLFWimage const &image, int xhot, int yhot) {
+		Cursor output = glfwCreateCursor(&image, xhot, yhot);
+		return createResultValue(getError(), output, VKFW_NAMESPACE_STRING"::createCursor");
+	}
+	VKFW_INLINE VKFW_NODISCARD typename ResultValueType<Cursor>::type
+	createStandardCursor(CursorShape shape) {
+		Cursor output = glfwCreateStandardCursor(static_cast<int>(shape));
+		return createResultValue(getError(), output, VKFW_NAMESPACE_STRING"::createStandardCursor");
+	}
+# ifndef VKFW_NO_SMART_HANDLE
+	VKFW_INLINE VKFW_NODISCARD typename ResultValueType<UniqueCursor>::type
+	createCursorUnique(GLFWimage const &image, int xhot, int yhot) {
+		Cursor output = glfwCreateCursor(&image, xhot, yhot);
+		return createResultValueUnique(getError(), output, VKFW_NAMESPACE_STRING"::createCursorUnique");
+	}
+	VKFW_INLINE VKFW_NODISCARD typename ResultValueType<UniqueCursor>::type
+	createStandardCursorUnique(CursorShape shape) {
+		Cursor output = glfwCreateStandardCursor(static_cast<int>(shape));
+		return createResultValueUnique(getError(), output, VKFW_NAMESPACE_STRING"::createStandardCursorUnique");
+	}
+# endif
 #endif
 }
