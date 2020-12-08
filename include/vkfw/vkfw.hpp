@@ -2263,6 +2263,14 @@ namespace VKFW_NAMESPACE {
 	void waitEvents();
 	void waitEventsTimeout(double timeout);
 	void postEmptyEvent();
+	VKFW_NODISCARD bool rawMouseMotionSupported();
+
+# ifdef VKFW_HAS_STRING_VIEW
+	VKFW_NODISCARD std::string_view getKeyName(Key key, int scancode = 0);
+# else
+	VKFW_NODISCARD char const *getKeyName(Key key, int scancode = 0);
+# endif
+	VKFW_NODISCARD int getKeyScancode(Key key);
 #else
 	VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type pollEvents();
 	VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type waitEvents();
@@ -2272,11 +2280,16 @@ namespace VKFW_NAMESPACE {
 		waitEventsTimeout(std::chrono::duration<double> timeout);
 	VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type
 		postEmptyEvent();
+	VKFW_NODISCARD typename ResultValueType<bool>::type rawMouseMotionSupported();
+
+# ifdef VKFW_HAS_STRING_VIEW
+	VKFW_NODISCARD typename ResultValueType<std::string_view>::type getKeyName(Key key, int32_t scancode = 0);
+# else
+	VKFW_NODISCARD typename ResultValueType<char const *>::type getKeyName(Key key, int32_t scancode = 0);
+# endif
+	VKFW_NODISCARD typename ResultValueType<int>::type getKeyScancode(Key key);
 #endif
-	// To be implementedAdd
-	// int glfwRawMouseMotionSupported(void);
-	// char const *glfwGetKeyName(int key, int scancode);
-	// int glfwGetKeyScancode(int key);
+	// To be implemented
 	// int glfwGetKey(GLFWwindow *window, int key);
 	// int glfwGetMouseButton(GLFWwindow *window, int button);
 	// void glfwGetCursorPos(GLFWwindow *window, double *xpos, double *ypos);
@@ -3669,6 +3682,23 @@ namespace VKFW_NAMESPACE {
 	VKFW_INLINE void waitEvents() { glfwWaitEvents(); }
 	VKFW_INLINE void waitEventsTimeout(double timeout) { glfwWaitEventsTimeout(timeout); }
 	VKFW_INLINE void postEmptyEvent() { glfwPostEmptyEvent(); }
+	VKFW_INLINE VKFW_NODISCARD bool rawMouseMotionSupported() {
+		return static_cast<bool>(glfwRawMouseMotionSupported());
+	}
+
+# ifdef VKFW_HAS_STRING_VIEW
+	VKFW_INLINE VKFW_NODISCARD std::string_view getKeyName(Key key, int scancode) {
+		char const *tmp = glfwGetKeyName(static_cast<int>(key), scancode);
+		return tmp ? std::string_view(output) : std::string_view();
+	}
+# else
+	VKFW_INLINE VKFW_NODISCARD char const *getKeyName(Key key, int scancode) {
+		return glfwGetKeyName(static_cast<int>(key), scancode);
+	}
+# endif
+	VKFW_INLINE VKFW_NODISCARD int getKeyScancode(Key key) {
+		return glfwGetKeyScancode(static_cast<int>(key));
+	}
 #else
 	VKFW_NODISCARD_WHEN_NO_EXCEPTIONS VKFW_INLINE typename ResultValueType<void>::type 
 	pollEvents() {
@@ -3695,5 +3725,28 @@ namespace VKFW_NAMESPACE {
 		glfwPostEmptyEvent();
 		return createResultValue(getError(), VKFW_NAMESPACE_STRING"::postEmptyEvent");
 	}
+	VKFW_INLINE VKFW_NODISCARD typename ResultValueType<bool>::type rawMouseMotionSupported() {
+		bool output = static_cast<bool>(glfwRawMouseMotionSupported());
+		return createResultValue(getError(), output, VKFW_NAMESPACE_STRING"::rawMouseMotionSupported");
+	}
+
+# ifdef VKFW_HAS_STRING_VIEW
+	VKFW_INLINE VKFW_NODISCARD typename ResultValueType<std::string_view>::type 
+	getKeyName(Key key, int32_t scancode) {
+		char const *tmp = glfwGetKeyName(static_cast<int>(key), static_cast<int>(scancode));
+		std::string_view output;
+		if (tmp)
+			output = tmp;
+# else
+	VKFW_INLINE VKFW_NODISCARD typename ResultValueType<char const *>::type 
+	getKeyName(Key key, int32_t scancode) {
+		char const *output = glfwGetKeyName(static_cast<int>(key), static_cast<int>(scancode));
+# endif
+		return createResultValue(getError(), output, VKFW_NAMESPACE_STRING"::rawMouseMotionSupported");
+	}
 #endif
+	VKFW_INLINE VKFW_NODISCARD typename ResultValueType<int>::type getKeyScancode(Key key) {
+		int32_t output = static_cast<int32_t>(glfwGetKeyScancode(static_cast<int>(key)));
+		return createResultValue(getError(), output, VKFW_NAMESPACE_STRING"::rawMouseMotionSupported");
+	}
 }
