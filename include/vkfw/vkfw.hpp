@@ -1665,6 +1665,18 @@ namespace VKFW_NAMESPACE {
 		VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type 
 			setUserPointer(void *pointer) const;
 
+		VKFW_NODISCARD typename ResultValueType<bool>::type getKey(Key key);
+		VKFW_NODISCARD typename ResultValueType<bool>::type getMouseButton(MouseButton button);
+
+		VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type
+			getCursorPos(double *xpos, double *ypos) const;
+		VKFW_NODISCARD typename ResultValueType<std::tuple<double, double>>::type getCursorPos() const;
+		VKFW_NODISCARD typename ResultValueType<double>::type getCursorPosX() const;
+		VKFW_NODISCARD typename ResultValueType<double>::type getCursorPosY() const;
+
+		VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type
+			setCursorPos(double xpos, double ypos) const;
+
 	private:
 		GLFWwindow *m_window;
 	};
@@ -2256,6 +2268,11 @@ namespace VKFW_NAMESPACE {
 	VKFW_NODISCARD typename ResultValueType<void *>::type getWindowUserPointer(GLFWwindow *window);
 	VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type
 		setWindowUserPointer(GLFWwindow *window, void *pointer);
+
+	VKFW_NODISCARD bool getKey(GLFWwindow *window, Key key);
+	VKFW_NODISCARD bool getMouseButton(GLFWwindow *window, MouseButton button);
+	void getCursorPos(GLFWwindow *window, double *xpos, double *ypos);
+	void setCursorPos(GLFWwindow *window, double xpos, double ypos);
 #endif
 
 #ifdef VKFW_DISABLE_ENHANCED_MODE
@@ -2290,10 +2307,6 @@ namespace VKFW_NAMESPACE {
 	VKFW_NODISCARD typename ResultValueType<int>::type getKeyScancode(Key key);
 #endif
 	// To be implemented
-	// int glfwGetKey(GLFWwindow *window, int key);
-	// int glfwGetMouseButton(GLFWwindow *window, int button);
-	// void glfwGetCursorPos(GLFWwindow *window, double *xpos, double *ypos);
-	// void glfwSetCursorPos(GLFWwindow *window, double xpos, double ypos);
 	// GLFWcursor *glfwCreateCursor(GLFWimage const *image, int xhot, int yhot);
 	// GLFWcursor *glfwCreateStandardCursor(int shape);
 	// void glfwDestroyCursor(GLFWcursor *cursor);
@@ -3220,6 +3233,21 @@ namespace VKFW_NAMESPACE {
 # endif
 	}
 
+	VKFW_INLINE VKFW_NODISCARD bool getKey(GLFWwindow *window, Key key) {
+		return glfwGetKey(window, static_cast<int>(key))
+			== static_cast<int>(KeyAction::VKFW_ENUMERATOR(Press));
+	}
+	VKFW_NODISCARD bool getMouseButton(GLFWwindow *window, MouseButton button) {
+		return glfwGetKey(window, static_cast<int>(button))
+			== static_cast<int>(MouseButtonAction::VKFW_ENUMERATOR(Press));
+	}
+	void getCursorPos(GLFWwindow *window, double *xpos, double *ypos) {
+		glfwGetCursorPos(window, xpos, ypos);
+	}
+	void setCursorPos(GLFWwindow *window, double xpos, double ypos) {
+		glfwSetCursorPos(window, xpos, ypos);
+	}
+
 #else
 	VKFW_INLINE VKFW_NODISCARD typename ResultValueType<bool>::type Window::shouldClose() const {
 		auto output = static_cast<bool>(glfwWindowShouldClose(m_window));
@@ -3665,15 +3693,60 @@ namespace VKFW_NAMESPACE {
 	VKFW_INLINE VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type
 	Window::setIcon(std::span<GLFWimage> images) {
 		glfwSetWindowIcon(m_window, static_cast<int>(images.size()), images.data());
+		return createResultValue(getError(), VKFW_NAMESPACE_STRING"::Window::setIcon");
 	}
 # endif
 	VKFW_INLINE VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type
 	Window::setIcon(std::vector<GLFWimage> images) {
 		glfwSetWindowIcon(m_window, static_cast<int>(images.size()), images.data());
+		return createResultValue(getError(), VKFW_NAMESPACE_STRING"::Window::setIcon");
 	}
 	VKFW_INLINE VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type
 	Window::setIcon(size_t image_count, GLFWimage *images) {
 		glfwSetWindowIcon(m_window, static_cast<int>(image_count), images);
+		return createResultValue(getError(), VKFW_NAMESPACE_STRING"::Window::setIcon");
+	}
+
+	VKFW_INLINE VKFW_NODISCARD typename ResultValueType<bool>::type Window::getKey(Key key) {
+		bool output = glfwGetKey(m_window, static_cast<int>(key)) 
+			== static_cast<int>(KeyAction::VKFW_ENUMERATOR(Press));
+		return createResultValue(getError(), output, VKFW_NAMESPACE_STRING"::Window::getKey");
+	}
+	VKFW_INLINE VKFW_NODISCARD typename ResultValueType<bool>::type 
+	Window::getMouseButton(MouseButton button) {
+		bool output = glfwGetMouseButton(m_window, static_cast<int>(button))
+			== static_cast<int>(MouseButtonAction::VKFW_ENUMERATOR(Press));
+		return createResultValue(getError(), output, VKFW_NAMESPACE_STRING"::Window::getMouseButton");
+	}
+
+	VKFW_INLINE VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type
+	Window::getCursorPos(double *xpos, double *ypos) const {
+		glfwGetCursorPos(m_window, xpos, ypos);
+		return createResultValue(getError(), VKFW_NAMESPACE_STRING"::Window::getCursorPos");
+	}
+	VKFW_INLINE VKFW_NODISCARD typename ResultValueType<std::tuple<double, double>>::type 
+	Window::getCursorPos() const {
+		std::tuple<double, double> output;
+		glfwGetCursorPos(m_window, &std::get<0>(output), &std::get<1>(output));
+		return createResultValue(getError(), output, VKFW_NAMESPACE_STRING"::Window::getCursorPos");
+	}
+	VKFW_INLINE VKFW_NODISCARD typename ResultValueType<double>::type 
+	Window::getCursorPosX() const {
+		double output;
+		glfwGetCursorPos(m_window, &output, nullptr);
+		return createResultValue(getError(), output, VKFW_NAMESPACE_STRING"::Window::getCursorPosX");
+	}
+	VKFW_INLINE VKFW_NODISCARD typename ResultValueType<double>::type 
+	Window::getCursorPosY() const {
+		double output;
+		glfwGetCursorPos(m_window, nullptr, &output);
+		return createResultValue(getError(), output, VKFW_NAMESPACE_STRING"::Window::getCursorPosY");
+	}
+
+	VKFW_INLINE VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type
+	Window::setCursorPos(double xpos, double ypos) const {
+		glfwSetCursorPos(m_window, xpos, ypos);
+		return createResultValue(getError(), VKFW_NAMESPACE_STRING"::Window::setCursorPos");
 	}
 #endif
 
@@ -3689,7 +3762,7 @@ namespace VKFW_NAMESPACE {
 # ifdef VKFW_HAS_STRING_VIEW
 	VKFW_INLINE VKFW_NODISCARD std::string_view getKeyName(Key key, int scancode) {
 		char const *tmp = glfwGetKeyName(static_cast<int>(key), scancode);
-		return tmp ? std::string_view(output) : std::string_view();
+		return tmp ? std::string_view(tmp) : std::string_view();
 	}
 # else
 	VKFW_INLINE VKFW_NODISCARD char const *getKeyName(Key key, int scancode) {
@@ -3744,9 +3817,9 @@ namespace VKFW_NAMESPACE {
 # endif
 		return createResultValue(getError(), output, VKFW_NAMESPACE_STRING"::rawMouseMotionSupported");
 	}
-#endif
 	VKFW_INLINE VKFW_NODISCARD typename ResultValueType<int>::type getKeyScancode(Key key) {
 		int32_t output = static_cast<int32_t>(glfwGetKeyScancode(static_cast<int>(key)));
 		return createResultValue(getError(), output, VKFW_NAMESPACE_STRING"::rawMouseMotionSupported");
 	}
+#endif
 }
