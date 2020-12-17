@@ -2374,6 +2374,64 @@ namespace VKFW_NAMESPACE {
 	VKFW_NODISCARD typename ResultValueType<uint64_t>::type getTimerFrequency();
 #endif
 
+	VKFW_INLINE VKFW_NODISCARD bool joystickPresent(Joystick jid) {
+		return static_cast<bool>(glfwJoystickPresent(static_cast<int>(jid)));
+	}
+	VKFW_INLINE VKFW_NODISCARD float const *getJoystickAxes(Joystick jid, int *count) {
+		return glfwGetJoystickAxes(static_cast<int>(jid), count);
+	}
+	VKFW_INLINE VKFW_NODISCARD const unsigned char *getJoystickButtons(Joystick jid, int *count) {
+		return glfwGetJoystickButtons(static_cast<int>(jid), count);
+	}
+	VKFW_INLINE VKFW_NODISCARD const unsigned char *getJoystickHats(Joystick jid, int *count) {
+		return glfwGetJoystickHats(static_cast<int>(jid), count);
+	}
+#ifdef VKFW_HAS_STRING_VIEW
+	VKFW_INLINE VKFW_NODISCARD std::string_view getJoystickName(Joystick jid) {
+		return glfwGetJoystickName(static_cast<int>(jid));
+	}
+	VKFW_INLINE VKFW_NODISCARD std::string_view getJoystickGUID(Joystick jid) {
+		return glfwGetJoystickGUID(static_cast<int>(jid));
+	}
+#else
+	VKFW_INLINE VKFW_NODISCARD char const *getJoystickName(Joystick jid) {
+		return glfwGetJoystickName(static_cast<int>(jid));
+	}
+	VKFW_INLINE VKFW_NODISCARD char const *getJoystickGUID(Joystick jid) {
+		return glfwGetJoystickGUID(static_cast<int>(jid));
+	}
+#endif
+	VKFW_INLINE void getJoystickUserPointer(Joystick jid, void *pointer) {
+		glfwSetJoystickUserPointer(static_cast<int>(jid), pointer);
+	}
+	VKFW_INLINE VKFW_NODISCARD void *getJoystickUserPointer(Joystick jid) {
+		return glfwGetJoystickUserPointer(static_cast<int>(jid));
+	}
+	VKFW_INLINE VKFW_NODISCARD bool joystickIsGamepad(Joystick jid) {
+		return static_cast<bool>(glfwJoystickIsGamepad(static_cast<int>(jid)));
+	}
+	VKFW_INLINE GLFWjoystickfun setJoystickCallback(GLFWjoystickfun callback) {
+		return glfwSetJoystickCallback(callback);
+	}
+#ifdef VKFW_HAS_STRING_VIEW
+	VKFW_INLINE VKFW_NODISCARD bool updateGamepadMappings(std::string_view string) {
+		return static_cast<bool>(glfwUpdateGamepadMappings(string.data()));
+	}
+	VKFW_INLINE VKFW_NODISCARD char const *getGamepadName(Joystick jid) {
+		return glfwGetGamepadName(static_cast<int>(jid));
+	}
+#else
+	VKFW_INLINE VKFW_NODISCARD bool updateGamepadMappings(char const *string) {
+		return static_cast<bool>(glfwUpdateGamepadMappings(string));
+	}
+	VKFW_INLINE VKFW_NODISCARD char const *getGamepadName(Joystick jid) {
+		return glfwGetGamepadName(static_cast<int>(jid));
+	}
+#endif
+	VKFW_INLINE VKFW_NODISCARD bool getGamepadState(Joystick jid, GLFWgamepadstate *state) {
+		return static_cast<bool>(glfwGetGamepadState(static_cast<int>(jid), state));
+	}
+
 	// To be implemented
 	// int glfwExtensionSupported(char const *extension);
 	// GLFWglproc glfwGetProcAddress(char const *procname);
@@ -2384,21 +2442,6 @@ namespace VKFW_NAMESPACE {
 	// GLFWvkproc glfwGetInstanceProcAddress(VkInstance instance, char const *procname);
 	// int glfwGetPhysicalDevicePresentationSupport(VkInstance instance, VkPhysicalDevice device, uint32_t queuefamily);
 	// VkResult glfwCreateWindowSurface(VkInstance instance, GLFWwindow *window, VkAllocationCallbacks const *allocator, VkSurfaceKHR *surface);
-
-	// To be implemented
-	// int glfwJoystickPresent(int jid);
-	// float const *glfwGetJoystickAxes(int jid, int *count);
-	// const unsigned char *glfwGetJoystickButtons(int jid, int *count);
-	// const unsigned char *glfwGetJoystickHats(int jid, int *count);
-	// char const *glfwGetJoystickName(int jid);
-	// char const *glfwGetJoystickGUID(int jid);
-	// void glfwSetJoystickUserPointer(int jid, void *pointer);
-	// void *glfwGetJoystickUserPointer(int jid);
-	// int glfwJoystickIsGamepad(int jid);
-	// GLFWjoystickfun glfwSetJoystickCallback(GLFWjoystickfun callback);
-	// int glfwUpdateGamepadMappings(char const *string);
-	// char const *glfwGetGamepadName(int jid);
-	// int glfwGetGamepadState(int jid, GLFWgamepadstate *state);
 }
 
 #ifndef VKFW_NO_STD_FUNCTION_CALLBACKS
@@ -3955,7 +3998,7 @@ namespace VKFW_NAMESPACE {
 
 #ifdef VKFW_DISABLE_ENHANCED_MODE
 # ifdef VKFW_HAS_STRING_VIEW
-	VKFW_INLINE void setClipboardString(std::string_view string) { 
+	VKFW_INLINE void setClipboardString(std::string_view string) {
 		glfwSetClipboardString(nullptr, string.data());
 	}
 	VKFW_INLINE std::string_view getClipboardString() {
@@ -4001,7 +4044,7 @@ namespace VKFW_NAMESPACE {
 		double output = glfwGetTime();
 		return createResultValue(getError(), output, VKFW_NAMESPACE_STRING"::getTime");
 	}
-	VKFW_INLINE VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type 
+	VKFW_INLINE VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type
 	setTime(double time) {
 		glfwSetTime(time);
 		return createResultValue(getError(), VKFW_NAMESPACE_STRING"::setTime");
