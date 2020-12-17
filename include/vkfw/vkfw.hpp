@@ -2450,31 +2450,33 @@ namespace VKFW_NAMESPACE {
 	VKFW_INLINE VKFW_NODISCARD bool glfwVulkanSupported() { return glfwVulkanSupported(); }
 
 # ifdef VKFW_HAS_SPAN
-	std::span<char const *> getRequiredInstanceExtensions() {
+	VKFW_INLINE VKFW_NODISCARD std::span<char const *> getRequiredInstanceExtensions() {
 		uint32_t count;
 		auto pointer = glfwGetRequiredInstanceExtensions(&count);
 		return std::span<char const *>(pointer, count);
 	}
 # endif
-	char const **getRequiredInstanceExtensions(uint32_t *count) {
+	VKFW_INLINE VKFW_NODISCARD char const **getRequiredInstanceExtensions(uint32_t *count) {
 		return glfwGetRequiredInstanceExtensions(count);
 	}
 #ifdef VKFW_HAS_STRING_VIEW
-	GLFWvkproc getInstanceProcAddress(VkInstance instance, std::string_view procname) {
+	VKFW_INLINE VKFW_NODISCARD GLFWvkproc getInstanceProcAddress(VkInstance instance, std::string_view procname) {
 		return glfwGetInstanceProcAddress(instance, procname.data());
 	}
 #else
-	GLFWvkproc getInstanceProcAddress(VkInstance instance, char const *procname) {
+	VKFW_INLINE VKFW_NODISCARD GLFWvkproc getInstanceProcAddress(VkInstance instance, char const *procname) {
 		return glfwGetInstanceProcAddress(instance, procname);
 	}
 #endif
-	bool getPhysicalDevicePresentationSupport(VkInstance instance, VkPhysicalDevice device, 
-											  uint32_t queuefamily) {
+	VKFW_INLINE VKFW_NODISCARD bool getPhysicalDevicePresentationSupport(VkInstance instance, 
+																		 VkPhysicalDevice device, 
+																		 uint32_t queuefamily) {
 		return static_cast<bool>(glfwGetPhysicalDevicePresentationSupport(instance, device, 
 																		  queuefamily));
 	}
-	VkResult createWindowSurface(VkInstance instance, GLFWwindow *window,
-								 VkAllocationCallbacks const *allocator, VkSurfaceKHR *surface) {
+	VKFW_INLINE VkResult createWindowSurface(VkInstance instance, GLFWwindow *window,
+											 VkAllocationCallbacks const *allocator, 
+											 VkSurfaceKHR *surface) {
 		return glfwCreateWindowSurface(instance, window, allocator, surface);
 	}
 }
