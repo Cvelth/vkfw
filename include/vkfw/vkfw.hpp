@@ -22,54 +22,9 @@
 # error "vkfw.hpp needs at least c++ standard version 11"
 #endif
 
-#ifndef VKFW_INCLUDE_GL
-# define GLFW_INCLUDE_NONE
-#endif
-#ifndef VKFW_NO_INCLUDE_VULKAN
-# define GLFW_INCLUDE_VULKAN
-#endif
-
-#if defined(VKFW_NO_STRUCT_CONSTRUCTORS) && !defined(VULKAN_HPP_NO_STRUCT_CONSTRUCTORS)
-# define VULKAN_HPP_NO_STRUCT_CONSTRUCTORS VKFW_NO_STRUCT_CONSTRUCTORS
-#endif
-#if defined(VKFW_NO_EXCEPTIONS) && !defined(VULKAN_HPP_NO_EXCEPTIONS)
-# define VULKAN_HPP_NO_EXCEPTIONS VKFW_NO_EXCEPTIONS
-#endif
-#if defined(VKFW_NO_NODISCARD_WARNINGS) && !defined(VULKAN_HPP_NO_NODISCARD_WARNINGS)
-# define VULKAN_HPP_NO_NODISCARD_WARNINGS VKFW_NO_NODISCARD_WARNINGS
-#endif
-#if defined(VKFW_ASSERT) && !defined(VULKAN_HPP_ASSERT)
-# define VULKAN_HPP_ASSERT VKFW_ASSERT
-#endif
-#if defined(VKFW_ASSERT_ON_RESULT) && !defined(VULKAN_HPP_ASSERT_ON_RESULT)
-# define VULKAN_HPP_ASSERT_ON_RESULT VKFW_ASSERT_ON_RESULT
-#endif
-#if defined(VKFW_DISABLE_ENHANCED_MODE) && !defined(VULKAN_HPP_DISABLE_ENHANCED_MODE)
-# define VULKAN_HPP_DISABLE_ENHANCED_MODE VKFW_DISABLE_ENHANCED_MODE
-#endif
-#if defined(VKFW_HPP_INLINE) && !defined(VULKAN_HPP_INLINE)
-# define VULKAN_HPP_INLINE VKFW_HPP_INLINE
-#endif
-#if defined(VKFW_NO_SMART_HANDLE) && !defined(VULKAN_HPP_NO_SMART_HANDLE)
-# define VULKAN_HPP_NO_SMART_HANDLE VKFW_NO_SMART_HANDLE
-#endif
-
-// Standard library includes go here!
-#include <cstdint>
-#include <string>
-#include <system_error>
-#include <tuple>
-#include <vector>
-
-#include <GLFW/glfw3.h>
-//#ifndef VKFW_NO_INCLUDE_VULKAN_HPP
-# include <vulkan/vulkan.hpp>
-//#endif
-
 #if 20 <= VKFW_CPP_VERSION && defined(__has_include) && __has_include( <version> )
 # include <version>
 #endif
-
 #if !defined(VKFW_NO_STRING_VIEW) && 17 <= VKFW_CPP_VERSION
 # include <string_view>
 # define VKFW_HAS_STRING_VIEW
@@ -78,6 +33,54 @@
 	&& defined(__has_include) && 202002L <= __cpp_lib_span && __has_include( <span> )
 # include <span>
 # define VKFW_HAS_SPAN
+#endif
+#if !defined(VKFW_NO_SPACESHIP_OPERATOR) && 20 <= VKFW_CPP_VERSION \
+	&& defined(__cpp_impl_three_way_comparison) && defined(__has_include) \
+	&& 201711 <= __cpp_impl_three_way_comparison && __has_include( <compare> )
+# define VKFW_HAS_SPACESHIP_OPERATOR
+# include <compare>
+#endif
+
+#include <cstdint>
+#include <string>
+#include <system_error>
+#include <tuple>
+#include <vector>
+
+#ifndef VKFW_INCLUDE_GL
+# define GLFW_INCLUDE_NONE
+#endif
+#ifndef VKFW_NO_INCLUDE_VULKAN
+# define GLFW_INCLUDE_VULKAN
+#endif
+#include <GLFW/glfw3.h>
+
+#ifndef VKFW_NO_INCLUDE_VULKAN_HPP
+# if defined(VKFW_NO_STRUCT_CONSTRUCTORS) && !defined(VULKAN_HPP_NO_STRUCT_CONSTRUCTORS)
+#   define VULKAN_HPP_NO_STRUCT_CONSTRUCTORS VKFW_NO_STRUCT_CONSTRUCTORS
+# endif
+# if defined(VKFW_NO_EXCEPTIONS) && !defined(VULKAN_HPP_NO_EXCEPTIONS)
+#   define VULKAN_HPP_NO_EXCEPTIONS VKFW_NO_EXCEPTIONS
+# endif
+# if defined(VKFW_NO_NODISCARD_WARNINGS) && !defined(VULKAN_HPP_NO_NODISCARD_WARNINGS)
+#   define VULKAN_HPP_NO_NODISCARD_WARNINGS VKFW_NO_NODISCARD_WARNINGS
+# endif
+# if defined(VKFW_ASSERT) && !defined(VULKAN_HPP_ASSERT)
+#   define VULKAN_HPP_ASSERT VKFW_ASSERT
+# endif
+# if defined(VKFW_ASSERT_ON_RESULT) && !defined(VULKAN_HPP_ASSERT_ON_RESULT)
+#   define VULKAN_HPP_ASSERT_ON_RESULT VKFW_ASSERT_ON_RESULT
+# endif
+# if defined(VKFW_DISABLE_ENHANCED_MODE) && !defined(VULKAN_HPP_DISABLE_ENHANCED_MODE)
+#   define VULKAN_HPP_DISABLE_ENHANCED_MODE VKFW_DISABLE_ENHANCED_MODE
+# endif
+# if defined(VKFW_HPP_INLINE) && !defined(VULKAN_HPP_INLINE)
+#   define VULKAN_HPP_INLINE VKFW_HPP_INLINE
+# endif
+# if defined(VKFW_NO_SMART_HANDLE) && !defined(VULKAN_HPP_NO_SMART_HANDLE)
+#   define VULKAN_HPP_NO_SMART_HANDLE VKFW_NO_SMART_HANDLE
+# endif
+# include <vulkan/vulkan.hpp>
 #endif
 
 #ifdef VKFW_DISABLE_ENHANCED_MODE
@@ -127,12 +130,6 @@ static_assert(GLFW_VERSION_MAJOR == 3
 #   define VKFW_INLINE inline
 # endif
 #endif
-
-//#ifdef VKFW_TYPESAFE_CONVERSION
-//# define VKFW_TYPESAFE_EXPLICIT
-//#else
-//# define VKFW_TYPESAFE_EXPLICIT explicit
-//#endif
 
 #ifdef __cpp_constexpr
 # define VKFW_CONSTEXPR constexpr
@@ -191,15 +188,122 @@ static_assert(GLFW_VERSION_MAJOR == 3
 # define VKFW_ENUMERATOR2(name_1, name_2) e ## name_1
 #endif
 
-#if defined(VULKAN_HPP_HAS_SPACESHIP_OPERATOR) && !defined(VKFW_HAS_SPACESHIP_OPERATOR)
-# define VKFW_HAS_SPACESHIP_OPERATOR VULKAN_HPP_HAS_SPACESHIP_OPERATOR
-#endif
-
 namespace VKFW_NAMESPACE {
+#ifndef VKFW_NO_INCLUDE_VULKAN_HPP
 	template <typename BitType> using Flags
 		= VULKAN_HPP_NAMESPACE::Flags<BitType>;
 	template <typename FlagBitsType> using FlagTraits
 		= VULKAN_HPP_NAMESPACE::FlagTraits<FlagBitsType>;
+#else
+	template <typename FlagBitsType> struct FlagTraits { enum { allFlags = 0 }; };
+	template <typename BitType> class Flags {
+	public:
+		using MaskType = typename std::underlying_type<BitType>::type;
+
+		VKFW_CONSTEXPR Flags() VKFW_NOEXCEPT : m_mask(0) {}
+		VKFW_CONSTEXPR Flags(BitType bit) VKFW_NOEXCEPT : m_mask(static_cast<MaskType>(bit)) {}
+		VKFW_CONSTEXPR Flags(Flags<BitType> const &rhs) VKFW_NOEXCEPT : m_mask(rhs.m_mask) {}
+		VKFW_CONSTEXPR explicit Flags(MaskType flags) VKFW_NOEXCEPT : m_mask(flags) {}
+
+# ifdef VKFW_HAS_SPACESHIP_OPERATOR
+		auto operator<=>(Flags<BitType> const &) const = default;
+# else
+		VKFW_CONSTEXPR bool operator<(Flags<BitType> const &rhs) const VKFW_NOEXCEPT {
+			return m_mask < rhs.m_mask;
+		}
+		VKFW_CONSTEXPR bool operator<=(Flags<BitType> const &rhs) const VKFW_NOEXCEPT {
+			return m_mask <= rhs.m_mask;
+		}
+		VKFW_CONSTEXPR bool operator>(Flags<BitType> const &rhs) const VKFW_NOEXCEPT {
+			return m_mask > rhs.m_mask;
+		}
+		VKFW_CONSTEXPR bool operator>=(Flags<BitType> const &rhs) const VKFW_NOEXCEPT {
+			return m_mask >= rhs.m_mask;
+		}
+		VKFW_CONSTEXPR bool operator==(Flags<BitType> const &rhs) const VKFW_NOEXCEPT {
+			return m_mask == rhs.m_mask;
+		}
+		VKFW_CONSTEXPR bool operator!=(Flags<BitType> const &rhs) const VKFW_NOEXCEPT {
+			return m_mask != rhs.m_mask;
+		}
+# endif
+		VKFW_CONSTEXPR bool operator!() const VKFW_NOEXCEPT { return !m_mask; }
+		VKFW_CONSTEXPR Flags<BitType> operator&(Flags<BitType> const &rhs) const VKFW_NOEXCEPT {
+			return Flags<BitType>(m_mask & rhs.m_mask);
+		}
+		VKFW_CONSTEXPR Flags<BitType> operator|(Flags<BitType> const &rhs) const VKFW_NOEXCEPT {
+			return Flags<BitType>(m_mask | rhs.m_mask);
+		}
+		VKFW_CONSTEXPR Flags<BitType> operator^(Flags<BitType> const &rhs) const VKFW_NOEXCEPT {
+			return Flags<BitType>(m_mask ^ rhs.m_mask);
+		}
+		VKFW_CONSTEXPR Flags<BitType> operator~() const VKFW_NOEXCEPT {
+			return Flags<BitType>(m_mask ^ FlagTraits<BitType>::allFlags);
+		}
+
+		VKFW_CONSTEXPR_14 Flags<BitType> &operator=(Flags<BitType> const &rhs) VKFW_NOEXCEPT {
+			m_mask = rhs.m_mask;
+			return *this;
+		}
+		VKFW_CONSTEXPR_14 Flags<BitType> &operator|=(Flags<BitType> const &rhs) VKFW_NOEXCEPT {
+			m_mask |= rhs.m_mask;
+			return *this;
+		}
+		VKFW_CONSTEXPR_14 Flags<BitType> &operator&=(Flags<BitType> const &rhs) VKFW_NOEXCEPT {
+			m_mask &= rhs.m_mask;
+			return *this;
+		}
+		VKFW_CONSTEXPR_14 Flags<BitType> &operator^=(Flags<BitType> const &rhs) VKFW_NOEXCEPT {
+			m_mask ^= rhs.m_mask;
+			return *this;
+		}
+
+		explicit VKFW_CONSTEXPR operator bool() const VKFW_NOEXCEPT { return !!m_mask; }
+		explicit VKFW_CONSTEXPR operator MaskType() const VKFW_NOEXCEPT { return m_mask; }
+
+	private:
+		MaskType m_mask;
+};
+
+# if !defined(VKFW_HAS_SPACESHIP_OPERATOR)
+	template <typename BitType>
+	VKFW_CONSTEXPR bool operator<(BitType bit, Flags<BitType> const &flags) VKFW_NOEXCEPT {
+		return flags > bit;
+	}
+	template <typename BitType>
+	VKFW_CONSTEXPR bool operator<=(BitType bit, Flags<BitType> const &flags) VKFW_NOEXCEPT {
+		return flags >= bit;
+	}
+	template <typename BitType>
+	VKFW_CONSTEXPR bool operator>(BitType bit, Flags<BitType> const &flags) VKFW_NOEXCEPT {
+		return flags < bit;
+	}
+	template <typename BitType>
+	VKFW_CONSTEXPR bool operator>=(BitType bit, Flags<BitType> const &flags) VKFW_NOEXCEPT {
+		return flags <= bit;
+	}
+	template <typename BitType>
+	VKFW_CONSTEXPR bool operator==(BitType bit, Flags<BitType> const &flags) VKFW_NOEXCEPT {
+		return flags == bit;
+	}
+	template <typename BitType>
+	VKFW_CONSTEXPR bool operator!=(BitType bit, Flags<BitType> const &flags) VKFW_NOEXCEPT {
+		return flags != bit;
+	}
+# endif
+	template <typename BitType>
+	VKFW_CONSTEXPR Flags<BitType> operator&(BitType bit, Flags<BitType> const &flags) VKFW_NOEXCEPT {
+		return flags & bit;
+	}
+	template <typename BitType>
+	VKFW_CONSTEXPR Flags<BitType> operator|(BitType bit, Flags<BitType> const &flags) VKFW_NOEXCEPT {
+		return flags | bit;
+	}
+	template <typename BitType>
+	VKFW_CONSTEXPR Flags<BitType> operator^(BitType bit, Flags<BitType> const &flags) VKFW_NOEXCEPT {
+		return flags ^ bit;
+	}
+#endif
 
 	enum Boolean {
 		VKFW_ENUMERATOR(True) = GLFW_TRUE,
@@ -1054,14 +1158,77 @@ namespace VKFW_NAMESPACE {
 
 namespace VKFW_NAMESPACE {
 #ifndef VKFW_NO_SMART_HANDLE
+# ifndef VKFW_NO_INCLUDE_VULKAN_HPP
 	template <typename Type> using UniqueHandleTraits
 		= VULKAN_HPP_NAMESPACE::UniqueHandleTraits<Type, VULKAN_HPP_DEFAULT_DISPATCHER_TYPE>;
 	template <typename Type> using UniqueHandle
 		= VULKAN_HPP_NAMESPACE::UniqueHandle<Type, VULKAN_HPP_DEFAULT_DISPATCHER_TYPE>;
+# else
+	template <typename Type> class UniqueHandleTraits;
+	template <typename Type> class UniqueHandle 
+		: public UniqueHandleTraits<Type>::deleter {
+	private:
+		using Deleter = typename UniqueHandleTraits<Type>::deleter;
+
+	public:
+		using element_type = Type;
+
+		UniqueHandle() : Deleter(), m_value() {}
+		explicit UniqueHandle(Type const &value, Deleter const &deleter = Deleter()) VKFW_NOEXCEPT
+			: Deleter(deleter) , m_value(value) {}
+		UniqueHandle(UniqueHandle const &) = delete;
+		UniqueHandle(UniqueHandle &&other) VKFW_NOEXCEPT
+			: Deleter(std::move(static_cast<Deleter &>(other))), m_value(other.release()) {}
+		~UniqueHandle() VKFW_NOEXCEPT { if (m_value) this->destroy(m_value); }
+
+		UniqueHandle &operator=(UniqueHandle const &) = delete;
+		UniqueHandle &operator=(UniqueHandle &&other) VKFW_NOEXCEPT {
+			reset(other.release());
+			*static_cast<Deleter *>(this) = std::move(static_cast<Deleter &>(other));
+			return *this;
+		}
+
+		explicit operator bool() const VKFW_NOEXCEPT {
+			return m_value.operator bool();
+		}
+		Type const *operator->() const VKFW_NOEXCEPT {
+			return &m_value;
+		}
+		Type *operator->() VKFW_NOEXCEPT {
+			return &m_value;
+		}
+		Type const &operator*() const VKFW_NOEXCEPT {
+			return m_value;
+		}
+		Type &operator*() VKFW_NOEXCEPT {
+			return m_value;
+		}
+		const Type &get() const VKFW_NOEXCEPT {
+			return m_value;
+		}
+		Type &get() VKFW_NOEXCEPT {
+			return m_value;
+		}
+		void reset(Type const &value = Type()) VKFW_NOEXCEPT {
+			if (m_value != value) {
+				if (m_value) this->destroy(m_value);
+				m_value = value;
+			}
+		}
+		Type release() VKFW_NOEXCEPT {
+			Type value = m_value;
+			m_value = nullptr;
+			return value;
+		}
+		void swap(UniqueHandle<Type> &rhs) VKFW_NOEXCEPT {
+			std::swap(m_value, rhs.m_value);
+			std::swap(static_cast<Deleter &>(*this), static_cast<Deleter &>(rhs));
+		}
+	private:
+		Type m_value;
+	};
+# endif
 #endif
-	//template <typename Type> struct isHandleType {
-	//	static VKFW_CONST_OR_CONSTEXPR bool value = false;
-	//};
 }
 
 #ifndef VKFW_NO_EXCEPTIONS
@@ -1400,8 +1567,8 @@ namespace VKFW_NAMESPACE {
 			m_monitor = nullptr; return *this;
 		}
 		VKFW_INLINE VKFW_CONSTEXPR operator GLFWmonitor *() const VKFW_NOEXCEPT { return m_monitor; }
-		VKFW_INLINE VKFW_CONSTEXPR explicit operator bool() const VULKAN_HPP_NOEXCEPT { return m_monitor != nullptr; }
-		VKFW_INLINE VKFW_CONSTEXPR bool operator!() const VULKAN_HPP_NOEXCEPT { return m_monitor == nullptr; }
+		VKFW_INLINE VKFW_CONSTEXPR explicit operator bool() const VKFW_NOEXCEPT { return m_monitor != nullptr; }
+		VKFW_INLINE VKFW_CONSTEXPR bool operator!() const VKFW_NOEXCEPT { return m_monitor == nullptr; }
 # if defined(VKFW_HAS_SPACESHIP_OPERATOR)
 		auto operator<=>(Monitor const &) const = default;
 # else
@@ -1484,8 +1651,8 @@ namespace VKFW_NAMESPACE {
 			m_cursor = nullptr; return *this;
 		}
 		VKFW_INLINE VKFW_CONSTEXPR operator GLFWcursor *() const VKFW_NOEXCEPT { return m_cursor; }
-		VKFW_INLINE VKFW_CONSTEXPR explicit operator bool() const VULKAN_HPP_NOEXCEPT { return m_cursor != nullptr; }
-		VKFW_INLINE VKFW_CONSTEXPR bool operator!() const VULKAN_HPP_NOEXCEPT { return m_cursor == nullptr; }
+		VKFW_INLINE VKFW_CONSTEXPR explicit operator bool() const VKFW_NOEXCEPT { return m_cursor != nullptr; }
+		VKFW_INLINE VKFW_CONSTEXPR bool operator!() const VKFW_NOEXCEPT { return m_cursor == nullptr; }
 # if defined(VKFW_HAS_SPACESHIP_OPERATOR)
 		auto operator<=>(Cursor const &) const = default;
 # else
@@ -1521,8 +1688,8 @@ namespace VKFW_NAMESPACE {
 		}
 
 		VKFW_INLINE VKFW_CONSTEXPR operator GLFWwindow *() const VKFW_NOEXCEPT { return m_window; }
-		VKFW_INLINE VKFW_CONSTEXPR explicit operator bool() const VULKAN_HPP_NOEXCEPT { return m_window != nullptr; }
-		VKFW_INLINE VKFW_CONSTEXPR bool operator!() const VULKAN_HPP_NOEXCEPT { return m_window == nullptr; }
+		VKFW_INLINE VKFW_CONSTEXPR explicit operator bool() const VKFW_NOEXCEPT { return m_window != nullptr; }
+		VKFW_INLINE VKFW_CONSTEXPR bool operator!() const VKFW_NOEXCEPT { return m_window == nullptr; }
 # if defined(VKFW_HAS_SPACESHIP_OPERATOR)
 		auto operator<=>(Window const &) const = default;
 # else
@@ -2520,21 +2687,31 @@ namespace VKFW_NAMESPACE {
 }
 #endif
 
+#ifndef VKFW_NO_INCLUDE_VULKAN_HPP
 template <> struct VULKAN_HPP_NAMESPACE::FlagTraits<VKFW_NAMESPACE::ModifierKeyBits> {
-	enum : VkFlags {
-		allFlags = VkFlags(VKFW_NAMESPACE::ModifierKeyBits::VKFW_ENUMERATOR(Shift))
-		| VkFlags(VKFW_NAMESPACE::ModifierKeyBits::VKFW_ENUMERATOR(Control))
-		| VkFlags(VKFW_NAMESPACE::ModifierKeyBits::VKFW_ENUMERATOR(Alt))
-		| VkFlags(VKFW_NAMESPACE::ModifierKeyBits::VKFW_ENUMERATOR(Super))
-		| VkFlags(VKFW_NAMESPACE::ModifierKeyBits::VKFW_ENUMERATOR(CapsLock))
-		| VkFlags(VKFW_NAMESPACE::ModifierKeyBits::VKFW_ENUMERATOR(NumLock))
+#else
+template <> struct VKFW_NAMESPACE::FlagTraits<VKFW_NAMESPACE::ModifierKeyBits> {
+#endif 
+	using underlying_t = std::underlying_type<VKFW_NAMESPACE::ModifierKeyBits>::type;
+	enum : underlying_t {
+		allFlags = underlying_t(VKFW_NAMESPACE::ModifierKeyBits::VKFW_ENUMERATOR(Shift))
+		| underlying_t(VKFW_NAMESPACE::ModifierKeyBits::VKFW_ENUMERATOR(Control))
+		| underlying_t(VKFW_NAMESPACE::ModifierKeyBits::VKFW_ENUMERATOR(Alt))
+		| underlying_t(VKFW_NAMESPACE::ModifierKeyBits::VKFW_ENUMERATOR(Super))
+		| underlying_t(VKFW_NAMESPACE::ModifierKeyBits::VKFW_ENUMERATOR(CapsLock))
+		| underlying_t(VKFW_NAMESPACE::ModifierKeyBits::VKFW_ENUMERATOR(NumLock))
 	};
 };
+
 #ifndef VKFW_NO_SMART_HANDLE
 template<> struct VKFW_NAMESPACE::CustomDestroy<VKFW_NAMESPACE::Instance> {
 	VKFW_INLINE void destroy(Instance &instance) { static_cast<void>(instance.destroy()); }
 };
+# ifndef VKFW_NO_INCLUDE_VULKAN_HPP
 template<> class VULKAN_HPP_NAMESPACE::UniqueHandleTraits<VKFW_NAMESPACE::Instance, VULKAN_HPP_DEFAULT_DISPATCHER_TYPE> {
+# else
+template<> class VKFW_NAMESPACE::UniqueHandleTraits<VKFW_NAMESPACE::Instance> {
+# endif
 public:
 	using deleter = VKFW_NAMESPACE::CustomDestroy<VKFW_NAMESPACE::Instance>;
 };
@@ -2542,7 +2719,11 @@ public:
 template<> struct VKFW_NAMESPACE::CustomDestroy<VKFW_NAMESPACE::Window> {
 	VKFW_INLINE void destroy(Window &window) { static_cast<void>(window.destroy()); }
 };
+# ifndef VKFW_NO_INCLUDE_VULKAN_HPP
 template<> class VULKAN_HPP_NAMESPACE::UniqueHandleTraits<VKFW_NAMESPACE::Window, VULKAN_HPP_DEFAULT_DISPATCHER_TYPE> {
+# else
+template<> class VKFW_NAMESPACE::UniqueHandleTraits<VKFW_NAMESPACE::Window> {
+# endif
 public:
 	using deleter = VKFW_NAMESPACE::CustomDestroy<VKFW_NAMESPACE::Window>;
 };
@@ -2550,7 +2731,11 @@ public:
 template<> struct VKFW_NAMESPACE::CustomDestroy<VKFW_NAMESPACE::Cursor> {
 	VKFW_INLINE void destroy(Cursor &cursor) { static_cast<void>(cursor.destroy()); }
 };
+# ifndef VKFW_NO_INCLUDE_VULKAN_HPP
 template<> class VULKAN_HPP_NAMESPACE::UniqueHandleTraits<VKFW_NAMESPACE::Cursor, VULKAN_HPP_DEFAULT_DISPATCHER_TYPE> {
+# else
+template<> class VKFW_NAMESPACE::UniqueHandleTraits<VKFW_NAMESPACE::Cursor> {
+# endif
 public:
 	using deleter = VKFW_NAMESPACE::CustomDestroy<VKFW_NAMESPACE::Cursor>;
 };
