@@ -2432,16 +2432,51 @@ namespace VKFW_NAMESPACE {
 		return static_cast<bool>(glfwGetGamepadState(static_cast<int>(jid), state));
 	}
 
-	// To be implemented
-	// int glfwExtensionSupported(char const *extension);
-	// GLFWglproc glfwGetProcAddress(char const *procname);
-	// int glfwVulkanSupported(void);
-	// char const **glfwGetRequiredInstanceExtensions(uint32_t *count);
+#ifdef VKFW_HAS_STRING_VIEW
+	VKFW_INLINE VKFW_NODISCARD bool extensionSupported(std::string_view extension) {
+		return static_cast<bool>(glfwExtensionSupported(extension.data()));
+	}
+	VKFW_INLINE VKFW_NODISCARD GLFWglproc getProcAddress(std::string_view procname) {
+		return glfwGetProcAddress(procname.data());
+	}
+#else
+	VKFW_INLINE VKFW_NODISCARD bool extensionSupported(char const *extension) {
+		return static_cast<bool>(glfwExtensionSupported(extension));
+	}
+	VKFW_INLINE VKFW_NODISCARD GLFWglproc getProcAddress(char const *procname) {
+		return glfwGetProcAddress(procname);
+	}
+#endif
+	VKFW_INLINE VKFW_NODISCARD bool glfwVulkanSupported() { return glfwVulkanSupported(); }
 
-	// To be implemented
-	// GLFWvkproc glfwGetInstanceProcAddress(VkInstance instance, char const *procname);
-	// int glfwGetPhysicalDevicePresentationSupport(VkInstance instance, VkPhysicalDevice device, uint32_t queuefamily);
-	// VkResult glfwCreateWindowSurface(VkInstance instance, GLFWwindow *window, VkAllocationCallbacks const *allocator, VkSurfaceKHR *surface);
+# ifdef VKFW_HAS_SPAN
+	std::span<char const *> getRequiredInstanceExtensions() {
+		uint32_t count;
+		auto pointer = glfwGetRequiredInstanceExtensions(&count);
+		return std::span<char const *>(pointer, count);
+	}
+# endif
+	char const **getRequiredInstanceExtensions(uint32_t *count) {
+		return glfwGetRequiredInstanceExtensions(count);
+	}
+#ifdef VKFW_HAS_STRING_VIEW
+	GLFWvkproc getInstanceProcAddress(VkInstance instance, std::string_view procname) {
+		return glfwGetInstanceProcAddress(instance, procname.data());
+	}
+#else
+	GLFWvkproc getInstanceProcAddress(VkInstance instance, char const *procname) {
+		return glfwGetInstanceProcAddress(instance, procname);
+	}
+#endif
+	bool getPhysicalDevicePresentationSupport(VkInstance instance, VkPhysicalDevice device, 
+											  uint32_t queuefamily) {
+		return static_cast<bool>(glfwGetPhysicalDevicePresentationSupport(instance, device, 
+																		  queuefamily));
+	}
+	VkResult createWindowSurface(VkInstance instance, GLFWwindow *window,
+								 VkAllocationCallbacks const *allocator, VkSurfaceKHR *surface) {
+		return glfwCreateWindowSurface(instance, window, allocator, surface);
+	}
 }
 
 #ifndef VKFW_NO_STD_FUNCTION_CALLBACKS
