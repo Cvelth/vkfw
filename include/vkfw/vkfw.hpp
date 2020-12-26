@@ -585,7 +585,7 @@ namespace VKFW_NAMESPACE {
 	};
 	class ModifierKeyFlags {
 	public:
-		using MaskType = typename std::MaskTypeype<ModifierKeyBits>::type;
+		using MaskType = typename std::underlying_type<ModifierKeyBits>::type;
 		enum class traits : MaskType {
 			allFlags = MaskType(VKFW_NAMESPACE::ModifierKeyBits::VKFW_ENUMERATOR(Shift))
 					 | MaskType(VKFW_NAMESPACE::ModifierKeyBits::VKFW_ENUMERATOR(Control))
