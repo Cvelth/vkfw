@@ -2632,11 +2632,34 @@ namespace VKFW_NAMESPACE {
 		return static_cast<bool>(glfwGetPhysicalDevicePresentationSupport(instance, device,
 																		  queuefamily));
 	}
+#ifdef VKFW_DISABLE_ENHANCED_MODE
 	VKFW_INLINE VkResult createWindowSurface(VkInstance instance, GLFWwindow *window,
 											 VkAllocationCallbacks const *allocator,
 											 VkSurfaceKHR *surface) {
 		return glfwCreateWindowSurface(instance, window, allocator, surface);
 	}
+#else
+# ifndef VKFW_NO_INCLUDE_VULKAN_HPP
+	VKFW_NODISCARD VKFW_INLINE vk::SurfaceKHR 
+	createWindowSurface(vk::Instance const &instance, Window const &window,
+						VkAllocationCallbacks const *allocator = nullptr) {
+		VkSurfaceKHR output;
+		glfwCreateWindowSurface(instance, window, allocator, &output);
+		return output;
+	}
+#   ifndef VKFW_NO_SMART_HANDLE
+	VKFW_NODISCARD VKFW_INLINE vk::UniqueSurfaceKHR 
+	createWindowSurfaceUnique(vk::Instance const &instance, Window const &window,
+							  VkAllocationCallbacks const *allocator = nullptr) {
+		VkSurfaceKHR output;
+		glfwCreateWindowSurface(instance, window, allocator, &output);
+
+		vk::ObjectDestroy<vk::Instance, VULKAN_HPP_DEFAULT_DISPATCHER_TYPE> deleter(instance, nullptr);
+		return vk::UniqueSurfaceKHR(output, deleter);
+	}
+#   endif
+# endif
+#endif
 }
 
 #ifndef VKFW_NO_STD_FUNCTION_CALLBACKS
