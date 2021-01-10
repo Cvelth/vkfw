@@ -3242,6 +3242,7 @@ namespace VKFW_NAMESPACE {
 		return getError();
 	}
 #else
+# ifndef VKFW_NO_STD_FUNCTION_CALLBACKS
 	VKFW_INLINE void setup_DynamicCallbackStorage(GLFWwindow *window_ptr) {
 		if (window_ptr) {
 			glfwSetWindowUserPointer(window_ptr, new DynamicCallbackStorage{});
@@ -3341,6 +3342,7 @@ namespace VKFW_NAMESPACE {
 			});
 		}
 	}
+# endif
 	VKFW_NODISCARD VKFW_INLINE typename ResultValueType<Window>::type
 	createWindow(size_t width, size_t height, char const *title, WindowHints hints,
 				 Monitor monitor, Window share, bool reset_hints) {
@@ -4003,7 +4005,7 @@ namespace VKFW_NAMESPACE {
 	VKFW_NODISCARD_WHEN_NO_EXCEPTIONS VKFW_INLINE typename ResultValueType<void>::type
 	Window::setUserPointer(void *pointer) const {
 # ifdef VKFW_NO_STD_FUNCTION_CALLBACKS
-		glfwSetWindowUserPointer(m_window, ptr);
+		glfwSetWindowUserPointer(m_window, pointer);
 		return createResultValue(getError(), VKFW_NAMESPACE_STRING"::Window::setUserPointer");
 # else
 		callbacks()->user_ptr = pointer;
