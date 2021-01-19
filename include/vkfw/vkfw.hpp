@@ -1964,11 +1964,11 @@ namespace VKFW_NAMESPACE {
 	struct WindowHints {
 # ifndef VKFW_NO_STRUCT_CONSTRUCTORS
 	public:
-#if HAS_STRING_VIEW
+#  if HAS_STRING_VIEW
 		VKFW_CONSTEXPR
-#else
+#  else
 		VKFW_INLINE
-#endif
+#  endif
 		WindowHints (
 			OptionalWindowHint<WindowHint::VKFW_ENUMERATOR(Resizable)> resizable_ = nullopt,
 			OptionalWindowHint<WindowHint::VKFW_ENUMERATOR(Visible)> visible_ = nullopt,
@@ -2149,7 +2149,7 @@ namespace VKFW_NAMESPACE {
 		else
 			return Result::VKFW_ENUMERATOR(Success);
 	}
-	VKFW_INLINE Result setWindowHints(WindowHints hints) {
+	VKFW_INLINE Result setWindowHints(WindowHints const &hints) {
 		Result result = Result::VKFW_ENUMERATOR(Success);
 		if (!check(result = setWindowHint(hints.resizable))) return result;
 		if (!check(result = setWindowHint(hints.visible))) return result;
@@ -2299,7 +2299,7 @@ namespace VKFW_NAMESPACE {
 	using UniqueWindow = UniqueHandle<Window>;
 	VKFW_NODISCARD typename ResultValueType<UniqueWindow>::type
 		createWindowUnique(size_t width, size_t height, char const *title,
-						   WindowHints hints = WindowHints{},
+						   WindowHints const &hints = WindowHints{},
 						   Monitor monitor = nullptr, Window share = nullptr,
 						   bool reset_hints = true);
 # endif
@@ -3365,7 +3365,7 @@ namespace VKFW_NAMESPACE {
 	}
 # ifndef VKFW_NO_SMART_HANDLE
 	VKFW_NODISCARD VKFW_INLINE typename ResultValueType<UniqueWindow>::type
-	createWindowUnique(size_t width, size_t height, char const *title, WindowHints hints,
+	createWindowUnique(size_t width, size_t height, char const *title, WindowHints const &hints,
 					   Monitor monitor, Window share, bool reset_hints) {
 		Window output;
 		if (reset_hints) {
@@ -3373,7 +3373,7 @@ namespace VKFW_NAMESPACE {
 			if (!check(result))
 				return createResultValueUnique(result, output, VKFW_NAMESPACE_STRING"::defaultWindowHints");
 		}
-		Result result = setWindowHints(std::move(hints));
+		Result result = setWindowHints(hints);
 		if (!check(result))
 			return createResultValueUnique(result, output, VKFW_NAMESPACE_STRING"::setWindowHints");
 
