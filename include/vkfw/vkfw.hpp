@@ -1664,6 +1664,8 @@ namespace VKFW_NAMESPACE {
 		GLFWcursor *m_cursor;
 	};
 
+	using Image = GLFWimage;
+
 	class Window {
 	public:
 		using CType = GLFWwindow;
@@ -1784,12 +1786,12 @@ namespace VKFW_NAMESPACE {
 
 # ifdef VKFW_HAS_SPAN
 		VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type
-			setIcon(std::span<GLFWimage> images) const;
+			setIcon(std::span<vkfw::Image> images) const;
 # endif
 		VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type
-			setIcon(std::vector<GLFWimage> images) const;
+			setIcon(std::vector<vkfw::Image> images) const;
 		VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type
-			setIcon(size_t image_count, GLFWimage *images) const;
+			setIcon(size_t image_count, vkfw::Image *images) const;
 
 		template <Attribute attribute>
 		VKFW_NODISCARD typename ResultValueType<typename AttributeTraits<attribute>::type>::type
@@ -2339,10 +2341,10 @@ namespace VKFW_NAMESPACE {
 						  size_t width, size_t height, size_t refreshRate);
 
 # ifdef VKFW_HAS_SPAN
-	void setWindowIcon(std::span<GLFWimage> images);
+	void setWindowIcon(std::span<vkfw::Image> images);
 # endif
-	void setWindowIcon(GLFWwindow *window, std::vector<GLFWimage> images);
-	void setWindowIcon(GLFWwindow *window, int count, GLFWimage const *images);
+	void setWindowIcon(GLFWwindow *window, std::vector<vkfw::Image> images);
+	void setWindowIcon(GLFWwindow *window, int count, vkfw::Image const *images);
 
 	template <Attribute attribute>
 	VKFW_NODISCARD typename ResultValueType<typename AttributeTraits<attribute>::type>::type
@@ -2492,18 +2494,18 @@ namespace VKFW_NAMESPACE {
 #endif
 
 #ifdef VKFW_DISABLE_ENHANCED_MODE
-	VKFW_NODISCARD GLFWcursor *createCursor(GLFWimage const *image, int xhot, int yhot);
+	VKFW_NODISCARD GLFWcursor *createCursor(vkfw::Image const *image, int xhot, int yhot);
 	VKFW_NODISCARD GLFWcursor *createStandardCursor(CursorShape shape);
 	VKFW_NODISCARD Result destroyCursor(GLFWcursor *cursor);
 #else
 	VKFW_NODISCARD typename ResultValueType<Cursor>::type
-		createCursor(GLFWimage const &image, int xhot, int yhot);
+		createCursor(vkfw::Image const &image, int xhot, int yhot);
 	VKFW_NODISCARD typename ResultValueType<Cursor>::type
 		createStandardCursor(CursorShape shape);
 # ifndef VKFW_NO_SMART_HANDLE
 	using UniqueCursor = UniqueHandle<Cursor>;
 	VKFW_NODISCARD typename ResultValueType<UniqueCursor>::type
-		createCursorUnique(GLFWimage const &image, int xhot, int yhot);
+		createCursorUnique(vkfw::Image const &image, int xhot, int yhot);
 	VKFW_NODISCARD typename ResultValueType<UniqueCursor>::type
 		createStandardCursorUnique(CursorShape shape);
 # endif
@@ -3511,14 +3513,14 @@ namespace VKFW_NAMESPACE {
 	}
 
 # ifdef VKFW_HAS_SPAN
-	VKFW_INLINE void setWindowIcon(GLFWwindow *window, std::span<GLFWimage> images) {
+	VKFW_INLINE void setWindowIcon(GLFWwindow *window, std::span<vkfw::Image> images) {
 		glfwSetWindowIcon(window, static_cast<int>(images.size()), images.data());
 	}
 # endif
-	VKFW_INLINE void setWindowIcon(GLFWwindow *window, std::vector<GLFWimage> images) {
+	VKFW_INLINE void setWindowIcon(GLFWwindow *window, std::vector<vkfw::Image> images) {
 		glfwSetWindowIcon(window, static_cast<int>(images.size()), images.data());
 	}
-	VKFW_INLINE void setWindowIcon(GLFWwindow *window, int image_count, GLFWimage const *images) {
+	VKFW_INLINE void setWindowIcon(GLFWwindow *window, int image_count, vkfw::Image const *images) {
 		glfwSetWindowIcon(window, static_cast<int>(image_count), images);
 	}
 
@@ -4014,18 +4016,18 @@ namespace VKFW_NAMESPACE {
 
 # ifdef VKFW_HAS_SPAN
 	VKFW_NODISCARD_WHEN_NO_EXCEPTIONS VKFW_INLINE typename ResultValueType<void>::type
-	Window::setIcon(std::span<GLFWimage> images) const {
+	Window::setIcon(std::span<vkfw::Image> images) const {
 		glfwSetWindowIcon(m_window, static_cast<int>(images.size()), images.data());
 		return createResultValue(getError(), VKFW_NAMESPACE_STRING"::Window::setIcon");
 	}
 # endif
 	VKFW_NODISCARD_WHEN_NO_EXCEPTIONS VKFW_INLINE typename ResultValueType<void>::type
-	Window::setIcon(std::vector<GLFWimage> images) const {
+	Window::setIcon(std::vector<vkfw::Image> images) const {
 		glfwSetWindowIcon(m_window, static_cast<int>(images.size()), images.data());
 		return createResultValue(getError(), VKFW_NAMESPACE_STRING"::Window::setIcon");
 	}
 	VKFW_NODISCARD_WHEN_NO_EXCEPTIONS VKFW_INLINE typename ResultValueType<void>::type
-	Window::setIcon(size_t image_count, GLFWimage *images) const {
+	Window::setIcon(size_t image_count, vkfw::Image *images) const {
 		glfwSetWindowIcon(m_window, static_cast<int>(image_count), images);
 		return createResultValue(getError(), VKFW_NAMESPACE_STRING"::Window::setIcon");
 	}
@@ -4181,7 +4183,7 @@ namespace VKFW_NAMESPACE {
 #endif
 
 #ifdef VKFW_DISABLE_ENHANCED_MODE
-	VKFW_NODISCARD VKFW_INLINE GLFWcursor *createCursor(GLFWimage const *image, int xhot, int yhot) {
+	VKFW_NODISCARD VKFW_INLINE GLFWcursor *createCursor(vkfw::Image const *image, int xhot, int yhot) {
 		return glfwCreateCursor(image, xhot, yhot);
 	}
 	VKFW_NODISCARD VKFW_INLINE GLFWcursor *createStandardCursor(CursorShape shape) {
@@ -4193,7 +4195,7 @@ namespace VKFW_NAMESPACE {
 	}
 #else
 	VKFW_NODISCARD VKFW_INLINE typename ResultValueType<Cursor>::type
-	createCursor(GLFWimage const &image, int xhot, int yhot) {
+	createCursor(vkfw::Image const &image, int xhot, int yhot) {
 		Cursor output = glfwCreateCursor(&image, xhot, yhot);
 		return createResultValue(getError(), output, VKFW_NAMESPACE_STRING"::createCursor");
 	}
@@ -4204,7 +4206,7 @@ namespace VKFW_NAMESPACE {
 	}
 # ifndef VKFW_NO_SMART_HANDLE
 	VKFW_NODISCARD VKFW_INLINE typename ResultValueType<UniqueCursor>::type
-	createCursorUnique(GLFWimage const &image, int xhot, int yhot) {
+	createCursorUnique(vkfw::Image const &image, int xhot, int yhot) {
 		Cursor output = glfwCreateCursor(&image, xhot, yhot);
 		return createResultValueUnique(getError(), output, VKFW_NAMESPACE_STRING"::createCursorUnique");
 	}
