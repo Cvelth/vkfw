@@ -2253,7 +2253,6 @@ namespace VKFW_NAMESPACE {
 	VKFW_NODISCARD typename ResultValueType<Monitor>::type getPrimaryMonitor();
 	VKFW_NODISCARD typename ResultValueType<std::vector<Monitor>>::type getMonitors();
 #endif
-	VKFW_NODISCARD GLFWmonitorfun setMonitorCallback(GLFWmonitorfun callback);
 
 #ifdef VKFW_DISABLE_ENHANCED_MODE
 	void getMonitorPos(GLFWmonitor *monitor, int *xpos, int *ypos);
@@ -2894,7 +2893,7 @@ namespace VKFW_NAMESPACE {
 		return createResultValue(result, output, VKFW_NAMESPACE_STRING"::getMonitors");
 	}
 #endif
-	VKFW_NODISCARD VKFW_INLINE GLFWmonitorfun setMonitorCallback(GLFWmonitorfun const &callback) {
+	VKFW_INLINE GLFWmonitorfun setMonitorCallback(GLFWmonitorfun const &callback) {
 		return glfwSetMonitorCallback(callback);
 	}
 
