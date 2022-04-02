@@ -68,8 +68,8 @@ To allow using lambdas as callbacks, `GLFWwindow` user pointer is used internall
 These objects are accessible through `vkfw::Window::callbacks()` (or `accessWindowCallbacks(GLFWwindow *)` if enhanced mode is disabled) function and can be set directly, for example:
 ```c++
 my_window.callbacks().on_key = [](vkfw::Window const &, vkfw::Key key, int32_t, 
-                                  vkfw::KeyAction action, vkfw::ModifierKeyFlags) { 
-    std::cout << vkfw::to_string(action) << ' ' << vkfw::to_string(key) << ".\n";
+                                  vkfw::KeyAction action, vkfw::ModifierKeyFlags) {
+  std::cout << vkfw::to_string(action) << ' ' << vkfw::to_string(key) << ".\n";
 };
 ```
 Supported callbacks:

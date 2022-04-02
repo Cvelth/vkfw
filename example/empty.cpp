@@ -29,74 +29,72 @@
 //
 // Conversion to vkfw (and C++): John Cvelth <cvelth.mail@gmail.com>
 
-#include <math.h>
-#include <stdio.h>
-#include <stdlib.h>
-
-#include <glad/glad.h>
-
 #define VKFW_NO_INCLUDE_VULKAN_HPP
-#include <vkfw/vkfw.hpp>
 
 #include <chrono>
+#include <cmath>
+#include <cstdio>
+#include <cstdlib>
 #include <random>
 #include <thread>
 
+#include "glad/glad.h"
+#include "vkfw/vkfw.hpp"
+
 static void error_callback(int, const char *description) {
-	fprintf(stderr, "Error: %s\n", description);
+  fprintf(stderr, "Error: %s\n", description);
 }
 
 int main() {
-	try {
-		vkfw::setErrorCallback(error_callback);
+  try {
+    vkfw::setErrorCallback(error_callback);
 
-		auto instance = vkfw::initUnique();
+    auto instance = vkfw::initUnique();
 
-		vkfw::WindowHints hints; hints.clientAPI = vkfw::ClientAPI::eOpenGL;
-		auto window = vkfw::createWindowUnique(640, 480, "Empty Event Test", hints);
-		window->callbacks()->on_key = [](vkfw::Window const &window, vkfw::Key key, int,
-										 vkfw::KeyAction action, vkfw::ModifierKeyFlags) {
-			if (key == vkfw::Key::eEscape && action == vkfw::KeyAction::ePress)
-				window.setShouldClose(true);
-		};
+    vkfw::WindowHints hints;
+    hints.clientAPI = vkfw::ClientAPI::eOpenGL;
+    auto window = vkfw::createWindowUnique(640, 480, "Empty Event Test", hints);
+    window->callbacks()->on_key = [](vkfw::Window const &window, vkfw::Key key, int,
+                                     vkfw::KeyAction action, vkfw::ModifierKeyFlags) {
+      if (key == vkfw::Key::eEscape && action == vkfw::KeyAction::ePress)
+        window.setShouldClose(true);
+    };
 
-		window->makeContextCurrent();
-		gladLoadGLLoader((GLADloadproc) vkfw::getProcAddress);
+    window->makeContextCurrent();
+    gladLoadGLLoader((GLADloadproc) vkfw::getProcAddress);
 
-		static volatile bool running = true;
-		std::thread thread([]() {
-			while (running) {
-				using namespace std::chrono_literals;
-				std::this_thread::sleep_for(1s);
-				vkfw::postEmptyEvent();
-			}
-		});
+    static volatile bool running = true;
+    std::thread thread([]() {
+      while (running) {
+        using namespace std::chrono_literals;
+        std::this_thread::sleep_for(1s);
+        vkfw::postEmptyEvent();
+      }
+    });
 
-		while (running) {
-			static std::mt19937_64 generator(std::random_device{}());
-			static std::uniform_real_distribution distribution(0.f, 1.f);
+    while (running) {
+      static std::mt19937_64 generator(std::random_device{}());
+      static std::uniform_real_distribution distribution(0.f, 1.f);
 
-			glViewport(0, 0, 
-					   static_cast<GLsizei>(window->getFramebufferWidth()), 
-					   static_cast<GLsizei>(window->getFramebufferHeight()));
-			glClearColor(distribution(generator), distribution(generator), distribution(generator), 1.f);
-			glClear(GL_COLOR_BUFFER_BIT);
-			window->swapBuffers();
+      glViewport(0, 0, static_cast<GLsizei>(window->getFramebufferWidth()),
+                 static_cast<GLsizei>(window->getFramebufferHeight()));
+      glClearColor(distribution(generator), distribution(generator), distribution(generator), 1.f);
+      glClear(GL_COLOR_BUFFER_BIT);
+      window->swapBuffers();
 
-			vkfw::waitEvents();
-			if (window->shouldClose())
-				running = false;
-		}
-		window->hide();
-		if (thread.joinable())
-			thread.join();
+      vkfw::waitEvents();
+      if (window->shouldClose())
+        running = false;
+    }
+    window->hide();
+    if (thread.joinable())
+      thread.join();
 
-		return 0;
-	} catch (std::system_error &err) {
-		char error_message[] = "An error has occured: ";
-		strcat(error_message, err.what());
-		fprintf(stderr, error_message);
-		return -1;
-	}
+    return 0;
+  } catch (std::system_error &err) {
+    char error_message[] = "An error has occured: ";
+    strcat(error_message, err.what());
+    fprintf(stderr, error_message);
+    return -1;
+  }
 }
-

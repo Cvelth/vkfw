@@ -29,118 +29,112 @@
 //
 // Conversion to vkfw (and C++): John Cvelth <cvelth.mail@gmail.com>
 
-#include <stdio.h>
-#include <stdlib.h>
-
-#include <glad/glad.h>
-
 #define VKFW_NO_INCLUDE_VULKAN_HPP
-#include <vkfw/vkfw.hpp>
 
 #include <array>
+#include <cstdio>
+#include <cstdlib>
 
-static const char *titles[] = {
-	"Red",
-	"Green",
-	"Blue",
-	"Yellow"
-};
+#include "glad/glad.h"
+#include "vkfw/vkfw.hpp"
 
-static const struct { float r, g, b; } colors[] = {
-	{ 0.95f, 0.32f, 0.11f },
-	{ 0.50f, 0.80f, 0.16f },
-	{   0.f, 0.68f, 0.94f },
-	{ 0.98f, 0.74f, 0.04f }
-};
+static const char *titles[] = { "Red", "Green", "Blue", "Yellow" };
+
+static const struct {
+  float r, g, b;
+} colors[] = { { 0.95f, 0.32f, 0.11f },
+               { 0.50f, 0.80f, 0.16f },
+               { 0.f, 0.68f, 0.94f },
+               { 0.98f, 0.74f, 0.04f } };
 
 static void usage(void) {
-	printf("Usage: windows [-h] [-b] [-f] \n");
-	printf("Options:\n");
-	printf("  -b create decorated windows\n");
-	printf("  -f set focus on show off for all but first window\n");
-	printf("  -h show this help\n");
+  printf("Usage: windows [-h] [-b] [-f] \n");
+  printf("Options:\n");
+  printf("  -b create decorated windows\n");
+  printf("  -f set focus on show off for all but first window\n");
+  printf("  -h show this help\n");
 }
 
 static void error_callback(int, const char *description) {
-	fprintf(stderr, "Error: %s\n", description);
+  fprintf(stderr, "Error: %s\n", description);
 }
 
-static void key_callback(vkfw::Window const &window, vkfw::Key key, int,
-						 vkfw::KeyAction action, vkfw::ModifierKeyFlags) {
-	if (action == vkfw::KeyAction::ePress)
-		switch (key) {
-			case vkfw::Key::eSpace:
-				window.setPos(window.getPos());
-				break;
-			case vkfw::Key::eBackspace:
-				window.setShouldClose(true);
-				break;
-		}
+static void key_callback(vkfw::Window const &window, vkfw::Key key, int, vkfw::KeyAction action,
+                         vkfw::ModifierKeyFlags) {
+  if (action == vkfw::KeyAction::ePress)
+    switch (key) {
+    case vkfw::Key::eSpace: window.setPos(window.getPos()); break;
+    case vkfw::Key::eBackspace: window.setShouldClose(true); break;
+    }
 }
 
 int main(int argc, char **argv) {
-	using namespace std::string_view_literals;
-	bool decorated = false, focus_on_show = true, running = true;
-	for (int i = 1; i < argc; ++i)
-		if (argv[i] == "-b"sv)
-			decorated = true;
-		else if (argv[i] == "-f"sv)
-			focus_on_show = false;
-		else if (argv[i] == "-h"sv) {
-			usage(); return 0;
-		} else {
-			usage(); return 1;
-		}
+  using namespace std::string_view_literals;
+  bool decorated = false, focus_on_show = true, running = true;
+  for (int i = 1; i < argc; ++i)
+    if (argv[i] == "-b"sv)
+      decorated = true;
+    else if (argv[i] == "-f"sv)
+      focus_on_show = false;
+    else if (argv[i] == "-h"sv) {
+      usage();
+      return 0;
+    } else {
+      usage();
+      return 1;
+    }
 
-	vkfw::setErrorCallback(error_callback);
+  vkfw::setErrorCallback(error_callback);
 
-	try {
-		auto instance = vkfw::initUnique();
+  try {
+    auto instance = vkfw::initUnique();
 
-		vkfw::WindowHints hints;
-		hints.clientAPI = vkfw::ClientAPI::eOpenGL;
-		hints.decorated = decorated;
-		hints.visible = false;
+    vkfw::WindowHints hints;
+    hints.clientAPI = vkfw::ClientAPI::eOpenGL;
+    hints.decorated = decorated;
+    hints.visible = false;
 
-		std::array<vkfw::UniqueWindow, 4> windows;
-		for (size_t i = 0; i < 4; ++i) {
-			if (i) hints.focusOnShow = focus_on_show;
-			windows[i] = vkfw::createWindowUnique(200, 200, titles[i], hints);
-			windows[i]->callbacks()->on_key = key_callback;
-			windows[i]->makeContextCurrent();
+    std::array<vkfw::UniqueWindow, 4> windows;
+    for (size_t i = 0; i < 4; ++i) {
+      if (i)
+        hints.focusOnShow = focus_on_show;
+      windows[i] = vkfw::createWindowUnique(200, 200, titles[i], hints);
+      windows[i]->callbacks()->on_key = key_callback;
+      windows[i]->makeContextCurrent();
 
-			static bool once = true;
-			if (once) {
-				once = false;
-				gladLoadGLLoader((GLADloadproc) vkfw::getProcAddress);
-			}
+      static bool once = true;
+      if (once) {
+        once = false;
+        gladLoadGLLoader((GLADloadproc) vkfw::getProcAddress);
+      }
 
-			glClearColor(colors[i].r, colors[i].g, colors[i].b, 1.f);
-			windows[i]->setPos(
-				int(100 + (i & 1) * (200 + windows[i]->getLeftFrameSize() + windows[i]->getRightFrameSize())),
-				int(100 + (i >> 1) * (200 + windows[i]->getTopFrameSize() + windows[i]->getBottomFrameSize()))
-			);
-		}
+      glClearColor(colors[i].r, colors[i].g, colors[i].b, 1.f);
 
-		for (auto const &window : windows)
-			window->show();
+      size_t left_and_right = windows[i]->getLeftFrameSize() + windows[i]->getRightFrameSize();
+      size_t top_and_bottom = windows[i]->getTopFrameSize() + windows[i]->getBottomFrameSize();
+      windows[i]->setPos(int(100 + (i & 1) * (200 + left_and_right)),
+                         int(100 + (i >> 1) * (200 + top_and_bottom)));
+    }
 
-		while (running) {
-			for (auto const &window : windows) {
-				window->makeContextCurrent();
-				glClear(GL_COLOR_BUFFER_BIT);
-				window->swapBuffers();
-				if (window->shouldClose())
-					running = false;
-			}
-			vkfw::waitEvents();
-		}
+    for (auto const &window : windows)
+      window->show();
 
-		return 0;
-	} catch (std::system_error &err) {
-		char error_message[] = "An error has occured: ";
-		strcat(error_message, err.what());
-		fprintf(stderr, error_message);
-		return -1;
-	}
+    while (running) {
+      for (auto const &window : windows) {
+        window->makeContextCurrent();
+        glClear(GL_COLOR_BUFFER_BIT);
+        window->swapBuffers();
+        if (window->shouldClose())
+          running = false;
+      }
+      vkfw::waitEvents();
+    }
+
+    return 0;
+  } catch (std::system_error &err) {
+    char error_message[] = "An error has occured: ";
+    strcat(error_message, err.what());
+    fprintf(stderr, error_message);
+    return -1;
+  }
 }
