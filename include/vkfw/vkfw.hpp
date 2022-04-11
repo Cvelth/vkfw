@@ -2816,6 +2816,7 @@ namespace VKFW_NAMESPACE {
     return glfwGetInstanceProcAddress(instance, procname.data());
   }
 #endif
+#if !defined(VKFW_NO_INCLUDE_VULKAN)
   VKFW_NODISCARD VKFW_INLINE GLFWvkproc getInstanceProcAddress(VkInstance instance,
                                                                char const *procname) {
     return glfwGetInstanceProcAddress(instance, procname);
@@ -2826,6 +2827,7 @@ namespace VKFW_NAMESPACE {
     return static_cast<bool>(
       glfwGetPhysicalDevicePresentationSupport(instance, device, queuefamily));
   }
+#endif
 #ifdef VKFW_DISABLE_ENHANCED_MODE
   VKFW_INLINE VkResult createWindowSurface(VkInstance instance, GLFWwindow *window,
                                            VkAllocationCallbacks const *allocator,
