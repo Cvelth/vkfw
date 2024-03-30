@@ -520,6 +520,10 @@ namespace VKFW_NAMESPACE {
     VKFW_ENUMERATOR(ContextNoError) = GLFW_CONTEXT_NO_ERROR,
     VKFW_ENUMERATOR(ContextCreationAPI) = GLFW_CONTEXT_CREATION_API,
 
+    // Win32 specific Hints
+    VKFW_ENUMERATOR(Win32KeyboardMenu) = GLFW_WIN32_KEYBOARD_MENU,
+    VKFW_ENUMERATOR(Win32ShowDefault) = GLFW_WIN32_SHOWDEFAULT,
+
     // MacOS specific Hints
     VKFW_ENUMERATOR(CocoaRetinaFramebuffer) = GLFW_COCOA_RETINA_FRAMEBUFFER,
     VKFW_ENUMERATOR(CocoaFrameName) = GLFW_COCOA_FRAME_NAME,
@@ -1206,6 +1210,12 @@ namespace VKFW_NAMESPACE {
   };
   template <> struct WindowHintTraits<WindowHint::VKFW_ENUMERATOR(ContextCreationAPI)> {
     using type = ContextCreationAPI;
+  };
+  template <> struct WindowHintTraits<WindowHint::VKFW_ENUMERATOR(Win32KeyboardMenu)> {
+    using type = bool;
+  };
+  template <> struct WindowHintTraits<WindowHint::VKFW_ENUMERATOR(Win32ShowDefault)> {
+    using type = bool;
   };
   template <> struct WindowHintTraits<WindowHint::VKFW_ENUMERATOR(CocoaRetinaFramebuffer)> {
     using type = bool;
@@ -2336,6 +2346,9 @@ namespace VKFW_NAMESPACE {
       = ClientAPI::VKFW_ENUMERATOR(None),
       OptionalWindowHint<WindowHint::VKFW_ENUMERATOR(ContextCreationAPI)> contextCreationAPI_
       = nullopt,
+      OptionalWindowHint<WindowHint::VKFW_ENUMERATOR(Win32KeyboardMenu)> win32KeyboardMenu_
+      = nullopt,
+      OptionalWindowHint<WindowHint::VKFW_ENUMERATOR(Win32ShowDefault)> win32ShowDefault_ = nullopt,
       OptionalWindowHint<WindowHint::VKFW_ENUMERATOR(ContextVersionMajor)> contextVersionMajor_
       = nullopt,
       OptionalWindowHint<WindowHint::VKFW_ENUMERATOR(ContextVersionMinor)> contextVersionMinor_
@@ -2394,6 +2407,8 @@ namespace VKFW_NAMESPACE {
                       doubleBuffer(doubleBuffer_),
                       clientAPI(clientAPI_),
                       contextCreationAPI(contextCreationAPI_),
+                      win32KeyboardMenu(win32KeyboardMenu_),
+                      win32ShowDefault(win32ShowDefault_),
                       contextVersionMajor(contextVersionMajor_),
                       contextVersionMinor(contextVersionMinor_),
                       contextRobustness(contextRobustness_),
@@ -2449,6 +2464,8 @@ namespace VKFW_NAMESPACE {
       = ClientAPI::VKFW_ENUMERATOR(None);
     OptionalWindowHint<WindowHint::VKFW_ENUMERATOR(ContextCreationAPI)> contextCreationAPI
       = nullopt;
+    OptionalWindowHint<WindowHint::VKFW_ENUMERATOR(Win32KeyboardMenu)> win32KeyboardMenu = nullopt;
+    OptionalWindowHint<WindowHint::VKFW_ENUMERATOR(Win32ShowDefault)> win32ShowDefault = nullopt;
     OptionalWindowHint<WindowHint::VKFW_ENUMERATOR(ContextVersionMajor)> contextVersionMajor
       = nullopt;
     OptionalWindowHint<WindowHint::VKFW_ENUMERATOR(ContextVersionMinor)> contextVersionMinor
@@ -2543,6 +2560,10 @@ namespace VKFW_NAMESPACE {
     if (!check(result = setWindowHint(hints.clientAPI)))
       return result;
     if (!check(result = setWindowHint(hints.contextCreationAPI)))
+      return result;
+    if (!check(result = setWindowHint(hints.win32KeyboardMenu)))
+      return result;
+    if (!check(result = setWindowHint(hints.win32ShowDefault)))
       return result;
     if (!check(result = setWindowHint(hints.contextVersionMajor)))
       return result;
