@@ -2103,6 +2103,13 @@ namespace VKFW_NAMESPACE {
     return glfwSetErrorCallback(callback);
   }
 
+  VKFW_NODISCARD VKFW_INLINE Platform getPlatform() {
+    return static_cast<Platform>(glfwGetPlatform());
+  }
+  VKFW_NODISCARD VKFW_INLINE bool platformSupported(Platform platform) {
+    return glfwPlatformSupported(static_cast<int>(platform)) == GLFW_TRUE;
+  }
+
   template <InitializationHint hint>
   VKFW_INLINE Result initHint(typename InitializationHintTraits<hint>::type value) {
     glfwInitHint(static_cast<int>(hint), static_cast<int>(value));
