@@ -423,7 +423,11 @@ namespace VKFW_NAMESPACE {
     VKFW_ENUMERATOR(VersionUnavailable) = GLFW_VERSION_UNAVAILABLE,
     VKFW_ENUMERATOR(PlatformError) = GLFW_PLATFORM_ERROR,
     VKFW_ENUMERATOR(FormatUnavailable) = GLFW_FORMAT_UNAVAILABLE,
-    VKFW_ENUMERATOR(NoWindowContext) = GLFW_NO_WINDOW_CONTEXT
+    VKFW_ENUMERATOR(NoWindowContext) = GLFW_NO_WINDOW_CONTEXT,
+    VKFW_ENUMERATOR(CursorUnavailable) = GLFW_CURSOR_UNAVAILABLE,
+    VKFW_ENUMERATOR(FeatureUnavailable) = GLFW_FEATURE_UNAVAILABLE,
+    VKFW_ENUMERATOR(FeatureUnimplemented) = GLFW_FEATURE_UNIMPLEMENTED,
+    VKFW_ENUMERATOR(PlatformUnavailable) = GLFW_PLATFORM_UNAVAILABLE
   };
   VKFW_INLINE VKFW_CONSTEXPR bool check(Result result) {
     return result == Result::VKFW_ENUMERATOR(Success);
@@ -1002,6 +1006,14 @@ namespace VKFW_NAMESPACE {
       return "The requested format is not supported or available";
     case Result::VKFW_ENUMERATOR(NoWindowContext):
       return "The specified window does not have an OpenGL or OpenGL ES context";
+    case Result::VKFW_ENUMERATOR(CursorUnavailable):
+      return "The specified cursor shape is not available.";
+    case Result::VKFW_ENUMERATOR(FeatureUnavailable):
+      return "The requested feature is not provided by the platform.";
+    case Result::VKFW_ENUMERATOR(FeatureUnimplemented):
+      return "The requested feature is not implemented for the platform.";
+    case Result::VKFW_ENUMERATOR(PlatformUnavailable):
+      return "Platform unavailable or no matching platform was found.";
     default: return "invalid";
     }
   }
@@ -1478,6 +1490,34 @@ namespace VKFW_NAMESPACE {
     NoWindowContextError(char const *message)
       : SystemError(make_error_code(Result::VKFW_ENUMERATOR(NoWindowContext)), message) {}
   };
+  class CursorUnavailableError : public SystemError {
+  public:
+    CursorUnavailableError(std::string const &message)
+      : SystemError(make_error_code(Result::VKFW_ENUMERATOR(CursorUnavailable)), message) {}
+    CursorUnavailableError(char const *message)
+      : SystemError(make_error_code(Result::VKFW_ENUMERATOR(CursorUnavailable)), message) {}
+  };
+  class FeatureUnavailableError : public SystemError {
+  public:
+    FeatureUnavailableError(std::string const &message)
+      : SystemError(make_error_code(Result::VKFW_ENUMERATOR(FeatureUnavailable)), message) {}
+    FeatureUnavailableError(char const *message)
+      : SystemError(make_error_code(Result::VKFW_ENUMERATOR(FeatureUnavailable)), message) {}
+  };
+  class FeatureUnimplementedError : public SystemError {
+  public:
+    FeatureUnimplementedError(std::string const &message)
+      : SystemError(make_error_code(Result::VKFW_ENUMERATOR(FeatureUnimplemented)), message) {}
+    FeatureUnimplementedError(char const *message)
+      : SystemError(make_error_code(Result::VKFW_ENUMERATOR(FeatureUnimplemented)), message) {}
+  };
+  class PlatformUnavailableError : public SystemError {
+  public:
+    PlatformUnavailableError(std::string const &message)
+      : SystemError(make_error_code(Result::VKFW_ENUMERATOR(PlatformUnavailable)), message) {}
+    PlatformUnavailableError(char const *message)
+      : SystemError(make_error_code(Result::VKFW_ENUMERATOR(PlatformUnavailable)), message) {}
+  };
 
   [[noreturn]] static void throwResultException(Result result, char const *message) {
     switch (result) {
@@ -1492,6 +1532,10 @@ namespace VKFW_NAMESPACE {
     case Result::VKFW_ENUMERATOR(PlatformError): throw PlatformError(message);
     case Result::VKFW_ENUMERATOR(FormatUnavailable): throw FormatUnavailableError(message);
     case Result::VKFW_ENUMERATOR(NoWindowContext): throw NoWindowContextError(message);
+    case Result::VKFW_ENUMERATOR(CursorUnavailable): throw CursorUnavailableError(message);
+    case Result::VKFW_ENUMERATOR(FeatureUnavailable): throw FeatureUnavailableError(message);
+    case Result::VKFW_ENUMERATOR(FeatureUnimplemented): throw FeatureUnimplementedError(message);
+    case Result::VKFW_ENUMERATOR(PlatformUnavailable): throw PlatformUnavailableError(message);
     default: throw SystemError(make_error_code(result));
     }
   }
