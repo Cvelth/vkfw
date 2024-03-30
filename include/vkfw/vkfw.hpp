@@ -428,7 +428,16 @@ namespace VKFW_NAMESPACE {
   VKFW_INLINE VKFW_CONSTEXPR bool check(Result result) {
     return result == Result::VKFW_ENUMERATOR(Success);
   }
+  enum class Platform {
+    VKFW_ENUMERATOR(Any) = GLFW_ANY_PLATFORM,
+    VKFW_ENUMERATOR(Win32) = GLFW_PLATFORM_WIN32,
+    VKFW_ENUMERATOR(Cocoa) = GLFW_PLATFORM_COCOA,
+    VKFW_ENUMERATOR(Wayland) = GLFW_PLATFORM_WAYLAND,
+    VKFW_ENUMERATOR(X11) = GLFW_PLATFORM_X11,
+    VKFW_ENUMERATOR(Null) = GLFW_PLATFORM_NULL
+  };
   enum class InitializationHint {
+    VKFW_ENUMERATOR(Platform) = GLFW_PLATFORM,
     VKFW_ENUMERATOR(JoystickHatButtons) = GLFW_JOYSTICK_HAT_BUTTONS,
     VKFW_ENUMERATOR(CocoaChdirResources) = GLFW_COCOA_CHDIR_RESOURCES, // MacOS specific
     VKFW_ENUMERATOR(CocoaMenubar) = GLFW_COCOA_MENUBAR                 // MacOS specific
@@ -997,6 +1006,9 @@ namespace VKFW_NAMESPACE {
 
 #ifndef VKFW_NO_ENHANCED_MODE
   template <InitializationHint hint> struct InitializationHintTraits;
+  template <> struct InitializationHintTraits<InitializationHint::VKFW_ENUMERATOR(Platform)> {
+    using type = Platform;
+  };
   template <>
   struct InitializationHintTraits<InitializationHint::VKFW_ENUMERATOR(JoystickHatButtons)> {
     using type = bool;
@@ -2073,6 +2085,7 @@ namespace VKFW_NAMESPACE {
   #ifndef VKFW_NO_STRUCT_CONSTRUCTORS
   public:
     VKFW_CONSTEXPR InitHints(
+      OptionalInitializationHint<InitializationHint::VKFW_ENUMERATOR(Platform)> platform_ = nullopt,
       OptionalInitializationHint<InitializationHint::VKFW_ENUMERATOR(JoystickHatButtons)>
         joystickHatButtons_
       = nullopt,
@@ -2080,11 +2093,13 @@ namespace VKFW_NAMESPACE {
         cocoaChdirResources_
       = nullopt,
       OptionalInitializationHint<InitializationHint::VKFW_ENUMERATOR(CocoaMenubar)> cocoaMenubar_
-      = nullopt) VKFW_NOEXCEPT : joystickHatButtons(joystickHatButtons_),
+      = nullopt) VKFW_NOEXCEPT : platform(platform_),
+                                 joystickHatButtons(joystickHatButtons_),
                                  cocoaChdirResources(cocoaChdirResources_),
                                  cocoaMenubar(cocoaMenubar_) {}
   #endif
   public:
+    OptionalInitializationHint<InitializationHint::VKFW_ENUMERATOR(Platform)> platform = nullopt;
     OptionalInitializationHint<InitializationHint::VKFW_ENUMERATOR(JoystickHatButtons)>
       joystickHatButtons = nullopt;
     OptionalInitializationHint<InitializationHint::VKFW_ENUMERATOR(CocoaChdirResources)>
@@ -2101,6 +2116,8 @@ namespace VKFW_NAMESPACE {
   }
   VKFW_INLINE Result setInitHints(InitHints hints) {
     Result result = Result::VKFW_ENUMERATOR(Success);
+    if (!check(result = setInitHint(hints.platform)))
+      return result;
     if (!check(result = setInitHint(hints.joystickHatButtons)))
       return result;
     if (!check(result = setInitHint(hints.cocoaChdirResources)))
