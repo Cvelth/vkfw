@@ -445,12 +445,21 @@ namespace VKFW_NAMESPACE {
     VKFW_ENUMERATOR(Vulkan) = GLFW_ANGLE_PLATFORM_TYPE_VULKAN,
     VKFW_ENUMERATOR(Metal) = GLFW_ANGLE_PLATFORM_TYPE_METAL
   };
+  enum class WaylandLibDecor {
+    VKFW_ENUMERATOR(Prefer) = GLFW_WAYLAND_PREFER_LIBDECOR,
+    VKFW_ENUMERATOR(Disable) = GLFW_WAYLAND_DISABLE_LIBDECOR
+  };
   enum class InitializationHint {
     VKFW_ENUMERATOR(Platform) = GLFW_PLATFORM,
     VKFW_ENUMERATOR(JoystickHatButtons) = GLFW_JOYSTICK_HAT_BUTTONS,
     VKFW_ENUMERATOR(AnglePlatformType) = GLFW_ANGLE_PLATFORM_TYPE,
-    VKFW_ENUMERATOR(CocoaChdirResources) = GLFW_COCOA_CHDIR_RESOURCES, // MacOS specific
-    VKFW_ENUMERATOR(CocoaMenubar) = GLFW_COCOA_MENUBAR                 // MacOS specific
+
+    // MacOS specific
+    VKFW_ENUMERATOR(CocoaChdirResources) = GLFW_COCOA_CHDIR_RESOURCES,
+    VKFW_ENUMERATOR(CocoaMenubar) = GLFW_COCOA_MENUBAR,
+
+    // Wayland specific
+    VKFW_ENUMERATOR(WaylandLibDecor) = GLFW_WAYLAND_LIBDECOR
   };
   enum class WindowHint {
 
@@ -1033,6 +1042,10 @@ namespace VKFW_NAMESPACE {
   };
   template <> struct InitializationHintTraits<InitializationHint::VKFW_ENUMERATOR(CocoaMenubar)> {
     using type = bool;
+  };
+  template <>
+  struct InitializationHintTraits<InitializationHint::VKFW_ENUMERATOR(WaylandLibDecor)> {
+    using type = WaylandLibDecor;
   };
 
   template <WindowHint hint> struct WindowHintTraits;
@@ -2110,11 +2123,15 @@ namespace VKFW_NAMESPACE {
         cocoaChdirResources_
       = nullopt,
       OptionalInitializationHint<InitializationHint::VKFW_ENUMERATOR(CocoaMenubar)> cocoaMenubar_
+      = nullopt,
+      OptionalInitializationHint<InitializationHint::VKFW_ENUMERATOR(WaylandLibDecor)>
+        waylandLibDecor_
       = nullopt) VKFW_NOEXCEPT : platform(platform_),
                                  joystickHatButtons(joystickHatButtons_),
                                  anglePlatformType(anglePlatformType_),
                                  cocoaChdirResources(cocoaChdirResources_),
-                                 cocoaMenubar(cocoaMenubar_) {}
+                                 cocoaMenubar(cocoaMenubar_),
+                                 waylandLibDecor(waylandLibDecor_) {}
   #endif
   public:
     OptionalInitializationHint<InitializationHint::VKFW_ENUMERATOR(Platform)> platform = nullopt;
@@ -2125,6 +2142,8 @@ namespace VKFW_NAMESPACE {
     OptionalInitializationHint<InitializationHint::VKFW_ENUMERATOR(CocoaChdirResources)>
       cocoaChdirResources = nullopt;
     OptionalInitializationHint<InitializationHint::VKFW_ENUMERATOR(CocoaMenubar)> cocoaMenubar
+      = nullopt;
+    OptionalInitializationHint<InitializationHint::VKFW_ENUMERATOR(WaylandLibDecor)> waylandLibDecor
       = nullopt;
   };
   template <InitializationHint hint>
@@ -2145,6 +2164,8 @@ namespace VKFW_NAMESPACE {
     if (!check(result = setInitHint(hints.cocoaChdirResources)))
       return result;
     if (!check(result = setInitHint(hints.cocoaMenubar)))
+      return result;
+    if (!check(result = setInitHint(hints.waylandLibDecor)))
       return result;
     return result;
   }
