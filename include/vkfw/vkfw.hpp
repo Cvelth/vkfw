@@ -436,9 +436,19 @@ namespace VKFW_NAMESPACE {
     VKFW_ENUMERATOR(X11) = GLFW_PLATFORM_X11,
     VKFW_ENUMERATOR(Null) = GLFW_PLATFORM_NULL
   };
+  enum class AnglePlatformType {
+    VKFW_ENUMERATOR(None) = GLFW_ANGLE_PLATFORM_TYPE_NONE,
+    VKFW_ENUMERATOR(OpenGL) = GLFW_ANGLE_PLATFORM_TYPE_OPENGL,
+    VKFW_ENUMERATOR(OpenGLES) = GLFW_ANGLE_PLATFORM_TYPE_OPENGLES,
+    VKFW_ENUMERATOR(D3D9) = GLFW_ANGLE_PLATFORM_TYPE_D3D9,
+    VKFW_ENUMERATOR(D3D11) = GLFW_ANGLE_PLATFORM_TYPE_D3D11,
+    VKFW_ENUMERATOR(Vulkan) = GLFW_ANGLE_PLATFORM_TYPE_VULKAN,
+    VKFW_ENUMERATOR(Metal) = GLFW_ANGLE_PLATFORM_TYPE_METAL
+  };
   enum class InitializationHint {
     VKFW_ENUMERATOR(Platform) = GLFW_PLATFORM,
     VKFW_ENUMERATOR(JoystickHatButtons) = GLFW_JOYSTICK_HAT_BUTTONS,
+    VKFW_ENUMERATOR(AnglePlatformType) = GLFW_ANGLE_PLATFORM_TYPE,
     VKFW_ENUMERATOR(CocoaChdirResources) = GLFW_COCOA_CHDIR_RESOURCES, // MacOS specific
     VKFW_ENUMERATOR(CocoaMenubar) = GLFW_COCOA_MENUBAR                 // MacOS specific
   };
@@ -1008,6 +1018,10 @@ namespace VKFW_NAMESPACE {
   template <InitializationHint hint> struct InitializationHintTraits;
   template <> struct InitializationHintTraits<InitializationHint::VKFW_ENUMERATOR(Platform)> {
     using type = Platform;
+  };
+  template <>
+  struct InitializationHintTraits<InitializationHint::VKFW_ENUMERATOR(AnglePlatformType)> {
+    using type = AnglePlatformType;
   };
   template <>
   struct InitializationHintTraits<InitializationHint::VKFW_ENUMERATOR(JoystickHatButtons)> {
@@ -2089,12 +2103,16 @@ namespace VKFW_NAMESPACE {
       OptionalInitializationHint<InitializationHint::VKFW_ENUMERATOR(JoystickHatButtons)>
         joystickHatButtons_
       = nullopt,
+      OptionalInitializationHint<InitializationHint::VKFW_ENUMERATOR(AnglePlatformType)>
+        anglePlatformType_
+      = nullopt,
       OptionalInitializationHint<InitializationHint::VKFW_ENUMERATOR(CocoaChdirResources)>
         cocoaChdirResources_
       = nullopt,
       OptionalInitializationHint<InitializationHint::VKFW_ENUMERATOR(CocoaMenubar)> cocoaMenubar_
       = nullopt) VKFW_NOEXCEPT : platform(platform_),
                                  joystickHatButtons(joystickHatButtons_),
+                                 anglePlatformType(anglePlatformType_),
                                  cocoaChdirResources(cocoaChdirResources_),
                                  cocoaMenubar(cocoaMenubar_) {}
   #endif
@@ -2102,6 +2120,8 @@ namespace VKFW_NAMESPACE {
     OptionalInitializationHint<InitializationHint::VKFW_ENUMERATOR(Platform)> platform = nullopt;
     OptionalInitializationHint<InitializationHint::VKFW_ENUMERATOR(JoystickHatButtons)>
       joystickHatButtons = nullopt;
+    OptionalInitializationHint<InitializationHint::VKFW_ENUMERATOR(AnglePlatformType)>
+      anglePlatformType = nullopt;
     OptionalInitializationHint<InitializationHint::VKFW_ENUMERATOR(CocoaChdirResources)>
       cocoaChdirResources = nullopt;
     OptionalInitializationHint<InitializationHint::VKFW_ENUMERATOR(CocoaMenubar)> cocoaMenubar
@@ -2119,6 +2139,8 @@ namespace VKFW_NAMESPACE {
     if (!check(result = setInitHint(hints.platform)))
       return result;
     if (!check(result = setInitHint(hints.joystickHatButtons)))
+      return result;
+    if (!check(result = setInitHint(hints.anglePlatformType)))
       return result;
     if (!check(result = setInitHint(hints.cocoaChdirResources)))
       return result;
