@@ -2885,6 +2885,9 @@ namespace VKFW_NAMESPACE {
     return glfwGetProcAddress(procname);
   }
   VKFW_NODISCARD VKFW_INLINE bool vulkanSupported() { return glfwVulkanSupported(); }
+  VKFW_INLINE void initVulkanLoader(PFN_vkGetInstanceProcAddr loader) {
+    return glfwInitVulkanLoader(loader);
+  }
 
 #ifdef VKFW_HAS_SPAN
   VKFW_NODISCARD VKFW_INLINE std::span<char const *> getRequiredInstanceExtensions() {
