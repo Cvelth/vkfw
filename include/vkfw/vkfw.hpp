@@ -1014,18 +1014,24 @@ namespace VKFW_NAMESPACE {
   };
 
   template <WindowHint hint> struct WindowHintTraits;
-  template <> struct WindowHintTraits<WindowHint::VKFW_ENUMERATOR(Focused)> { using type = bool; };
+  template <> struct WindowHintTraits<WindowHint::VKFW_ENUMERATOR(Focused)> {
+    using type = bool;
+  };
   template <> struct WindowHintTraits<WindowHint::VKFW_ENUMERATOR(Resizable)> {
     using type = bool;
   };
-  template <> struct WindowHintTraits<WindowHint::VKFW_ENUMERATOR(Visible)> { using type = bool; };
+  template <> struct WindowHintTraits<WindowHint::VKFW_ENUMERATOR(Visible)> {
+    using type = bool;
+  };
   template <> struct WindowHintTraits<WindowHint::VKFW_ENUMERATOR(Decorated)> {
     using type = bool;
   };
   template <> struct WindowHintTraits<WindowHint::VKFW_ENUMERATOR(AutoIconify)> {
     using type = bool;
   };
-  template <> struct WindowHintTraits<WindowHint::VKFW_ENUMERATOR(Floating)> { using type = bool; };
+  template <> struct WindowHintTraits<WindowHint::VKFW_ENUMERATOR(Floating)> {
+    using type = bool;
+  };
   template <> struct WindowHintTraits<WindowHint::VKFW_ENUMERATOR(Maximized)> {
     using type = bool;
   };
@@ -1228,7 +1234,9 @@ namespace VKFW_NAMESPACE {
   template <> struct InputModeTraits<InputMode::VKFW_ENUMERATOR(Cursor)> {
     using type = CursorMode;
   };
-  template <> struct InputModeTraits<InputMode::VKFW_ENUMERATOR(StickyKeys)> { using type = bool; };
+  template <> struct InputModeTraits<InputMode::VKFW_ENUMERATOR(StickyKeys)> {
+    using type = bool;
+  };
   template <> struct InputModeTraits<InputMode::VKFW_ENUMERATOR(StickyMouseButtons)> {
     using type = bool;
   };
