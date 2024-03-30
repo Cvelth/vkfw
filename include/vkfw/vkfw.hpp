@@ -1906,9 +1906,11 @@ namespace VKFW_NAMESPACE {
     setShouldClose(bool value) const;
 
   #ifdef VKFW_HAS_STRING_VIEW
+    VKFW_NODISCARD VKFW_INLINE std::string_view getTitle() const;
     VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type
     setTitle(std::string_view title) const;
   #else
+    VKFW_NODISCARD VKFW_INLINE char const *getTitle() const;
     VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type
     setTitle(char const *title) const;
   #endif
@@ -3701,10 +3703,16 @@ namespace VKFW_NAMESPACE {
   }
 
   #ifdef VKFW_HAS_STRING_VIEW
+  VKFW_NODISCARD VKFW_INLINE std::string_view getWindowTitle(GLFWwindow *window) {
+    return glfwGetWindowTitle(window);
+  }
   VKFW_INLINE void setWindowTitle(GLFWwindow *window, std::string_view title) {
     glfwSetWindowTitle(window, title.data());
   }
   #else
+  VKFW_NODISCARD VKFW_INLINE char const *getWindowTitle(GLFWwindow *window) {
+    return glfwGetWindowTitle(window);
+  }
   VKFW_INLINE void setWindowTitle(GLFWwindow *window, char const *title) {
     glfwSetWindowTitle(window, title);
   }
@@ -3872,10 +3880,16 @@ namespace VKFW_NAMESPACE {
   }
 
   #ifdef VKFW_HAS_STRING_VIEW
+  VKFW_NODISCARD VKFW_INLINE std::string_view Window::getTitle() const {
+    return glfwGetWindowTitle(m_window);
+  }
   VKFW_NODISCARD_WHEN_NO_EXCEPTIONS VKFW_INLINE typename ResultValueType<void>::type
   Window::setTitle(std::string_view title) const {
     glfwSetWindowTitle(m_window, title.data());
   #else
+  VKFW_NODISCARD VKFW_INLINE char const *Window::getTitle() const {
+    return glfwGetWindowTitle(m_window);
+  }
   VKFW_NODISCARD_WHEN_NO_EXCEPTIONS VKFW_INLINE typename ResultValueType<void>::type
   Window::setTitle(char const *title) const {
     glfwSetWindowTitle(m_window, title);
