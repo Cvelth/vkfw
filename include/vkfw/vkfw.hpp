@@ -998,18 +998,14 @@ namespace VKFW_NAMESPACE {
 #ifndef VKFW_NO_ENHANCED_MODE
   template <InitializationHint hint> struct InitializationHintTraits;
   template <>
-  struct InitializationHintTraits<InitializationHint::VKFW_ENUMERATOR(JoystickHatButtons)>
-    : std::true_type {
+  struct InitializationHintTraits<InitializationHint::VKFW_ENUMERATOR(JoystickHatButtons)> {
     using type = bool;
   };
   template <>
-  struct InitializationHintTraits<InitializationHint::VKFW_ENUMERATOR(CocoaChdirResources)>
-    : std::true_type {
+  struct InitializationHintTraits<InitializationHint::VKFW_ENUMERATOR(CocoaChdirResources)> {
     using type = bool;
   };
-  template <>
-  struct InitializationHintTraits<InitializationHint::VKFW_ENUMERATOR(CocoaMenubar)>
-    : std::true_type {
+  template <> struct InitializationHintTraits<InitializationHint::VKFW_ENUMERATOR(CocoaMenubar)> {
     using type = bool;
   };
 
@@ -2101,7 +2097,7 @@ namespace VKFW_NAMESPACE {
     if (optional_hint.has_value())
       return initHint<hint>(optional_hint.value());
     else
-      return initHint<hint>(InitializationHintTraits<hint>::value);
+      return Result::VKFW_ENUMERATOR(Success);
   }
   VKFW_INLINE Result setInitHints(InitHints hints) {
     Result result = Result::VKFW_ENUMERATOR(Success);
