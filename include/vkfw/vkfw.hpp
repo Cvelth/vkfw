@@ -532,6 +532,9 @@ namespace VKFW_NAMESPACE {
     // X11 specific Hints
     VKFW_ENUMERATOR(X11ClassName) = GLFW_X11_CLASS_NAME,
     VKFW_ENUMERATOR(X11InstanceName) = GLFW_X11_INSTANCE_NAME,
+
+    // Wayland specific Hints
+    VKFW_ENUMERATOR(WaylandAppID) = GLFW_WAYLAND_APP_ID
   };
   enum class Attribute {
     // Window Attributes
@@ -1238,6 +1241,13 @@ namespace VKFW_NAMESPACE {
   #endif
   };
   template <> struct WindowHintTraits<WindowHint::VKFW_ENUMERATOR(X11InstanceName)> {
+  #ifdef VKFW_HAS_STRING_VIEW
+    using type = std::string_view;
+  #else
+    using type = char const *;
+  #endif
+  };
+  template <> struct WindowHintTraits<WindowHint::VKFW_ENUMERATOR(WaylandAppID)> {
   #ifdef VKFW_HAS_STRING_VIEW
     using type = std::string_view;
   #else
@@ -2374,6 +2384,7 @@ namespace VKFW_NAMESPACE {
       = nullopt,
       OptionalWindowHint<WindowHint::VKFW_ENUMERATOR(X11ClassName)> x11ClassName_ = nullopt,
       OptionalWindowHint<WindowHint::VKFW_ENUMERATOR(X11InstanceName)> x11InstanceName_ = nullopt)
+      OptionalWindowHint<WindowHint::VKFW_ENUMERATOR(WaylandAppID)> waylandAppID_ = nullopt)
       VKFW_NOEXCEPT : resizable(resizable_),
                       visible(visible_),
                       decorated(decorated_),
@@ -2421,7 +2432,8 @@ namespace VKFW_NAMESPACE {
                       cocoaFrameName(cocoaFrameName_),
                       cocoaGraphicsSwitching(cocoaGraphicsSwitching_),
                       x11ClassName(x11ClassName_),
-                      x11InstanceName(x11InstanceName_) {}
+                      x11InstanceName(x11InstanceName_),
+                      waylandAppID(waylandAppID_) {}
   #endif
   public:
     OptionalWindowHint<WindowHint::VKFW_ENUMERATOR(Resizable)> resizable = nullopt;
@@ -2486,6 +2498,7 @@ namespace VKFW_NAMESPACE {
       = nullopt;
     OptionalWindowHint<WindowHint::VKFW_ENUMERATOR(X11ClassName)> x11ClassName = nullopt;
     OptionalWindowHint<WindowHint::VKFW_ENUMERATOR(X11InstanceName)> x11InstanceName = nullopt;
+    OptionalWindowHint<WindowHint::VKFW_ENUMERATOR(WaylandAppID)> waylandAppID = nullopt;
   };
   template <WindowHint hint> Result setWindowHint(OptionalWindowHint<hint> optional_hint) {
     if (optional_hint.has_value())
@@ -2590,6 +2603,8 @@ namespace VKFW_NAMESPACE {
     if (!check(result = setWindowHint(hints.x11ClassName)))
       return result;
     if (!check(result = setWindowHint(hints.x11InstanceName)))
+      return result;
+    if (!check(result = setWindowHint(hints.waylandAppID)))
       return result;
     return result;
   }
@@ -3230,6 +3245,21 @@ namespace VKFW_NAMESPACE {
   VKFW_INLINE Result windowHint<WindowHint::VKFW_ENUMERATOR(X11InstanceName)>(
     typename WindowHintTraits<WindowHint::VKFW_ENUMERATOR(X11InstanceName)>::type value) {
     glfwWindowHintString(static_cast<int>(WindowHint::VKFW_ENUMERATOR(X11InstanceName)), value);
+    return getError();
+  }
+#endif
+#ifdef VKFW_HAS_STRING_VIEW
+  template <>
+  VKFW_INLINE Result windowHint<WindowHint::VKFW_ENUMERATOR(WaylandAppID)>(
+    typename WindowHintTraits<WindowHint::VKFW_ENUMERATOR(WaylandAppID)>::type value) {
+    glfwWindowHintString(static_cast<int>(WindowHint::VKFW_ENUMERATOR(WaylandAppID)), value.data());
+    return getError();
+  }
+#else
+  template <>
+  VKFW_INLINE Result windowHint<WindowHint::VKFW_ENUMERATOR(WaylandAppID)>(
+    typename WindowHintTraits<WindowHint::VKFW_ENUMERATOR(WaylandAppID)>::type value) {
+    glfwWindowHintString(static_cast<int>(WindowHint::VKFW_ENUMERATOR(WaylandAppID)), value);
     return getError();
   }
 #endif
