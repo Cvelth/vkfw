@@ -459,7 +459,10 @@ namespace VKFW_NAMESPACE {
     VKFW_ENUMERATOR(CocoaMenubar) = GLFW_COCOA_MENUBAR,
 
     // Wayland specific
-    VKFW_ENUMERATOR(WaylandLibDecor) = GLFW_WAYLAND_LIBDECOR
+    VKFW_ENUMERATOR(WaylandLibDecor) = GLFW_WAYLAND_LIBDECOR,
+
+    // X11 specific
+    VKFW_ENUMERATOR(X11XCBVulkanSurface) = GLFW_X11_XCB_VULKAN_SURFACE
   };
   enum class WindowHint {
 
@@ -1046,6 +1049,10 @@ namespace VKFW_NAMESPACE {
   template <>
   struct InitializationHintTraits<InitializationHint::VKFW_ENUMERATOR(WaylandLibDecor)> {
     using type = WaylandLibDecor;
+  };
+  template <>
+  struct InitializationHintTraits<InitializationHint::VKFW_ENUMERATOR(X11XCBVulkanSurface)> {
+    using type = bool;
   };
 
   template <WindowHint hint> struct WindowHintTraits;
@@ -2126,12 +2133,16 @@ namespace VKFW_NAMESPACE {
       = nullopt,
       OptionalInitializationHint<InitializationHint::VKFW_ENUMERATOR(WaylandLibDecor)>
         waylandLibDecor_
+      = nullopt,
+      OptionalInitializationHint<InitializationHint::VKFW_ENUMERATOR(X11XCBVulkanSurface)>
+        x11XCBVulkanSurface_
       = nullopt) VKFW_NOEXCEPT : platform(platform_),
                                  joystickHatButtons(joystickHatButtons_),
                                  anglePlatformType(anglePlatformType_),
                                  cocoaChdirResources(cocoaChdirResources_),
                                  cocoaMenubar(cocoaMenubar_),
-                                 waylandLibDecor(waylandLibDecor_) {}
+                                 waylandLibDecor(waylandLibDecor_),
+                                 x11XCBVulkanSurface(x11XCBVulkanSurface_) {}
   #endif
   public:
     OptionalInitializationHint<InitializationHint::VKFW_ENUMERATOR(Platform)> platform = nullopt;
@@ -2145,6 +2156,8 @@ namespace VKFW_NAMESPACE {
       = nullopt;
     OptionalInitializationHint<InitializationHint::VKFW_ENUMERATOR(WaylandLibDecor)> waylandLibDecor
       = nullopt;
+    OptionalInitializationHint<InitializationHint::VKFW_ENUMERATOR(X11XCBVulkanSurface)>
+      x11XCBVulkanSurface = nullopt;
   };
   template <InitializationHint hint>
   VKFW_INLINE Result setInitHint(OptionalInitializationHint<hint> optional_hint) {
@@ -2166,6 +2179,8 @@ namespace VKFW_NAMESPACE {
     if (!check(result = setInitHint(hints.cocoaMenubar)))
       return result;
     if (!check(result = setInitHint(hints.waylandLibDecor)))
+      return result;
+    if (!check(result = setInitHint(hints.x11XCBVulkanSurface)))
       return result;
     return result;
   }
