@@ -501,6 +501,7 @@ namespace VKFW_NAMESPACE {
     VKFW_ENUMERATOR(RefreshRate) = GLFW_REFRESH_RATE,
 
     VKFW_ENUMERATOR(ScaleToMonitor) = GLFW_SCALE_TO_MONITOR,
+    VKFW_ENUMERATOR(ScaleFramebuffer) = GLFW_SCALE_FRAMEBUFFER,
 
     // Context client API Hints
     VKFW_ENUMERATOR(DoubleBuffer) = GLFW_DOUBLEBUFFER,
@@ -1159,6 +1160,9 @@ namespace VKFW_NAMESPACE {
     using type = unsigned;
   };
   template <> struct WindowHintTraits<WindowHint::VKFW_ENUMERATOR(ScaleToMonitor)> {
+    using type = bool;
+  };
+  template <> struct WindowHintTraits<WindowHint::VKFW_ENUMERATOR(ScaleFramebuffer)> {
     using type = bool;
   };
   template <> struct WindowHintTraits<WindowHint::VKFW_ENUMERATOR(DoubleBuffer)> {
@@ -2296,6 +2300,7 @@ namespace VKFW_NAMESPACE {
       OptionalWindowHint<WindowHint::VKFW_ENUMERATOR(FocusOnShow)> focusOnShow_ = nullopt,
       OptionalWindowHint<WindowHint::VKFW_ENUMERATOR(MousePassthrough)> mousePassthrough_ = nullopt,
       OptionalWindowHint<WindowHint::VKFW_ENUMERATOR(ScaleToMonitor)> scaleToMonitor_ = nullopt,
+      OptionalWindowHint<WindowHint::VKFW_ENUMERATOR(ScaleFramebuffer)> scaleFramebuffer_ = nullopt,
       OptionalWindowHint<WindowHint::VKFW_ENUMERATOR(RedBits)> redBits_ = nullopt,
       OptionalWindowHint<WindowHint::VKFW_ENUMERATOR(GreenBits)> greenBits_ = nullopt,
       OptionalWindowHint<WindowHint::VKFW_ENUMERATOR(BlueBits)> blueBits_ = nullopt,
@@ -2357,6 +2362,7 @@ namespace VKFW_NAMESPACE {
                       focusOnShow(focusOnShow_),
                       mousePassthrough(mousePassthrough_),
                       scaleToMonitor(scaleToMonitor_),
+                      scaleFramebuffer(scaleFramebuffer_),
                       redBits(redBits_),
                       greenBits(greenBits_),
                       blueBits(blueBits_),
@@ -2403,6 +2409,7 @@ namespace VKFW_NAMESPACE {
     OptionalWindowHint<WindowHint::VKFW_ENUMERATOR(FocusOnShow)> focusOnShow = nullopt;
     OptionalWindowHint<WindowHint::VKFW_ENUMERATOR(MousePassthrough)> mousePassthrough = nullopt;
     OptionalWindowHint<WindowHint::VKFW_ENUMERATOR(ScaleToMonitor)> scaleToMonitor = nullopt;
+    OptionalWindowHint<WindowHint::VKFW_ENUMERATOR(ScaleFramebuffer)> scaleFramebuffer = nullopt;
     OptionalWindowHint<WindowHint::VKFW_ENUMERATOR(RedBits)> redBits = nullopt;
     OptionalWindowHint<WindowHint::VKFW_ENUMERATOR(GreenBits)> greenBits = nullopt;
     OptionalWindowHint<WindowHint::VKFW_ENUMERATOR(BlueBits)> blueBits = nullopt;
@@ -2479,6 +2486,8 @@ namespace VKFW_NAMESPACE {
     if (!check(result = setWindowHint(hints.mousePassthrough)))
       return result;
     if (!check(result = setWindowHint(hints.scaleToMonitor)))
+      return result;
+    if (!check(result = setWindowHint(hints.scaleFramebuffer)))
       return result;
     if (!check(result = setWindowHint(hints.redBits)))
       return result;
