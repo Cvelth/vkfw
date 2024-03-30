@@ -481,6 +481,7 @@ namespace VKFW_NAMESPACE {
     VKFW_ENUMERATOR(CenterCursor) = GLFW_CENTER_CURSOR,
     VKFW_ENUMERATOR(TransparentFramebuffer) = GLFW_TRANSPARENT_FRAMEBUFFER,
     VKFW_ENUMERATOR(FocusOnShow) = GLFW_FOCUS_ON_SHOW,
+    VKFW_ENUMERATOR(MousePassthrough) = GLFW_MOUSE_PASSTHROUGH,
 
     // Framebuffer Hints
     VKFW_ENUMERATOR(RedBits) = GLFW_RED_BITS,
@@ -537,6 +538,7 @@ namespace VKFW_NAMESPACE {
     VKFW_ENUMERATOR(TransparentFramebuffer) = GLFW_TRANSPARENT_FRAMEBUFFER,
     VKFW_ENUMERATOR(Hovered) = GLFW_HOVERED,
     VKFW_ENUMERATOR(FocusOnShow) = GLFW_FOCUS_ON_SHOW,
+    VKFW_ENUMERATOR(MousePassthrough) = GLFW_MOUSE_PASSTHROUGH,
 
     // Context client API Attributes
     VKFW_ENUMERATOR(ClientAPI) = GLFW_CLIENT_API,
@@ -1107,6 +1109,9 @@ namespace VKFW_NAMESPACE {
   template <> struct WindowHintTraits<WindowHint::VKFW_ENUMERATOR(FocusOnShow)> {
     using type = bool;
   };
+  template <> struct WindowHintTraits<WindowHint::VKFW_ENUMERATOR(MousePassthrough)> {
+    using type = bool;
+  };
   template <> struct WindowHintTraits<WindowHint::VKFW_ENUMERATOR(RedBits)> {
     using type = unsigned;
   };
@@ -1249,6 +1254,10 @@ namespace VKFW_NAMESPACE {
     using type = bool;
   };
   template <> struct AttributeTraits<Attribute::VKFW_ENUMERATOR(FocusOnShow)> : std::true_type {
+    using type = bool;
+  };
+  template <>
+  struct AttributeTraits<Attribute::VKFW_ENUMERATOR(MousePassthrough)> : std::true_type {
     using type = bool;
   };
   template <> struct AttributeTraits<Attribute::VKFW_ENUMERATOR(ClientAPI)> : std::false_type {
@@ -2284,6 +2293,7 @@ namespace VKFW_NAMESPACE {
         transparentFramebuffer_
       = nullopt,
       OptionalWindowHint<WindowHint::VKFW_ENUMERATOR(FocusOnShow)> focusOnShow_ = nullopt,
+      OptionalWindowHint<WindowHint::VKFW_ENUMERATOR(MousePassthrough)> mousePassthrough_ = nullopt,
       OptionalWindowHint<WindowHint::VKFW_ENUMERATOR(ScaleToMonitor)> scaleToMonitor_ = nullopt,
       OptionalWindowHint<WindowHint::VKFW_ENUMERATOR(RedBits)> redBits_ = nullopt,
       OptionalWindowHint<WindowHint::VKFW_ENUMERATOR(GreenBits)> greenBits_ = nullopt,
@@ -2344,6 +2354,7 @@ namespace VKFW_NAMESPACE {
                       centerCursor(centerCursor_),
                       transparentFramebuffer(transparentFramebuffer_),
                       focusOnShow(focusOnShow_),
+                      mousePassthrough(mousePassthrough_),
                       scaleToMonitor(scaleToMonitor_),
                       redBits(redBits_),
                       greenBits(greenBits_),
@@ -2389,6 +2400,7 @@ namespace VKFW_NAMESPACE {
     OptionalWindowHint<WindowHint::VKFW_ENUMERATOR(TransparentFramebuffer)> transparentFramebuffer
       = nullopt;
     OptionalWindowHint<WindowHint::VKFW_ENUMERATOR(FocusOnShow)> focusOnShow = nullopt;
+    OptionalWindowHint<WindowHint::VKFW_ENUMERATOR(MousePassthrough)> mousePassthrough = nullopt;
     OptionalWindowHint<WindowHint::VKFW_ENUMERATOR(ScaleToMonitor)> scaleToMonitor = nullopt;
     OptionalWindowHint<WindowHint::VKFW_ENUMERATOR(RedBits)> redBits = nullopt;
     OptionalWindowHint<WindowHint::VKFW_ENUMERATOR(GreenBits)> greenBits = nullopt;
@@ -2462,6 +2474,8 @@ namespace VKFW_NAMESPACE {
     if (!check(result = setWindowHint(hints.transparentFramebuffer)))
       return result;
     if (!check(result = setWindowHint(hints.focusOnShow)))
+      return result;
+    if (!check(result = setWindowHint(hints.mousePassthrough)))
       return result;
     if (!check(result = setWindowHint(hints.scaleToMonitor)))
       return result;
