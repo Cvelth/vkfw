@@ -2383,7 +2383,7 @@ namespace VKFW_NAMESPACE {
         cocoaGraphicsSwitching_
       = nullopt,
       OptionalWindowHint<WindowHint::VKFW_ENUMERATOR(X11ClassName)> x11ClassName_ = nullopt,
-      OptionalWindowHint<WindowHint::VKFW_ENUMERATOR(X11InstanceName)> x11InstanceName_ = nullopt)
+      OptionalWindowHint<WindowHint::VKFW_ENUMERATOR(X11InstanceName)> x11InstanceName_ = nullopt,
       OptionalWindowHint<WindowHint::VKFW_ENUMERATOR(WaylandAppID)> waylandAppID_ = nullopt)
       VKFW_NOEXCEPT : resizable(resizable_),
                       visible(visible_),
