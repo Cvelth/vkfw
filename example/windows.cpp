@@ -34,6 +34,7 @@
 #include <array>
 #include <cstdio>
 #include <cstdlib>
+#include <cstring>
 
 #include "glad/glad.h"
 #include "vkfw/vkfw.hpp"

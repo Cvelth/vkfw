@@ -30,27 +30,31 @@
 #include <array>
 #include <cstdio>
 #include <cstdlib>
-#include <iostream>
+#include <cstring>
 
 #include "linmath.h"
 
 #include "glad/glad.h"
 #include "vkfw/vkfw.hpp"
 
-static const char *vertex_shader_text = R("
+static const char *vertex_shader_text = R"(
 #version 110
-                                          uniform mat4 MVP;
-                                          attribute vec2 vPos; varying vec2 texcoord; void main() {
-                                            gl_Position = MVP * vec4(vPos, 0.0, 1.0);
-                                            texcoord = vPos;
-                                          }) ";
+uniform mat4 MVP;
+attribute vec2 vPos;
+varying vec2 texcoord;
 
-  static const char *fragment_shader_text
-  = R"(
+void main() {
+  gl_Position = MVP * vec4(vPos, 0.0, 1.0);
+  texcoord = vPos;
+}
+)";
+
+static const char *fragment_shader_text = R"(
 #version 110
 uniform sampler2D texture;
 uniform vec3 color;
 varying vec2 texcoord;
+
 void main() {
   gl_FragColor = vec4(color * texture2D(texture, texcoord).rgb, 1.0);
 }
