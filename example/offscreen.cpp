@@ -55,19 +55,23 @@ uniform mat4 MVP;
 attribute vec3 vCol;
 attribute vec2 vPos;
 varying vec3 color;
+
 void main() {
   gl_Position = MVP * vec4(vPos, 0.0, 1.0);
   color = vCol;
 }
 )";
 
-static const char *fragment_shader_text = R("
+static const char *fragment_shader_text = R"(
 #version 110
-                                            varying vec3 color;
-                                            void main() { gl_FragColor = vec4(color, 1.0); }) ";
+varying vec3 color;
 
-  static void
-  error_callback(int error, const char *description) {
+void main() {
+  gl_FragColor = vec4(color, 1.0);
+}
+)";
+
+static void error_callback(int error, const char *description) {
   fprintf(stderr, "Error #%d: %s\n", error, description);
 }
 

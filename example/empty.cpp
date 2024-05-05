@@ -31,10 +31,8 @@
 
 #define VKFW_NO_INCLUDE_VULKAN_HPP
 
-#include <chrono>
-#include <cmath>
 #include <cstdio>
-#include <cstdlib>
+#include <cstring>
 #include <random>
 #include <thread>
 

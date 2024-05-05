@@ -43,7 +43,7 @@
 #include <cmath>
 #include <cstdio>
 #include <cstdlib>
-#include <optional>
+#include <cstring>
 
 #include "linmath.h"
 
@@ -52,19 +52,25 @@
 
 #define CURSOR_FRAME_COUNT 60
 
-static const char *vertex_shader_text = R(
-  "
+static const char *vertex_shader_text = R"(
 #version 110
-  uniform mat4 MVP;
-  attribute vec2 vPos; void main() { gl_Position = MVP * vec4(vPos, 0.0, 1.0); }) ";
+uniform mat4 MVP;
+attribute vec2 vPos;
 
-  static const char *fragment_shader_text
-  = R("
+void main() {
+  gl_Position = MVP * vec4(vPos, 0.0, 1.0);
+}
+)";
+
+static const char *fragment_shader_text = R"(
 #version 110
-      void main() { gl_FragColor = vec4(1.0); }) ";
 
-  static void
-  error_callback(int, const char *description) {
+void main() {
+  gl_FragColor = vec4(1.0);
+}
+)";
+
+static void error_callback(int, const char *description) {
   fprintf(stderr, "Error: %s\n", description);
 }
 

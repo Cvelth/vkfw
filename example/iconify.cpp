@@ -32,11 +32,12 @@
 
 #define VKFW_NO_INCLUDE_VULKAN_HPP
 
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
 
-#include <glad/glad.h>
-#include <vkfw/vkfw.hpp>
+#include "glad/glad.h"
+#include "vkfw/vkfw.hpp"
 
 static void usage(void) {
   printf("Usage: iconify [-h] [-f] [-a]\n");
