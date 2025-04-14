@@ -89,7 +89,7 @@ As all the deleters are known at compiler time and don't need to store anything 
 To allow using lambdas as callbacks, `GLFWwindow` user pointer is used internally to store `std::function` objects instead of c-style function pointers.
 These objects are accessible through `vkfw::Window::callbacks()` (or `accessWindowCallbacks(GLFWwindow *)` if enhanced mode is disabled) function and can be set directly, for example:
 ```c++
-my_window.callbacks().on_key = [](vkfw::Window const &, vkfw::Key key, int32_t, 
+my_window.callbacks().on_key = [](vkfw::Window const &, vkfw::Key key, int32_t,
                                   vkfw::KeyAction action, vkfw::ModifierKeyFlags) {
   std::cout << vkfw::to_string(action) << ' ' << vkfw::to_string(key) << ".\n";
 };
@@ -125,7 +125,7 @@ In enhanced mode, the last optional parameter of `vkfw::createWindow(..., bool r
 ## Configuration Options
 
 ### `VKFW_DISABLE_ENHANCED_MODE`
-When this is defined before including `vkfw.hpp`, you essentially disable all enhanced functionality. 
+When this is defined before including `vkfw.hpp`, you essentially disable all enhanced functionality.
 
 All you then get is improved compile time error detection, via scoped enums and bitmasks, as well as a compile time checked attribute/hint getters/setters.
 
