@@ -35,7 +35,8 @@
 #include <cstdlib>
 #include <cstring>
 
-#include "glad/glad.h"
+#define GLAD_GL_IMPLEMENTATION
+#include "glad/gl.h"
 #include "vkfw/vkfw.hpp"
 
 // a simple glfw logo
@@ -98,7 +99,7 @@ int main() {
     hints.clientAPI = vkfw::ClientAPI::eOpenGL;
     auto window = vkfw::createWindowUnique(200, 200, "Window Icon", hints);
     window->makeContextCurrent();
-    gladLoadGLLoader((GLADloadproc) vkfw::getProcAddress);
+    gladLoadGL((GLADloadfunc) vkfw::getProcAddress);
 
     bool is_vkfw = true;
     size_t current_color = 0;

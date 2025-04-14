@@ -34,7 +34,8 @@
 #include <cstdlib>
 #include <cstring>
 
-#include "glad/glad.h"
+#define GLAD_GL_IMPLEMENTATION
+#include "glad/gl.h"
 #include "vkfw/vkfw.hpp"
 
 /* Map height updates */
@@ -378,7 +379,7 @@ int main(int, char **) {
     };
 
     window->makeContextCurrent();
-    gladLoadGLLoader((GLADloadproc) &vkfw::getProcAddress);
+    gladLoadGL((GLADloadfunc) &vkfw::getProcAddress);
 
     /* Prepare opengl resources for rendering */
     GLuint shader_program = make_shader_program(vertex_shader_text, fragment_shader_text);

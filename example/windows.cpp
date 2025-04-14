@@ -36,7 +36,8 @@
 #include <cstdlib>
 #include <cstring>
 
-#include "glad/glad.h"
+#define GLAD_GL_IMPLEMENTATION
+#include "glad/gl.h"
 #include "vkfw/vkfw.hpp"
 
 static const char *titles[] = { "Red", "Green", "Blue", "Yellow" };
@@ -106,7 +107,7 @@ int main(int argc, char **argv) {
       static bool once = true;
       if (once) {
         once = false;
-        gladLoadGLLoader((GLADloadproc) vkfw::getProcAddress);
+        gladLoadGL((GLADloadfunc) vkfw::getProcAddress);
       }
 
       glClearColor(colors[i].r, colors[i].g, colors[i].b, 1.f);

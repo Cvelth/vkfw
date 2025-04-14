@@ -42,7 +42,8 @@
 
 #include "linmath.h"
 
-#include "glad/glad.h"
+#define GLAD_GL_IMPLEMENTATION
+#include "glad/gl.h"
 #include "vkfw/vkfw.hpp"
 
 /*****************************************************************************
@@ -595,7 +596,7 @@ int main(void) {
     window->callbacks()->on_cursor_move = &cursor_position_callback;
 
     window->makeContextCurrent();
-    gladLoadGLLoader((GLADloadproc) &vkfw::getProcAddress);
+    gladLoadGL((GLADloadfunc) &vkfw::getProcAddress);
     vkfw::swapInterval(1);
 
     reshape(*window, window->getFramebufferWidth(), window->getFramebufferHeight());

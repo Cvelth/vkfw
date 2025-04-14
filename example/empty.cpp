@@ -36,7 +36,8 @@
 #include <random>
 #include <thread>
 
-#include "glad/glad.h"
+#define GLAD_GL_IMPLEMENTATION
+#include "glad/gl.h"
 #include "vkfw/vkfw.hpp"
 
 static void error_callback(int, const char *description) {
@@ -59,7 +60,7 @@ int main() {
     };
 
     window->makeContextCurrent();
-    gladLoadGLLoader((GLADloadproc) vkfw::getProcAddress);
+    gladLoadGL((GLADloadfunc) vkfw::getProcAddress);
 
     static volatile bool running = true;
     std::thread thread([]() {

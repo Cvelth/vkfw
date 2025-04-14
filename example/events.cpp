@@ -43,7 +43,8 @@
 #include <cstring>
 #include <string_view>
 
-#include "glad/glad.h"
+#define GLAD_GL_IMPLEMENTATION
+#include "glad/gl.h"
 #include "vkfw/vkfw.hpp"
 
 // Event index
@@ -338,7 +339,7 @@ int main(int argc, char **argv) {
       if (once) {
         once = false;
         slots[i].window->makeContextCurrent();
-        gladLoadGLLoader((GLADloadproc) vkfw::getProcAddress);
+        gladLoadGL((GLADloadfunc) vkfw::getProcAddress);
         vkfw::swapInterval(1);
       }
     }

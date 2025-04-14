@@ -34,7 +34,8 @@
 #include "linmath.h"
 #include "stb_image_write.h"
 
-#include "glad/glad.h"
+#define GLAD_GL_IMPLEMENTATION
+#include "glad/gl.h"
 #include "vkfw/vkfw.hpp"
 
 #if USE_NATIVE_OSMESA
@@ -91,7 +92,7 @@ int main(void) {
     auto window = vkfw::createWindowUnique(640, 480, "Simple example", hints);
 
     window->makeContextCurrent();
-    gladLoadGLLoader((GLADloadproc) &vkfw::getProcAddress);
+    gladLoadGL((GLADloadfunc) &vkfw::getProcAddress);
 
     // NOTE: OpenGL error checks have been omitted for brevity
     GLuint vertex_buffer, vertex_shader, fragment_shader, program;
