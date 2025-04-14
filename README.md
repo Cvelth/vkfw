@@ -5,8 +5,30 @@ It focuses on features like type safety with enums and bitfields, STL containers
 If you find any bugs or problems, I'd appreciate an [issue](https://github.com/Cvelth/vkfw/issues).
 
 ## Getting Started
-All you need is to include `vkfw/vkfw.hpp` and you're ready to go.
-That is to say, you still need to link against [glfw](https://github.com/glfw/glfw). These are just bindings, not a full-fledged library.
+There are a few ways in which you can integrate `vkfw` in your project:
+
+1. The easiest way is to copy the header file (`vkfw/vkfw.hpp`) into your source tree and include it. Note that you still need to link against [glfw](https://github.com/glfw/glfw) as these are just bindings, not a full-fledged library.
+2. You can add it as a git submodule and then just:
+    ```cmake
+    add_subdirectory(<path-to-vkfw-dir>)
+    target_link_libraries(<your-project> PRIVATE vkfw)
+    ```
+3. You can also install it system-wide (see `VKFW_INSTALL` option of the provided `CMakeLists.txt` and then do):
+    ```cmake
+    find_package(vkfw REQUIRED)
+    target_link_libraries(<your-project> PRIVATE vkfw::vkfw)
+    ```
+4. You can use `FetchContent`:
+    ```cmake
+    include(FetchContent)
+    FetchContent_Declare(
+        vkfw
+        GIT_REPOSITORY https://github.com/Cvelth/vkfw
+    )
+    FetchContent_MakeAvailable(vkfw)
+    target_link_libraries(<your-project> PRIVATE vkfw::vkfw)
+    ```
+5. You can add a port for it to your private `vcpkg` repository or otherwise adopt it in your preferred package manager. All you need is the `vkfw/vkfw.hpp` header.
 
 ### Minimum Requirements
 VKFW requires a C++11 capable compiler to compile. The following compilers are expected to work:
