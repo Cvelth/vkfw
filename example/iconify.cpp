@@ -36,7 +36,8 @@
 #include <cstdlib>
 #include <cstring>
 
-#include "glad/glad.h"
+#define GLAD_GL_IMPLEMENTATION
+#include "glad/gl.h"
 #include "vkfw/vkfw.hpp"
 
 static void usage(void) {
@@ -138,7 +139,7 @@ static auto create_window(vkfw::Monitor const &monitor, bool is_fullscreen) {
   } else
     output = vkfw::createWindowUnique(640, 480, "Iconify", hints, monitor);
   output->makeContextCurrent();
-  gladLoadGLLoader((GLADloadproc) vkfw::getProcAddress);
+  gladLoadGL((GLADloadfunc) vkfw::getProcAddress);
   return output;
 }
 

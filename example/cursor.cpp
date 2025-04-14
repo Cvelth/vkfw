@@ -47,7 +47,8 @@
 
 #include "linmath.h"
 
-#include "glad/glad.h"
+#define GLAD_GL_IMPLEMENTATION
+#include "glad/gl.h"
 #include "vkfw/vkfw.hpp"
 
 #define CURSOR_FRAME_COUNT 60
@@ -315,7 +316,7 @@ int CursorExample::run() {
   hints.contextVersionMinor = 0u;
   auto window = vkfw::createWindowUnique(640, 480, "Cursor Test", hints);
   window->makeContextCurrent();
-  gladLoadGLLoader((GLADloadproc) vkfw::getProcAddress);
+  gladLoadGL((GLADloadfunc) vkfw::getProcAddress);
 
   GLuint vertex_buffer, vertex_shader, fragment_shader, program;
   GLint mvp_location, vpos_location;

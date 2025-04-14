@@ -34,7 +34,8 @@
 
 #include "linmath.h"
 
-#include "glad/glad.h"
+#define GLAD_GL_IMPLEMENTATION
+#include "glad/gl.h"
 #include "vkfw/vkfw.hpp"
 
 static const char *vertex_shader_text = R"(
@@ -93,7 +94,7 @@ int main() {
 
     // The contexts are created with the same APIs so the function
     // pointers should be re-usable between them
-    gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);
+    gladLoadGL((GLADloadfunc) glfwGetProcAddress);
 
     GLuint texture, program, vertex_buffer;
     GLint mvp_location, color_location, texture_location, vpos_location;

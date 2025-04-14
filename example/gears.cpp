@@ -36,7 +36,8 @@
 #include <cstdlib>
 #include <cstring>
 
-#include "glad/glad.h"
+#define GLAD_GL_IMPLEMENTATION
+#include "glad/gl.h"
 #include "vkfw/vkfw.hpp"
 
 /**
@@ -295,7 +296,7 @@ int main(int, char *[]) {
     window->callbacks()->on_key = &key;
 
     window->makeContextCurrent();
-    gladLoadGLLoader((GLADloadproc) &vkfw::getProcAddress);
+    gladLoadGL((GLADloadfunc) &vkfw::getProcAddress);
     vkfw::swapInterval(1);
 
     reshape(*window, window->getFramebufferWidth(), window->getFramebufferHeight());

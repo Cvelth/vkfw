@@ -35,7 +35,8 @@
 #include <cstdlib>
 #include <cstring>
 
-#include "glad/glad.h"
+#define GLAD_GL_IMPLEMENTATION
+#include "glad/gl.h"
 #include "vkfw/vkfw.hpp"
 
 #if defined(__APPLE__)
@@ -83,7 +84,7 @@ int main() {
     auto window = vkfw::createWindowUnique(200, 200, "Clipboard Test", hints);
     window->makeContextCurrent();
 
-    gladLoadGLLoader((GLADloadproc) vkfw::getProcAddress);
+    gladLoadGL((GLADloadfunc) vkfw::getProcAddress);
     vkfw::swapInterval(1);
 
     window->callbacks()->on_key = key_callback;
