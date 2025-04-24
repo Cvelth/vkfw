@@ -135,6 +135,10 @@ When a `vkfw` function returns an error value code, an exception is thrown unles
 ### `VKFW_NO_SMART_HANDLE`
 The `UniqueHandle` helper class and all the unique handle types and functions returning them are not compiled if this precompiler definition is defined.
 
+> [!WARNING]
+> If `VKFW_NO_INCLUDE_VULKAN_HPP` isn't defined, then `vkfw` will use the smart handles from Vulkan-HPP directly. In the event that `VULKAN_HPP_NO_SMART_HANDLES` is defined, then `VKFW_NO_SMART_HANDLE` will also be defined if it hasn't been defined already and a compiler warning will be issued.
+> You can avoid this behavior by defining either `VKFW_NO_SMART_HANDLE` or `VKFW_NO_INCLUDE_VULKAN_HPP` before including `<vkfw/vkfw.hpp>`
+
 ### `VKFW_NO_STD_FUNCTION_CALLBACKS`
 Disables c++ callbacks based on `std::function`. Define this if you cannot afford an extra function call per event for extra usability. Note, that original callbacks do not use `enum class`es and it's your responcibility to cast the values correctly inside the callback itself. Or you can just use original preprocessor definitions.
 
@@ -147,6 +151,9 @@ VKFW includes `vulkan.h` by default (same as GLFW with `GLFW_INCLUDE_VULKAN` def
 ### `VKFW_NO_INCLUDE_VULKAN_HPP`
 VKFW includes `vulkan.hpp` by default. This preprocessor definition allows to disable the inclusion.
 When it is not defined, some of the vulkan.hpp helpers are used (like `UniqueHandle`), otherwise an alternatives are declared.
+
+> [!NOTE]
+> This flag can cause an override of `VKFW_NO_SMART_HANDLE`. See the documentation for `VKFW_NO_SMART_HANDLE` for more details.
 
 ### `VKFW_NO_LEADING_e_IN_ENUMS`
 Removes leading `e` from enum values, for example `vkfw::Key::eA` becomes `vkfw::Key::A` and `vkfw::Key::e1` becomes `vkfw::Key::_1`.
