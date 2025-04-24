@@ -83,6 +83,15 @@
   #include <vulkan/vulkan.hpp>
 #endif
 
+#if defined(VULKAN_HPP_NO_SMART_HANDLE) && !defined(VKFW_NO_SMART_HANDLE)                          \
+  && !defined(VKFW_NO_INCLUDE_VULKAN_HPP)
+  #pragma message(                                                                                 \
+    "warning: VKFW_NO_SMART_HANDLE will be defined as vkfw requires Vulkan-HPP handles when "      \
+    "VKFW_NO_INCLUDE_VULKAN_HPP isn't defined. You can silence this warning by defining "          \
+    "VKFW_NO_SMART_HANDLE or VKFW_NO_INCLUDE_VULKAN_HPP before including <vkfw/vkfw.hpp>")
+  #define VKFW_NO_SMART_HANDLE
+#endif
+
 #ifdef VKFW_DISABLE_ENHANCED_MODE
   #ifndef VKFW_NO_SMART_HANDLE
     #define VKFW_NO_SMART_HANDLE
