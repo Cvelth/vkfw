@@ -62,7 +62,7 @@ VKFW declares a class for all handles to ensure full type safety and to add supp
 ### Return values, Error Codes & Exceptions
 By default VKFW has exceptions enabled. This means than VKFW checks both the return value of the function and the error code returned by `vkfw::getError()` (`glfwGetError()`). If it indicates a failure a `std::runtime_error` will be thrown.
 
-If exception handling is disabled (by defining `VKFW_HPP_NO_EXCEPTIONS`), the type of `vkfw::ResultValue<SomeType>::type` is a struct holding a `vkfw::Result` success indicator and the value itself. This struct supports unpacking the return values by using `std::tie`, alternatively you can just access struct members as you normally would, for example:
+If exception handling is disabled (by defining `VKFW_NO_EXCEPTIONS`), the type of `vkfw::ResultValue<SomeType>::type` is a struct holding a `vkfw::Result` success indicator and the value itself. This struct supports unpacking the return values by using `std::tie`, alternatively you can just access struct members as you normally would, for example:
 ```c++
 auto [result_code, my_brand_new_window] = vkfw::createWindow(...);
 // OR
@@ -76,7 +76,7 @@ auto my_brand_new_window = create_window_output.value;
 ```
 
 ### C++17: `[[nodiscard]]`
-With C++17 and above, some functions are attributed with `[[nodiscard]]`, resulting in a warning if you don't use the return value. You can switch those warnings off by defining `VKFW_HPP_NO_NODISCARD_WARNINGS`.
+With C++17 and above, some functions are attributed with `[[nodiscard]]`, resulting in a warning if you don't use the return value. You can switch those warnings off by defining `VKFW_NO_NODISCARD_WARNINGS`.
 
 ### UniqueHandle for automatic resource management
 VKFW provides a `vkfw::UniqueHandle<Type>` interface. For each GLFW handle type `vkfw::Type` there is a unique handle `vkfw::UniqueType` which will delete the underlying GLFW resource upon destruction, e.g. `vkfw::UniqueWindow` is the unique handle for `vkfw::Window`.
@@ -152,7 +152,7 @@ When it is not defined, some of the vulkan.hpp helpers are used (like `UniqueHan
 Removes leading `e` from enum values, for example `vkfw::Key::eA` becomes `vkfw::Key::A` and `vkfw::Key::e1` becomes `vkfw::Key::_1`.
 
 ### `VKFW_NAMESPACE`
-By default, the namespace used with `vkfw.hpp` is `vkfw`. By defining `VKFW_HPP_NAMESPACE` before including `vkfw.hpp`, you can adjust this.
+By default, the namespace used with `vkfw.hpp` is `vkfw`. By defining `VKFW_NAMESPACE` before including `vkfw.hpp`, you can adjust this.
 
 ### `VKFW_NO_STRUCT_CONSTRUCTORS`
 In order to support designated initializers (c++20 feature) a struct must not have constructors, so this preprocessor definition just removes them outright. For example:
@@ -176,12 +176,12 @@ Define this if you prefer c style arrays / `std::vector`s to `std::span` even if
 ### `VKFW_INLINE`
 This preprocessor definition is set to be the compiler-dependent attribute used to mark functions as inline. If your compiler happens to need some different attribute, you can set this define accordingly before including `vkfw.hpp`.
 
-### `VKFW_HPP_ASSERT`
+### `VKFW_ASSERT`
 Define this one if you need an alternative assertion, by default `<cassert>` is used.
 Mainly, this allow to introduce your own function with the same interface as `assert` to be used instead.
 
-### `VKFW_HPP_ASSERT_ON_RESULT`
-Allows to replace an assertion call used to check success codes if exceptions are disabled. By default `VKFW_HPP_ASSERT` is used.
+### `VKFW_ASSERT_ON_RESULT`
+Allows to replace an assertion call used to check success codes if exceptions are disabled. By default `VKFW_ASSERT` is used.
 
 ## See Also
 - Original [GLFW C API](https://www.glfw.org)
