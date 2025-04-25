@@ -3183,7 +3183,18 @@ public:
 };
 
 template <> struct VKFW_NAMESPACE::CustomDestroy<VKFW_NAMESPACE::Cursor> {
-  VKFW_INLINE void destroy(Cursor &cursor) { static_cast<void>(cursor.destroy()); }
+  VKFW_INLINE void destroy(Cursor &cursor) {
+    // Warning: this function will swallow any exceptions or return codes (if using
+    // VKFW_NO_EXCEPTIONS). If you wish to be notified of any errors, please use
+    // vkfw::setErrorCallback to bind a function that captures errors.
+  #ifndef VKFW_NO_EXCEPTIONS
+    try {
+  #endif
+      static_cast<void>(cursor.destroy());
+  #ifndef VKFW_NO_EXCEPTIONS
+    } catch (...) {}
+  #endif
+  }
 };
   #ifndef VKFW_NO_INCLUDE_VULKAN_HPP
 template <>
@@ -3226,10 +3237,14 @@ namespace VKFW_NAMESPACE {
   }
   VKFW_NODISCARD_WHEN_NO_EXCEPTIONS VKFW_INLINE typename ResultValueType<void>::type
   Cursor::destroy() {
-    glfwDestroyCursor(m_cursor);
-    m_cursor = nullptr;
-    return createResultValue(Result::VKFW_ENUMERATOR(Success),
-                             VKFW_NAMESPACE_STRING "::Cursor::destroy");
+    if (m_cursor) {
+      glfwDestroyCursor(m_cursor);
+      m_cursor = nullptr;
+      return createResultValue(getError(), VKFW_NAMESPACE_STRING "::Cursor::destroy");
+    } else {
+      return createResultValue(Result::VKFW_ENUMERATOR(Success),
+                               VKFW_NAMESPACE_STRING "::Cursor::destroy");
+    }
   }
 #endif
 

@@ -86,7 +86,7 @@ For each function which constructs a GLFW handle of type `vkfw::Type` VKFW provi
 As all the deleters are known at compiler time and don't need to store anything extra - the only downside is a slight compilation time increase.
 
  > [!WARNING]
- > The destructors for `vkfw::UniqueInstance` and `vkfw::UniqueWindow` will swallow any exceptions or error codes (if using `VKFW_NO_EXCEPTIONS`) that are produced in the destruction of the underlying handle.
+ > The destructors for `vkfw::UniqueInstance`, `vkfw::UniqueWindow`, and `vkfw::UniqueCursor` will will swallow any exceptions or error codes (if using `VKFW_NO_EXCEPTIONS`) that are produced in the destruction of the underlying handle.
  > If you wish to be notified of these kinds of errors, you are encouraged to use `vkfw::setErrorCallback` to bind a function that captures errors.
 
 ### Callbacks
