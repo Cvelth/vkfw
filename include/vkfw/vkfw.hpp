@@ -3133,7 +3133,18 @@ namespace VKFW_NAMESPACE {
 
 #ifndef VKFW_NO_SMART_HANDLE
 template <> struct VKFW_NAMESPACE::CustomDestroy<VKFW_NAMESPACE::Instance> {
-  VKFW_INLINE void destroy(Instance &instance) { static_cast<void>(instance.destroy()); }
+  VKFW_INLINE void destroy(Instance &instance) {
+    // Warning: this function will swallow any exceptions or return codes (if using
+    // VKFW_NO_EXCEPTIONS). If you wish to be notified of any errors, please use
+    // vkfw::setErrorCallback to bind a function that captures errors.
+  #ifndef VKFW_NO_EXCEPTIONS
+    try {
+  #endif
+      static_cast<void>(instance.destroy());
+  #ifndef VKFW_NO_EXCEPTIONS
+    } catch (...) {}
+  #endif
+  }
 };
   #ifndef VKFW_NO_INCLUDE_VULKAN_HPP
 template <>
@@ -3147,7 +3158,18 @@ public:
 };
 
 template <> struct VKFW_NAMESPACE::CustomDestroy<VKFW_NAMESPACE::Window> {
-  VKFW_INLINE void destroy(Window &window) { static_cast<void>(window.destroy()); }
+  VKFW_INLINE void destroy(Window &window) {
+    // Warning: this function will swallow any exceptions or return codes (if using
+    // VKFW_NO_EXCEPTIONS). If you wish to be notified of any errors, please use
+    // vkfw::setErrorCallback to bind a function that captures errors.
+  #ifndef VKFW_NO_EXCEPTIONS
+    try {
+  #endif
+      static_cast<void>(window.destroy());
+  #ifndef VKFW_NO_EXCEPTIONS
+    } catch (...) {}
+  #endif
+  }
 };
   #ifndef VKFW_NO_INCLUDE_VULKAN_HPP
 template <>
