@@ -1,10 +1,13 @@
 cmake_minimum_required(VERSION 3.20)
+set(CMAKE_EXPERIMENTAL_CXX_IMPORT_STD "a9e1cf81-9932-4810-974b-6eccaf14e457")
+
 project(vkfw LANGUAGES CXX)
 
 # Build options.
 option(VKFW_FETCH_DEPENDENCIES "Fetch build dependencies" OFF)
 option(VKFW_INSTALL "Create install target" OFF)
 option(VKFW_BUILD_EXAMPLES "Build examples" OFF)
+option(VKFW_BUILD_CXX_MODULE "Add a C++ module target for vkfw" OFF)
 
 # Configuration options
 option(VKFW_DISABLE_ENHANCED_MODE "Disable enhanced functionality" OFF)
@@ -72,7 +75,11 @@ add_definitions(VKFW_NO_SPACESHIP_OPERATOR)
 add_definitions(VKFW_NO_STRING_VIEW)
 add_definitions(VKFW_NO_SPAN)
 
-if (VKFW_INSTALL)
+if(VKFW_BUILD_CXX_MODULE)
+    add_subdirectory(CppModule)
+endif()
+
+if(VKFW_INSTALL)
     include(CMakePackageConfigHelpers)
     include(GNUInstallDirs)
 

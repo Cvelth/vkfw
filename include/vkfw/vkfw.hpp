@@ -55,33 +55,54 @@
   #if defined(VKFW_NO_SMART_HANDLE) && !defined(VULKAN_HPP_NO_SMART_HANDLE)
     #define VULKAN_HPP_NO_SMART_HANDLE VKFW_NO_SMART_HANDLE
   #endif
-  #include <vulkan/vulkan.hpp>
+  #ifdef VKFW_ENABLE_VULKAN_HPP_MODULE
+import vulkan_hpp;
+    #include <vulkan/vulkan_hpp_macros.hpp>
+  #else
+    #include <vulkan/vulkan.hpp>
+  #endif
 #endif
 
 #if 20 <= VKFW_CPP_VERSION && defined(__has_include) && __has_include(<version> )
   #include <version>
 #endif
 #if !defined(VKFW_NO_STRING_VIEW) && 17 <= VKFW_CPP_VERSION
-  #include <string_view>
   #define VKFW_HAS_STRING_VIEW
+  #ifndef VKFW_ENABLE_STD_MODULE
+    #include <string_view>
+  #endif
 #endif
 #if !defined(VKFW_NO_SPAN) && 20 <= VKFW_CPP_VERSION && defined(__cpp_lib_span)                    \
   && defined(__has_include) && 202002L <= __cpp_lib_span && __has_include(<span> )
-  #include <span>
   #define VKFW_HAS_SPAN
+  #ifndef VKFW_ENABLE_STD_MODULE
+    #include <span>
+  #endif
 #endif
 #if !defined(VKFW_NO_SPACESHIP_OPERATOR) && 20 <= VKFW_CPP_VERSION                                 \
   && defined(__cpp_impl_three_way_comparison) && defined(__has_include)                            \
   && 201711 <= __cpp_impl_three_way_comparison && __has_include(<compare> )
   #define VKFW_HAS_SPACESHIP_OPERATOR
-  #include <compare>
+  #ifndef VKFW_ENABLE_STD_MODULE
+    #include <compare>
+  #endif
 #endif
 
-#include <cstdint>
-#include <string>
-#include <system_error>
-#include <tuple>
-#include <vector>
+#ifndef VKFW_ENABLE_STD_MODULE
+  #include <cstdint>
+  #include <string>
+  #include <system_error>
+  #include <tuple>
+  #include <vector>
+#endif
+
+#ifdef VULKAN_HPP_STD_MODULE
+import VULKAN_HPP_STD_MODULE;
+#else
+  #ifdef VKFW_ENABLE_STD_MODULE
+import std;
+  #endif
+#endif
 
 #if defined(VULKAN_HPP_NO_SMART_HANDLE) && !defined(VKFW_NO_SMART_HANDLE)                          \
   && !defined(VKFW_NO_INCLUDE_VULKAN_HPP)
@@ -96,14 +117,14 @@
   #ifndef VKFW_NO_SMART_HANDLE
     #define VKFW_NO_SMART_HANDLE
   #endif
-#else
+#elif !defined(VKFW_ENABLE_STD_MODULE)
   #include <algorithm>
   #include <chrono>
   #include <iterator>
   #include <memory>
 #endif
 
-#ifndef VKFW_NO_STD_FUNCTION_CALLBACKS
+#if !defined(VKFW_NO_STD_FUNCTION_CALLBACKS) && !defined(VKFW_ENABLE_STD_MODULE)
   #include <functional>
 #endif
 
