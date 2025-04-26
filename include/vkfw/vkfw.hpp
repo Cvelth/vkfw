@@ -2988,7 +2988,7 @@ namespace VKFW_NAMESPACE {
     return glfwGetJoystickGUID(static_cast<int>(jid));
   }
 #endif
-  VKFW_INLINE void getJoystickUserPointer(Joystick jid, void *pointer) {
+  VKFW_INLINE void setJoystickUserPointer(Joystick jid, void *pointer) {
     glfwSetJoystickUserPointer(static_cast<int>(jid), pointer);
   }
   VKFW_NODISCARD VKFW_INLINE void *getJoystickUserPointer(Joystick jid) {
