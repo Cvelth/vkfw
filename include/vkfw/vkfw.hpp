@@ -3087,6 +3087,14 @@ namespace VKFW_NAMESPACE {
     return vk::UniqueSurfaceKHR(output, deleter);
   }
     #endif
+  #else
+  VKFW_NODISCARD VKFW_INLINE VkSurfaceKHR
+  createWindowSurface(VkInstance const &instance, Window const &window,
+                      VkAllocationCallbacks const *allocator = nullptr) {
+    VkSurfaceKHR output;
+    glfwCreateWindowSurface(instance, window, allocator, &output);
+    return output;
+  }
   #endif
 #endif
 } // namespace VKFW_NAMESPACE
