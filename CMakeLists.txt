@@ -1,5 +1,11 @@
 cmake_minimum_required(VERSION 3.20)
-set(CMAKE_EXPERIMENTAL_CXX_IMPORT_STD "a9e1cf81-9932-4810-974b-6eccaf14e457")
+
+option(VKFW_BUILD_CXX_MODULE "Add a C++ module target for vkfw" OFF)
+if(VKFW_BUILD_CXX_MODULE)
+    # This line must be before any call to `project()`
+    set(CMAKE_EXPERIMENTAL_CXX_IMPORT_STD
+        "a9e1cf81-9932-4810-974b-6eccaf14e457")
+endif()
 
 project(vkfw LANGUAGES CXX)
 
@@ -7,7 +13,6 @@ project(vkfw LANGUAGES CXX)
 option(VKFW_FETCH_DEPENDENCIES "Fetch build dependencies" OFF)
 option(VKFW_INSTALL "Create install target" OFF)
 option(VKFW_BUILD_EXAMPLES "Build examples" OFF)
-option(VKFW_BUILD_CXX_MODULE "Add a C++ module target for vkfw" OFF)
 
 # Configuration options
 option(VKFW_DISABLE_ENHANCED_MODE "Disable enhanced functionality" OFF)
