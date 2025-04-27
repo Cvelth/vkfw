@@ -33,7 +33,7 @@
 import vkfw;
 import std;
 
-#include <cstdio> // for stderr
+#include <cstdio> // for stderr (macro hence not imported by std)
 
 #define GLAD_GL_IMPLEMENTATION
 #include "glad/gl.h"
