@@ -29,7 +29,7 @@
 //
 // Conversion to vkfw (and C++): John Cvelth <cvelth.mail@gmail.com>
 
-import vkfw_hpp;
+import vkfw;
 import std;
 
 #include <cstdio> // for stderr

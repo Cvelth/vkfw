@@ -7,7 +7,7 @@ module;
 
 #include <vkfw/vkfw.hpp>
 
-export module vkfw_hpp;
+export module vkfw;
 
 export namespace VKFW_NAMESPACE {
   using VKFW_NAMESPACE::AnglePlatformType;
