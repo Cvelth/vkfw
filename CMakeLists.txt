@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.20)
 
+# Note that C++ module support requires a quite recent version of CMake,
+# so CppModules/CMakeLists.txt forces CMake 3.30 or later.
 option(VKFW_BUILD_CXX_MODULE "Add a C++ module target for vkfw" OFF)
 if(VKFW_BUILD_CXX_MODULE)
     # This line must be before any call to `project()`
