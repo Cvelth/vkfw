@@ -22,31 +22,6 @@
   #error "vkfw.hpp needs at least c++ standard version 11"
 #endif
 
-#if 20 <= VKFW_CPP_VERSION && defined(__has_include) && __has_include(<version> )
-  #include <version>
-#endif
-#if !defined(VKFW_NO_STRING_VIEW) && 17 <= VKFW_CPP_VERSION
-  #include <string_view>
-  #define VKFW_HAS_STRING_VIEW
-#endif
-#if !defined(VKFW_NO_SPAN) && 20 <= VKFW_CPP_VERSION && defined(__cpp_lib_span)                    \
-  && defined(__has_include) && 202002L <= __cpp_lib_span && __has_include(<span> )
-  #include <span>
-  #define VKFW_HAS_SPAN
-#endif
-#if !defined(VKFW_NO_SPACESHIP_OPERATOR) && 20 <= VKFW_CPP_VERSION                                 \
-  && defined(__cpp_impl_three_way_comparison) && defined(__has_include)                            \
-  && 201711 <= __cpp_impl_three_way_comparison && __has_include(<compare> )
-  #define VKFW_HAS_SPACESHIP_OPERATOR
-  #include <compare>
-#endif
-
-#include <cstdint>
-#include <string>
-#include <system_error>
-#include <tuple>
-#include <vector>
-
 #ifndef VKFW_INCLUDE_GL
   #define GLFW_INCLUDE_NONE
 #endif
@@ -82,6 +57,31 @@
   #endif
   #include <vulkan/vulkan.hpp>
 #endif
+
+#if 20 <= VKFW_CPP_VERSION && defined(__has_include) && __has_include(<version> )
+  #include <version>
+#endif
+#if !defined(VKFW_NO_STRING_VIEW) && 17 <= VKFW_CPP_VERSION
+  #include <string_view>
+  #define VKFW_HAS_STRING_VIEW
+#endif
+#if !defined(VKFW_NO_SPAN) && 20 <= VKFW_CPP_VERSION && defined(__cpp_lib_span)                    \
+  && defined(__has_include) && 202002L <= __cpp_lib_span && __has_include(<span> )
+  #include <span>
+  #define VKFW_HAS_SPAN
+#endif
+#if !defined(VKFW_NO_SPACESHIP_OPERATOR) && 20 <= VKFW_CPP_VERSION                                 \
+  && defined(__cpp_impl_three_way_comparison) && defined(__has_include)                            \
+  && 201711 <= __cpp_impl_three_way_comparison && __has_include(<compare> )
+  #define VKFW_HAS_SPACESHIP_OPERATOR
+  #include <compare>
+#endif
+
+#include <cstdint>
+#include <string>
+#include <system_error>
+#include <tuple>
+#include <vector>
 
 #if defined(VULKAN_HPP_NO_SMART_HANDLE) && !defined(VKFW_NO_SMART_HANDLE)                          \
   && !defined(VKFW_NO_INCLUDE_VULKAN_HPP)
