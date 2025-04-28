@@ -20,15 +20,26 @@ if(glfw3_FOUND)
 endif()
 
 function(add_example NAME)
+    cmake_parse_arguments(ARG "MODULE" "" "" ${ARGN})
+
     add_executable(
         "${NAME}"
         WIN32
         MACOSX_BUNDLE
         "${VKFW_EXAMPLE_ROOT}/${NAME}.cpp"
     )
-    target_link_libraries("${NAME}" PRIVATE vkfw glfw Vulkan::Vulkan)
+
+    if(${ARG_MODULE})
+        target_compile_features("${NAME}" PRIVATE cxx_std_23)
+        set_target_properties("${NAME}" PROPERTIES CXX_MODULE_STD ON)
+        target_link_libraries("${NAME}" PUBLIC vkfw-module)
+    else()
+        target_compile_features("${NAME}" PRIVATE cxx_std_20)
+        target_link_libraries("${NAME}" PRIVATE vkfw)
+    endif()
+
+    target_link_libraries("${NAME}" PRIVATE glfw Vulkan::Vulkan)
     target_include_directories("${NAME}" PRIVATE "${glfw3_SOURCE_DIR}/deps")
-    target_compile_features("${NAME}" PRIVATE cxx_std_20)
 
     if(MSVC OR CMAKE_CXX_SIMULATE_ID STREQUAL "MSVC")
         target_compile_definitions("${NAME}" PRIVATE _CRT_SECURE_NO_WARNINGS)
@@ -66,3 +77,8 @@ add_example(iconify)
 add_example(offscreen)
 add_example(sharing)
 add_example(windows)
+
+# C++ module example, require C++23 (for import std;) and CMake 3.30+
+if(${VKFW_BUILD_CXX_MODULE} AND ${VKFW_BUILD_WITH_STD_MODULE})
+    add_example(empty-module MODULE)
+endif()
