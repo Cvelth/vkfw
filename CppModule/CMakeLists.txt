@@ -108,38 +108,3 @@ if(${VKFW_BUILD_WITH_VULKAN_MODULE})
         PRIVATE VKFW_ENABLE_VULKAN_HPP_MODULE
     )
 endif()
-
-if(${VKFW_BUILD_WITH_VULKAN_MODULE})
-    if(VKFW_BUILD_EXAMPLES)
-        add_executable(Modules-Example modules-example.cpp)
-        target_compile_features(Modules-Example PRIVATE cxx_std_20)
-        target_link_libraries(
-            Modules-Example
-            PRIVATE vkfw-module Vulkan-Hpp-Module
-        )
-
-        # Additional glfw3 example dependencies.
-        #
-        # See example/CMakeLists.txt for more details.
-        if(glfw3_FOUND)
-            include(FetchContent)
-            FetchContent_Populate(
-                glfw3
-                GIT_REPOSITORY https://github.com/glfw/glfw
-                GIT_TAG ${VKFW_GLFW_FETCH_VERSION}
-                QUIET
-            )
-        endif()
-        target_include_directories(
-            Modules-Example
-            PRIVATE "${glfw3_SOURCE_DIR}/deps"
-        )
-
-        if(${VKFW_BUILD_WITH_STD_MODULE})
-            target_compile_features(Modules-Example PUBLIC cxx_std_23)
-            set_target_properties(Modules-Example PROPERTIES CXX_MODULE_STD ON)
-        else()
-            target_compile_features(Modules-Example PUBLIC cxx_std_20)
-        endif()
-    endif()
-endif()
