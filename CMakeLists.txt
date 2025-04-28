@@ -4,7 +4,8 @@ option(VKFW_BUILD_CXX_MODULE "Add a C++ module target for vkfw" OFF)
 if(VKFW_BUILD_CXX_MODULE)
     # This line must be before any call to `project()`
     set(CMAKE_EXPERIMENTAL_CXX_IMPORT_STD
-        "a9e1cf81-9932-4810-974b-6eccaf14e457")
+        "a9e1cf81-9932-4810-974b-6eccaf14e457"
+    )
 endif()
 
 project(vkfw LANGUAGES CXX)
@@ -34,13 +35,13 @@ set(VKFW_SOURCE_ROOT ${VKFW_SOURCE_DIR}/include)
 set(VKFW_EXAMPLE_ROOT ${VKFW_SOURCE_DIR}/example)
 set(VKFW_DEPS_ROOT ${VKFW_SOURCE_DIR}/deps)
 
-# This the version of GLFW that will be fetched either through VKFW_FETCH_DEPENDENCIES or
-# by the examples (if VKFW_BUILD_EXAMPLES is set). See ./example/CMakeLists.txt for
-# details.
+# This the version of GLFW that will be fetched either through
+# VKFW_FETCH_DEPENDENCIES or by the examples (if VKFW_BUILD_EXAMPLES is set).
+# See ./example/CMakeLists.txt for details.
 set(VKFW_GLFW_FETCH_VERSION 3.4)
 
 find_package(glfw3 QUIET)
-if (NOT glfw3_FOUND AND VKFW_FETCH_DEPENDENCIES)
+if(NOT glfw3_FOUND AND VKFW_FETCH_DEPENDENCIES)
     include(FetchContent)
     FetchContent_Declare(
         glfw3
@@ -53,14 +54,16 @@ elseif(NOT glfw3_FOUND)
 endif()
 
 add_library(vkfw INTERFACE)
-target_include_directories(vkfw INTERFACE
-    $<BUILD_INTERFACE:${VKFW_SOURCE_ROOT}>
-    $<INSTALL_INTERFACE:include>
+target_include_directories(
+    vkfw
+    INTERFACE
+        $<BUILD_INTERFACE:${VKFW_SOURCE_ROOT}>
+        $<INSTALL_INTERFACE:include>
 )
 target_link_libraries(vkfw INTERFACE glfw)
 
 function(add_definitions OPTION_NAME)
-    if ("${${OPTION_NAME}}")
+    if("${${OPTION_NAME}}")
         target_compile_definitions(vkfw INTERFACE "${OPTION_NAME}")
     endif()
 endfunction()
@@ -88,33 +91,33 @@ if(VKFW_INSTALL)
     include(CMakePackageConfigHelpers)
     include(GNUInstallDirs)
 
-    install(TARGETS vkfw
+    install(
+        TARGETS vkfw
         EXPORT vkfw
         LIBRARY DESTINATION lib
         INCLUDES DESTINATION include
     )
 
-    install(EXPORT vkfw
+    install(
+        EXPORT vkfw
         FILE vkfwTargets.cmake
         NAMESPACE vkfw::
         DESTINATION lib/cmake/vkfw
     )
 
-    install(FILES
-        "${CMAKE_CURRENT_SOURCE_DIR}/cmake/vkfwConfig.cmake"
+    install(
+        FILES "${CMAKE_CURRENT_SOURCE_DIR}/cmake/vkfwConfig.cmake"
         DESTINATION lib/cmake/vkfw
     )
 
-    set(VKFW_INSTALL_HEADERS
-        ${VKFW_SOURCE_ROOT}/vkfw/vkfw.hpp
-    )
+    set(VKFW_INSTALL_HEADERS ${VKFW_SOURCE_ROOT}/vkfw/vkfw.hpp)
 
-    install(FILES
-        ${VKFW_INSTALL_HEADERS}
+    install(
+        FILES ${VKFW_INSTALL_HEADERS}
         DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/vkfw"
     )
 endif()
 
-if (VKFW_BUILD_EXAMPLES)
+if(VKFW_BUILD_EXAMPLES)
     add_subdirectory(${VKFW_EXAMPLE_ROOT})
 endif()
