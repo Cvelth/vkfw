@@ -56,7 +56,6 @@
     #define VULKAN_HPP_NO_SMART_HANDLE VKFW_NO_SMART_HANDLE
   #endif
   #ifdef VKFW_ENABLE_VULKAN_HPP_MODULE
-import vulkan_hpp;
     #include <vulkan/vulkan_hpp_macros.hpp>
   #else
     #include <vulkan/vulkan.hpp>
@@ -94,14 +93,6 @@ import vulkan_hpp;
   #include <system_error>
   #include <tuple>
   #include <vector>
-#endif
-
-#ifdef VULKAN_HPP_STD_MODULE
-import VULKAN_HPP_STD_MODULE;
-#else
-  #ifdef VKFW_ENABLE_STD_MODULE
-import std;
-  #endif
 #endif
 
 #if defined(VULKAN_HPP_NO_SMART_HANDLE) && !defined(VKFW_NO_SMART_HANDLE)                          \
@@ -220,7 +211,28 @@ static_assert(GLFW_VERSION_MAJOR == VKFW_TARGET_GLFW_VERSION_MAJOR
   #define VKFW_ENUMERATOR2(name_1, name_2) e##name_1
 #endif
 
+#ifdef VKFW_MODULE_IMPLEMENTATION
+export module vkfw;
+#endif
+
+#ifdef VKFW_ENABLE_VULKAN_HPP_MODULE
+import vulkan_hpp;
+#endif
+
+#ifdef VKFW_ENABLE_STD_MODULE
+  #ifdef VULKAN_HPP_STD_MODULE
+import VULKAN_HPP_STD_MODULE
+  #else
+// use std.compat for maximum compatibility
+import std.compat;
+  #endif
+#endif
+
+#ifdef VKFW_MODULE_IMPLEMENTATION
+  export namespace VKFW_NAMESPACE {
+#else
 namespace VKFW_NAMESPACE {
+#endif
   enum Boolean { VKFW_ENUMERATOR(True) = GLFW_TRUE, VKFW_ENUMERATOR(False) = GLFW_FALSE };
   enum class KeyAction {
     VKFW_ENUMERATOR(Release) = GLFW_RELEASE,
@@ -1385,7 +1397,11 @@ namespace VKFW_NAMESPACE {
 #endif
 } // namespace VKFW_NAMESPACE
 
+#ifdef VKFW_MODULE_IMPLEMENTATION
+export namespace VKFW_NAMESPACE {
+#else
 namespace VKFW_NAMESPACE {
+#endif
 #ifndef VKFW_NO_SMART_HANDLE
   #ifndef VKFW_NO_INCLUDE_VULKAN_HPP
   template <typename Type>
@@ -1459,7 +1475,11 @@ namespace std {
 } // namespace std
 #endif
 
+#ifdef VKFW_MODULE_IMPLEMENTATION
+export namespace VKFW_NAMESPACE {
+#else
 namespace VKFW_NAMESPACE {
+#endif
 #ifndef VKFW_NO_EXCEPTIONS
   class ErrorCategoryImpl : public std::error_category {
   public:
@@ -1601,7 +1621,7 @@ namespace VKFW_NAMESPACE {
       : SystemError(make_error_code(Result::VKFW_ENUMERATOR(PlatformUnavailable)), message) {}
   };
 
-  [[noreturn]] static void throwResultException(Result result, char const *message) {
+  [[noreturn]] inline void throwResultException(Result result, char const *message) {
     switch (result) {
     // case Result::VKFW_ENUMERATOR(Success): break;
     case Result::VKFW_ENUMERATOR(NotInitialized): throw NotInitializedError(message);
@@ -3121,7 +3141,11 @@ namespace VKFW_NAMESPACE {
 } // namespace VKFW_NAMESPACE
 
 #ifndef VKFW_NO_STD_FUNCTION_CALLBACKS
+  #ifdef VKFW_MODULE_IMPLEMENTATION
+export namespace VKFW_NAMESPACE {
+  #else
 namespace VKFW_NAMESPACE {
+  #endif
   struct DynamicCallbackStorage {
   #ifdef VKFW_DISABLE_ENHANCED_MODE
     friend void *VKFW_NAMESPACE::getWindowUserPointer(GLFWwindow *window);
@@ -3237,6 +3261,7 @@ public:
 };
 #endif
 
+// This one is only implementation of declared functions so we don't need to export.
 namespace VKFW_NAMESPACE {
 #ifndef VKFW_DISABLE_ENHANCED_MODE
   VKFW_NODISCARD_WHEN_NO_EXCEPTIONS VKFW_INLINE typename ResultValueType<void>::type
