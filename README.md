@@ -194,6 +194,17 @@ Mainly, this allow to introduce your own function with the same interface as `as
 ### `VKFW_ASSERT_ON_RESULT`
 Allows to replace an assertion call used to check success codes if exceptions are disabled. By default `VKFW_ASSERT` is used.
 
+### C++20 module support
+`vkfw` has experimental support for C++ modules. You can set the option `VKFW_BUILD_CXX_MODULE` (default: `OFF`) to `ON` to build a linkable library target `vkfw-module`.
+
+If `VKFW_NO_INCLUDE_VULKAN_HPP` is not set, then `vkfw-module` will find an existing Vulkan installation on your system using `find_package(Vulkan QUIET)` for Vulkan-Hpp headers, and if found, it will be defined a dependency of `vkfw-module`. By specifying `VKFW_BUILD_WITH_VULKAN_MODULE` (default: `ON`), you can further specify whether the Vulkan-Hpp dependency should be a module or not. Note that module `Vulkan-Hpp` will violate ODR if you are using your own Vulkan-Hpp module.
+
+If you are in an environment where `import std;` (requires C++23) is not available, you might want to set the option `VKFW_BUILD_WITH_STD_MODULE` (default: `ON`) to `OFF`. This will build `vkfw-module` with standard library features being imported using plain-old includes.
+
+Another option `VKFW_BUILD_MODULE_VULKAN_DYNAMIC` is available to configure whether the `Vulkan-Hpp` module should use static or dynamic dispatch by default. Currently this only affects the behavior of the default dispatch used in `vk::createWindowSurfaceUnique`.
+
+Note that module and `import std;` support requires CMake 3.28+ and 3.30+, respectively.
+
 ## See Also
 - Original [GLFW C API](https://www.glfw.org)
 - [Vulkan-Hpp](https://github.com/KhronosGroup/Vulkan-Hpp) - similar bindings for Khronos Vulkan API
