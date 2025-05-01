@@ -199,6 +199,10 @@ static_assert(GLFW_VERSION_MAJOR == VKFW_TARGET_GLFW_VERSION_MAJOR
   #define VKFW_NAMESPACE vkfw
 #endif
 
+#ifndef VKFW_RAII_NAMESPACE
+  #define VKFW_RAII_NAMESPACE raii
+#endif
+
 #define VKFW_STRINGIFY2(text) #text
 #define VKFW_STRINGIFY(text)  VKFW_STRINGIFY2(text)
 #define VKFW_NAMESPACE_STRING VKFW_STRINGIFY(VKFW_NAMESPACE)
@@ -4825,5 +4829,461 @@ namespace VKFW_NAMESPACE {
     uint64_t output = glfwGetTimerFrequency();
     return createResultValue(getError(), output, VKFW_NAMESPACE_STRING "::getTimerFrequency");
   }
+#endif
+
+#if !defined(VKFW_DISABLE_ENHANCED_MODE) && !defined(VKFW_NO_RAII_HANDLE)
+  namespace VKFW_RAII_NAMESPACE {
+    class Instance {
+    public:
+      using CType = void;
+      using CppType = VKFW_NAMESPACE::Instance;
+
+  #ifndef VKFW_NO_EXCEPTIONS
+      Instance(VKFW_NAMESPACE::InitHints hints = {}) {
+        VKFW_NAMESPACE::init(hints);
+        m_instance = true;
+      }
+  #endif
+      VKFW_CONSTEXPR Instance(VKFW_NAMESPACE::Instance const &instance) VKFW_NOEXCEPT
+        : m_instance{ instance } {}
+      VKFW_CONSTEXPR Instance(Instance const &) = delete;
+      VKFW_CONSTEXPR_14 Instance(Instance &&) VKFW_NOEXCEPT = default;
+      ~Instance() VKFW_NOEXCEPT {
+        // Warning: this function will swallow any exceptions or return codes (if using
+        // VKFW_NO_EXCEPTIONS). If you wish to be notified of any errors, please use
+        // vkfw::setErrorCallback to bind a function that captures errors.
+  #ifndef VKFW_NO_EXCEPTIONS
+        try {
+  #endif
+          static_cast<void>(m_instance.destroy());
+  #ifndef VKFW_NO_EXCEPTIONS
+        } catch (...) {}
+  #endif
+      }
+
+      Instance &operator=(Instance const &) = delete;
+      Instance &operator=(Instance &&) VKFW_NOEXCEPT = default;
+
+    private:
+      VKFW_NAMESPACE::Instance m_instance;
+    };
+
+    class Window {
+    public:
+      using CType = GLFWwindow;
+      using CppType = VKFW_NAMESPACE::Window;
+
+  #ifndef VKFW_NO_EXCEPTIONS
+      Window(size_t width, size_t height, char const *title, VKFW_NAMESPACE::WindowHints hints = {},
+             VKFW_NAMESPACE::Monitor monitor = nullptr, VKFW_NAMESPACE::Window share = nullptr,
+             bool reset_hints = true)
+        : m_window{ VKFW_NAMESPACE::createWindow(width, height, title, hints, monitor, share,
+                                                 reset_hints) } {}
+  #endif
+      VKFW_CONSTEXPR Window(GLFWwindow *window) VKFW_NOEXCEPT : m_window{ window } {}
+      VKFW_CONSTEXPR Window(VKFW_NAMESPACE::Window const &window) VKFW_NOEXCEPT
+        : m_window{ window } {}
+      Window(Window const &) = delete;
+      VKFW_CONSTEXPR_14 Window(Window &&) = default;
+      ~Window() VKFW_NOEXCEPT {
+        // Warning: this function will swallow any exceptions or return codes (if using
+        // VKFW_NO_EXCEPTIONS). If you wish to be notified of any errors, please use
+        // vkfw::setErrorCallback to bind a function that captures errors.
+  #ifndef VKFW_NO_EXCEPTIONS
+        try {
+  #endif
+          static_cast<void>(m_window.destroy());
+  #ifndef VKFW_NO_EXCEPTIONS
+        } catch (...) {}
+  #endif
+      }
+
+      Window &operator=(Window const &) = delete;
+      Window &operator=(Window &&) = default;
+
+      VKFW_NAMESPACE::Window const &operator*() const VKFW_NOEXCEPT { return m_window; }
+      operator VKFW_NAMESPACE::Window() const VKFW_NOEXCEPT { return m_window; }
+
+  #if defined(VKFW_HAS_SPACESHIP_OPERATOR)
+      auto operator<=>(Window const &) const = default;
+  #else
+      bool operator==(Window const &another) const VKFW_NOEXCEPT {
+        return m_window == another.m_window;
+      }
+      bool operator!=(Window const &another) const VKFW_NOEXCEPT { return !operator==(another); }
+  #endif
+
+      VKFW_NODISCARD typename VKFW_NAMESPACE::ResultValueType<bool>::type shouldClose() const {
+        return m_window.shouldClose();
+      }
+      VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type
+      setShouldClose(bool value) const {
+        return m_window.setShouldClose(value);
+      }
+
+  #ifdef VKFW_HAS_STRING_VIEW
+      VKFW_NODISCARD VKFW_INLINE std::string_view getTitle() const { return m_window.getTitle(); }
+      VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type
+      setTitle(std::string_view title) const {
+        return m_window.setTitle(title);
+      }
+  #else
+      VKFW_NODISCARD VKFW_INLINE char const *getTitle() const { return m_window.getTitle(); }
+      VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type
+      setTitle(char const *title) const {
+        return m_window.setTitle(title);
+      }
+  #endif
+
+      VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type
+      getPos(int *xpos, int *ypos) const {
+        return m_window.getPos(xpos, ypos);
+      }
+      VKFW_NODISCARD typename ResultValueType<std::tuple<int, int>>::type getPos() const {
+        return m_window.getPos();
+      }
+      VKFW_NODISCARD typename ResultValueType<int>::type getPosX() const {
+        return m_window.getPosX();
+      }
+      VKFW_NODISCARD typename ResultValueType<int>::type getPosY() const {
+        return m_window.getPosY();
+      }
+      VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type
+      setPos(int xpos, int ypos) const {
+        return m_window.setPos(xpos, ypos);
+      }
+
+      VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type
+      getSize(size_t *width, size_t *height) const {
+        return m_window.getSize(width, height);
+      }
+      VKFW_NODISCARD typename ResultValueType<std::tuple<size_t, size_t>>::type getSize() const {
+        return m_window.getSize();
+      }
+      VKFW_NODISCARD typename ResultValueType<size_t>::type getWidth() const {
+        return m_window.getWidth();
+      }
+      VKFW_NODISCARD typename ResultValueType<size_t>::type getHeight() const {
+        return m_window.getHeight();
+      }
+      VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type
+      setSize(size_t width, size_t height) const {
+        return m_window.setSize(width, height);
+      }
+      VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type
+      setSize(std::tuple<size_t, size_t> size) const {
+        return m_window.setSize(size);
+      }
+
+      VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type
+      setSizeLimits(size_t minimum_width, size_t minimum_height, size_t maximum_width,
+                    size_t maximum_height) const {
+        return m_window.setSizeLimits(minimum_width, minimum_height, maximum_width, maximum_height);
+      }
+      VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type setSizeLimits(
+        std::tuple<size_t, size_t> minimum_size, std::tuple<size_t, size_t> maximum_size) const {
+        return m_window.setSizeLimits(minimum_size, maximum_size);
+      }
+      VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type
+      setSizeLimits(std::tuple<size_t, size_t, size_t, size_t> limits) const {
+        return m_window.setSizeLimits(limits);
+      }
+      VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type
+      setAspectRatio(size_t numerator, size_t denominator) const {
+        return m_window.setAspectRatio(numerator, denominator);
+      }
+
+      VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type
+      getFramebufferSize(size_t *width, size_t *height) const {
+        return m_window.getFramebufferSize(width, height);
+      }
+      VKFW_NODISCARD typename ResultValueType<std::tuple<size_t, size_t>>::type
+      getFramebufferSize() const {
+        return m_window.getFramebufferSize();
+      }
+      VKFW_NODISCARD typename ResultValueType<size_t>::type getFramebufferWidth() const {
+        return m_window.getFramebufferWidth();
+      }
+      VKFW_NODISCARD typename ResultValueType<size_t>::type getFramebufferHeight() const {
+        return m_window.getFramebufferHeight();
+      }
+
+      VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type
+      getFrameSize(size_t *left, size_t *top, size_t *right, size_t *bottom) const {
+        return m_window.getFrameSize(left, top, right, bottom);
+      }
+      VKFW_NODISCARD typename ResultValueType<std::tuple<size_t, size_t, size_t, size_t>>::type
+      getFrameSize() const {
+        return m_window.getFrameSize();
+      }
+      VKFW_NODISCARD typename ResultValueType<size_t>::type getLeftFrameSize() const {
+        return m_window.getLeftFrameSize();
+      }
+      VKFW_NODISCARD typename ResultValueType<size_t>::type getTopFrameSize() const {
+        return m_window.getTopFrameSize();
+      }
+      VKFW_NODISCARD typename ResultValueType<size_t>::type getRightFrameSize() const {
+        return m_window.getRightFrameSize();
+      }
+      VKFW_NODISCARD typename ResultValueType<size_t>::type getBottomFrameSize() const {
+        return m_window.getBottomFrameSize();
+      }
+
+      VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type
+      getContentScale(float *xscale, float *yscale) const {
+        return m_window.getContentScale(xscale, yscale);
+      }
+      VKFW_NODISCARD typename ResultValueType<std::tuple<float, float>>::type
+      getContentScale() const {
+        return m_window.getContentScale();
+      }
+      VKFW_NODISCARD typename ResultValueType<float>::type getContentScaleX() const {
+        return m_window.getContentScaleX();
+      }
+      VKFW_NODISCARD typename ResultValueType<float>::type getContentScaleY() const {
+        return m_window.getContentScaleY();
+      }
+
+      VKFW_NODISCARD typename ResultValueType<float>::type getOpacity() const {
+        return m_window.getOpacity();
+      }
+      VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type
+      setOpacity(float opacity) const {
+        return m_window.setOpacity(opacity);
+      }
+
+      VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type iconify() const {
+        return m_window.iconify();
+      }
+      VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type restore() const {
+        return m_window.restore();
+      }
+      VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type maximize() const {
+        return m_window.maximize();
+      }
+      VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type show() const {
+        return m_window.show();
+      }
+      VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type hide() const {
+        return m_window.hide();
+      }
+      VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type focus() const {
+        return m_window.focus();
+      }
+      VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type
+      requestAttention() const {
+        return m_window.requestAttention();
+      }
+      VKFW_NODISCARD typename ResultValueType<Monitor>::type getMonitor() const {
+        return m_window.getMonitor();
+      }
+      VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type
+      setMonitor(Monitor const &monitor, int xpos, int ypos, size_t width, size_t height,
+                 size_t refreshRate = 0) const {
+        return m_window.setMonitor(monitor, xpos, ypos, width, height, refreshRate);
+      }
+      VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type
+      setMonitor(Monitor const &monitor, std::tuple<int, int> pos, std::tuple<size_t, size_t> size,
+                 size_t refreshRate = 0) const {
+        return m_window.setMonitor(monitor, pos, size, refreshRate);
+      }
+
+  #ifdef VKFW_HAS_SPAN
+      VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type
+      setIcon(std::span<vkfw::Image> images) const {
+        return m_window.setIcon(images);
+      }
+  #endif
+      VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type
+      setIcon(std::vector<vkfw::Image> images) const {
+        return m_window.setIcon(images);
+      }
+      VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type
+      setIcon(size_t image_count, vkfw::Image *images) const {
+        return m_window.setIcon(image_count, images);
+      }
+
+      template <Attribute attribute>
+      VKFW_NODISCARD typename ResultValueType<typename AttributeTraits<attribute>::type>::type
+      get() const {
+        return m_window.get<attribute>();
+      }
+
+      template <Attribute attribute,
+                typename = typename std::enable_if<AttributeTraits<attribute>::value>::type>
+      VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type
+      set(typename AttributeTraits<attribute>::type const &new_value) const {
+        return m_window.set(new_value);
+      }
+
+      template <InputMode mode>
+      VKFW_NODISCARD typename ResultValueType<typename InputModeTraits<mode>::type>::type
+      get() const {
+        return m_window.get<mode>();
+      }
+
+      template <InputMode mode>
+      VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type
+      set(typename InputModeTraits<mode>::type const &new_value) const {
+        return m_window.set(new_value);
+      }
+
+  #ifdef VKFW_NO_STD_FUNCTION_CALLBACKS
+      VKFW_INLINE GLFWwindowposfun setPosCallback(GLFWwindowposfun callback) const {
+        return m_window.setPosCallback(callback);
+      }
+      VKFW_INLINE GLFWwindowsizefun setSizeCallback(GLFWwindowsizefun callback) const {
+        return m_window.setSizeCallback(callback);
+      }
+      VKFW_INLINE GLFWwindowclosefun setCloseCallback(GLFWwindowclosefun callback) const {
+        return m_window.setCloseCallback(callback);
+      }
+      VKFW_INLINE GLFWwindowrefreshfun setRefreshCallback(GLFWwindowrefreshfun callback) const {
+        return m_window.setRefreshCallback(callback);
+      }
+      VKFW_INLINE GLFWwindowfocusfun setFocusCallback(GLFWwindowfocusfun callback) const {
+        return m_window.setFocusCallback(callback);
+      }
+      VKFW_INLINE GLFWwindowiconifyfun setIconifyCallback(GLFWwindowiconifyfun callback) const {
+        return m_window.setIconifyCallback(callback);
+      }
+      VKFW_INLINE GLFWwindowmaximizefun setMaximizeCallback(GLFWwindowmaximizefun callback) const {
+        return m_window.setMaximizeCallback(callback);
+      }
+      VKFW_INLINE GLFWframebuffersizefun
+      setFramebufferSizeCallback(GLFWframebuffersizefun callback) const {
+        return m_window.setFramebufferSizeCallback(callback);
+      }
+      VKFW_INLINE GLFWwindowcontentscalefun
+      setContentScaleCallback(GLFWwindowcontentscalefun callback) const {
+        return m_window.setContentScaleCallback(callback);
+      }
+      VKFW_INLINE GLFWkeyfun setKeyCallback(GLFWkeyfun callback) const {
+        return m_window.setKeyCallback(callback);
+      }
+      VKFW_INLINE GLFWcharfun setCharCallback(GLFWcharfun callback) const {
+        return m_window.setCharCallback(callback);
+      }
+      VKFW_INLINE GLFWcharmodsfun setCharModsCallback(GLFWcharmodsfun callback) const {
+        return m_window.setCharModsCallback(callback);
+      }
+      VKFW_INLINE GLFWmousebuttonfun setMouseButtonCallback(GLFWmousebuttonfun callback) const {
+        return m_window.setMouseButtonCallback(callback);
+      }
+      VKFW_INLINE GLFWcursorposfun setCursorPosCallback(GLFWcursorposfun callback) const {
+        return m_window.setCursorPosCallback(callback);
+      }
+      VKFW_INLINE GLFWcursorenterfun setCursorEnterCallback(GLFWcursorenterfun callback) const {
+        return m_window.setCursorEnterCallback(callback);
+      }
+      VKFW_INLINE GLFWscrollfun setScrollCallback(GLFWscrollfun callback) const {
+        return m_window.setScrollCallback(callback);
+      }
+      VKFW_INLINE GLFWdropfun setDropCallback(GLFWdropfun callback) const {
+        return m_window.setDropCallback(callback);
+      }
+  #else
+      VKFW_NODISCARD VKFW_INLINE DynamicCallbackStorage *callbacks() const {
+        return m_window.callbacks();
+      }
+  #endif
+      VKFW_NODISCARD typename ResultValueType<void *>::type getUserPointer() const {
+        return m_window.getUserPointer();
+      }
+      VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type
+      setUserPointer(void *pointer) const {
+        return m_window.setUserPointer(pointer);
+      }
+
+      VKFW_NODISCARD typename ResultValueType<bool>::type getKey(Key key) const {
+        return m_window.getKey(key);
+      }
+      VKFW_NODISCARD typename ResultValueType<bool>::type getMouseButton(MouseButton button) const {
+        return m_window.getMouseButton(button);
+      }
+
+      VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type
+      getCursorPos(double *xpos, double *ypos) const {
+        return m_window.getCursorPos(xpos, ypos);
+      }
+      VKFW_NODISCARD typename ResultValueType<std::tuple<double, double>>::type
+      getCursorPos() const {
+        return m_window.getCursorPos();
+      }
+      VKFW_NODISCARD typename ResultValueType<double>::type getCursorPosX() const {
+        return m_window.getCursorPosX();
+      }
+      VKFW_NODISCARD typename ResultValueType<double>::type getCursorPosY() const {
+        return m_window.getCursorPosY();
+      }
+
+      VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type
+      setCursorPos(double xpos, double ypos) const {
+        return m_window.setCursorPos(xpos, ypos);
+      }
+
+      VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type
+      setCursor(Cursor const &cursor) const {
+        return m_window.setCursor(cursor);
+      }
+
+      VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type
+      makeContextCurrent() const {
+        return m_window.makeContextCurrent();
+      }
+      VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type swapBuffers() const {
+        return m_window.swapBuffers();
+      }
+
+    private:
+      VKFW_NAMESPACE::Window m_window;
+    };
+
+    class Cursor {
+    public:
+      using CType = GLFWcursor;
+      using CppType = VKFW_NAMESPACE::Cursor;
+
+  #ifndef VKFW_NO_EXCEPTIONS
+      Cursor(VKFW_NAMESPACE::Image const &image, int xhot, int yhot)
+        : m_cursor{ VKFW_NAMESPACE::createCursor(image, xhot, yhot) } {}
+  #endif
+      VKFW_CONSTEXPR Cursor(GLFWcursor *cursor) VKFW_NOEXCEPT : m_cursor(cursor) {}
+      VKFW_CONSTEXPR Cursor(VKFW_NAMESPACE::Cursor const &cursor) VKFW_NOEXCEPT : m_cursor(cursor) {
+      }
+      Cursor(Cursor const &) = delete;
+      VKFW_CONSTEXPR_14 Cursor(Cursor &&) = default;
+      ~Cursor() VKFW_NOEXCEPT {
+        // Warning: this function will swallow any exceptions or return codes (if using
+        // VKFW_NO_EXCEPTIONS). If you wish to be notified of any errors, please use
+        // vkfw::setErrorCallback to bind a function that captures errors.
+  #ifndef VKFW_NO_EXCEPTIONS
+        try {
+  #endif
+          static_cast<void>(m_cursor.destroy());
+  #ifndef VKFW_NO_EXCEPTIONS
+        } catch (...) {}
+  #endif
+      }
+
+      Cursor &operator=(Cursor const &) = delete;
+      Cursor &operator=(Cursor &&) = default;
+
+      VKFW_NAMESPACE::Cursor const &operator*() const VKFW_NOEXCEPT { return m_cursor; }
+      operator VKFW_NAMESPACE::Cursor() const VKFW_NOEXCEPT { return m_cursor; }
+
+  #if defined(VKFW_HAS_SPACESHIP_OPERATOR)
+      auto operator<=>(Cursor const &) const = default;
+  #else
+      bool operator==(Cursor const &another) const VKFW_NOEXCEPT {
+        return m_cursor == another.m_cursor;
+      }
+  #endif
+
+    private:
+      VKFW_NAMESPACE::Cursor m_cursor;
+    };
+
+  } // namespace VKFW_RAII_NAMESPACE
 #endif
 } // namespace VKFW_NAMESPACE
