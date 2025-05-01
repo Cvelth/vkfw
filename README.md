@@ -89,6 +89,39 @@ As all the deleters are known at compiler time and don't need to store anything 
  > The destructors for `vkfw::UniqueInstance`, `vkfw::UniqueWindow`, and `vkfw::UniqueCursor` will will swallow any exceptions or error codes (if using `VKFW_NO_EXCEPTIONS`) that are produced in the destruction of the underlying handle.
  > If you wish to be notified of these kinds of errors, you are encouraged to use `vkfw::setErrorCallback` to bind a function that captures errors.
 
+### RAII wrappers for automatic resource management
+In addition to `vkfw::UniqueHandle`, VKFW provides RAII wrappers for `vkfw::Instance`, `vkfw::Window`, and `vkfw::Cursor`. For each wrapper, the underlying VKFW handle will be destroyed upon destruction. Unlike `vkfw::UniqueHandle` however, these wrappers are fully compatible with other smart pointers from the STL, providing greater flexibility.
+Unlike `vkfw::UniqueHandle`, there is no function to create a RAII handle. You can do so
+directly like this:
+```c++
+vkfw::raii::Window win{400, 400, "raii_window"};
+// The destructor of vkfw::raii::Window will destroy the underlying handle when it goes out of scope.
+```
+Note that if you have exceptions disabled through `VKFW_NO_EXCEPTIONS`, then these
+constructors are not available as they might throw. In that case, you can do this:
+```c++
+auto [result_code, win] = vkfw::createWindow(...);
+// win_raii will now take ownership of the win and will destroy it when it goes out of
+// scope.
+vkfw::raii::Window win_raii{win};
+```
+For all RAII wrappers (with the exception of `vkfw::raii::Instance`), you can access the
+underlying handle like this:
+```c++
+vkfw::raii::Window win{...};
+auto handle = *win;
+
+// You can also convert them into vkfw:: types directly:
+vkfw::Window base = win;
+```
+
+> [!WARNING]
+> Like their unique counterparts, all RAII handles will swallow any exceptions or error codes (if using `VKFW_NO_EXCEPTIONS`) that are produced in the destruction of their wrapped handles.
+> If you wish to be notified of these kinds of errors, you are encouraged to use `vkfw::setErrorCallback` to bind a function that captures errors.
+
+> [!NOTE]
+> See `example/empty_raii.cpp` for a complete example of how to use the RAII handles.
+
 ### Callbacks
 To allow using lambdas as callbacks, `GLFWwindow` user pointer is used internally to store `std::function` objects instead of c-style function pointers.
 These objects are accessible through `vkfw::Window::callbacks()` (or `accessWindowCallbacks(GLFWwindow *)` if enhanced mode is disabled) function and can be set directly, for example:
@@ -143,6 +176,12 @@ The `UniqueHandle` helper class and all the unique handle types and functions re
 > If `VKFW_NO_INCLUDE_VULKAN_HPP` isn't defined, then `vkfw` will use the smart handles from Vulkan-HPP directly. In the event that `VULKAN_HPP_NO_SMART_HANDLES` is defined, then `VKFW_NO_SMART_HANDLE` will also be defined if it hasn't been defined already and a compiler warning will be issued.
 > You can avoid this behavior by defining either `VKFW_NO_SMART_HANDLE` or `VKFW_NO_INCLUDE_VULKAN_HPP` before including `<vkfw/vkfw.hpp>`
 
+### `VKFW_NO_RAII_HANDLE`
+The RAII wrappers and the `raii` namespace (if `VKFW_RAII_NAMESPACE` isn't defined) will be disabled.
+
+> [!NOTE]
+> If `VKFW_DISABLE_ENHANCED_MODE` is defined, then the RAII handles are removed as well. See `VKFW_DISABLE_ENHANCED_MODE` for more details.
+
 ### `VKFW_NO_STD_FUNCTION_CALLBACKS`
 Disables c++ callbacks based on `std::function`. Define this if you cannot afford an extra function call per event for extra usability. Note, that original callbacks do not use `enum class`es and it's your responcibility to cast the values correctly inside the callback itself. Or you can just use original preprocessor definitions.
 
@@ -164,6 +203,10 @@ Removes leading `e` from enum values, for example `vkfw::Key::eA` becomes `vkfw:
 
 ### `VKFW_NAMESPACE`
 By default, the namespace used with `vkfw.hpp` is `vkfw`. By defining `VKFW_NAMESPACE` before including `vkfw.hpp`, you can adjust this.
+
+### `VKFW_RAII_NAMESPACE`
+By default, the namespace used with the RAII wrappers is `raii`. By defining `VKFW_RAII_NAMESPACE` before including `vkfw.hpp`, you can adjust this.
+Note that the full namespace will be `VKFW_NAMESPACE::VKFW_RAII_NAMESPACE`.
 
 ### `VKFW_NO_STRUCT_CONSTRUCTORS`
 In order to support designated initializers (c++20 feature) a struct must not have constructors, so this preprocessor definition just removes them outright. For example:
