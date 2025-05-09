@@ -9,7 +9,7 @@ option(VKFW_BUILD_CXX_MODULE "Add a C++ module target for vkfw" OFF)
 if(VKFW_BUILD_CXX_MODULE)
     # This line must be before any call to `project()`
     set(CMAKE_EXPERIMENTAL_CXX_IMPORT_STD
-        "a9e1cf81-9932-4810-974b-6eccaf14e457"
+        "d0edc3af-4c50-42ea-a356-e2862fe7a444"
     )
 endif()
 
