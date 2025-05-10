@@ -87,7 +87,7 @@ endif()
 add_library(vkfw-module)
 target_sources(
     vkfw-module
-    PUBLIC FILE_SET CXX_MODULES BASE_DIRS ../src FILES ../src/vkfw.cppm
+    PUBLIC FILE_SET CXX_MODULES BASE_DIRS ../src FILES ../include/vkfw/vkfw.cppm
 )
 
 if(${VKFW_BUILD_WITH_STD_MODULE})

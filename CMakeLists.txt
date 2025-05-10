@@ -9,7 +9,7 @@ option(VKFW_BUILD_CXX_MODULE "Add a C++ module target for vkfw" OFF)
 if(VKFW_BUILD_CXX_MODULE)
     # This line must be before any call to `project()`
     set(CMAKE_EXPERIMENTAL_CXX_IMPORT_STD
-        "a9e1cf81-9932-4810-974b-6eccaf14e457"
+        "d0edc3af-4c50-42ea-a356-e2862fe7a444"
     )
 endif()
 
@@ -27,7 +27,7 @@ option(VKFW_NO_SMART_HANDLE "Disable UniqueHandles" OFF)
 option(VKFW_NO_RAII_HANDLE "Disable RAII handles" OFF)
 option(VKFW_NO_STD_FUNCTION_CALLBACKS "Disable std::function callbacks" OFF)
 option(VKFW_NO_NODISCARD_WARNINGS "Disable [[nodiscard]] warnings" OFF)
-option(VKFW_NO_INCLUDE_VULKAN "Disable includsion of vulkan.h" OFF)
+option(VKFW_NO_INCLUDE_VULKAN "Disable inclusion of vulkan.h" OFF)
 option(VKFW_INCLUDE_GL "Include OpenGL headers" OFF)
 option(VKFW_NO_INCLUDE_VULKAN_HPP "Disable inclusion of vulkan.hpp" OFF)
 option(VKFW_NO_LEADING_E_IN_ENUMS "Disable leading e prefix in enums" OFF)
@@ -118,9 +118,10 @@ if(VKFW_INSTALL)
     )
 
     set(VKFW_INSTALL_HEADERS ${VKFW_SOURCE_ROOT}/vkfw/vkfw.hpp)
+    set(VKFW_INSTALL_MODULES ${VKFW_SOURCE_ROOT}/vkfw/vkfw.cppm)
 
     install(
-        FILES ${VKFW_INSTALL_HEADERS}
+        FILES ${VKFW_INSTALL_HEADERS} ${VKFW_INSTALL_MODULES}
         DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/vkfw"
     )
 endif()
