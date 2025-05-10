@@ -118,9 +118,10 @@ if(VKFW_INSTALL)
     )
 
     set(VKFW_INSTALL_HEADERS ${VKFW_SOURCE_ROOT}/vkfw/vkfw.hpp)
+    set(VKFW_INSTALL_MODULES ${VKFW_SOURCE_ROOT}/vkfw/vkfw.cppm)
 
     install(
-        FILES ${VKFW_INSTALL_HEADERS}
+        FILES ${VKFW_INSTALL_HEADERS} ${VKFW_INSTALL_MODULES}
         DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/vkfw"
     )
 endif()
