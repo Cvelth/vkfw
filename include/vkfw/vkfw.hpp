@@ -3128,9 +3128,13 @@ namespace VKFW_NAMESPACE {
                             Dispatch const& dispatch VULKAN_HPP_DEFAULT_DISPATCHER_ASSIGNMENT) {
     VkSurfaceKHR output;
     glfwCreateWindowSurface(instance, window, allocator, &output);
-
+      #ifdef VULKAN_API_VERSION_1_4
     vk::detail::ObjectDestroy<vk::Instance, VULKAN_HPP_DEFAULT_DISPATCHER_TYPE> deleter(instance,
                                                                                         dispatch);
+      #else
+    vk::ObjectDestroy<vk::Instance, VULKAN_HPP_DEFAULT_DISPATCHER_TYPE> deleter(instance,
+                                                                                dispatch);
+      #endif
     return vk::UniqueSurfaceKHR(output, deleter);
   }
     #endif
