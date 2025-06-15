@@ -41,8 +41,8 @@ set(VKFW_SOURCE_ROOT ${VKFW_SOURCE_DIR}/include)
 set(VKFW_EXAMPLE_ROOT ${VKFW_SOURCE_DIR}/example)
 set(VKFW_DEPS_ROOT ${VKFW_SOURCE_DIR}/deps)
 
-# This the version of GLFW that will be fetched either through
-# VKFW_FETCH_DEPENDENCIES or by the examples (if VKFW_BUILD_EXAMPLES is set).
+# This is the version of GLFW that will be fetched if either
+# VKFW_FETCH_DEPENDENCIES or VKFW_BUILD_EXAMPLES is set.
 # See ./example/CMakeLists.txt for details.
 set(VKFW_GLFW_FETCH_VERSION 3.4)
 
