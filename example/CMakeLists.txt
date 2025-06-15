@@ -77,6 +77,7 @@ add_example(icon)
 add_example(iconify)
 add_example(offscreen)
 add_example(sharing)
+add_example(vulkan-surface)
 add_example(windows)
 
 # C++ module example, require C++23 (for import std;) and CMake 3.30+
