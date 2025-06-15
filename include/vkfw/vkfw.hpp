@@ -3121,19 +3121,18 @@ namespace VKFW_NAMESPACE {
     return output;
   }
     #ifndef VKFW_NO_SMART_HANDLE
-  template<class Dispatch = VULKAN_HPP_DEFAULT_DISPATCHER_TYPE>
+  template <class Dispatch = VULKAN_HPP_DEFAULT_DISPATCHER_TYPE>
   VKFW_NODISCARD VKFW_INLINE vk::UniqueSurfaceKHR
   createWindowSurfaceUnique(vk::Instance const &instance, Window const &window,
                             VkAllocationCallbacks const *allocator = nullptr,
-                            Dispatch const& dispatch VULKAN_HPP_DEFAULT_DISPATCHER_ASSIGNMENT) {
+                            Dispatch const &dispatch VULKAN_HPP_DEFAULT_DISPATCHER_ASSIGNMENT) {
     VkSurfaceKHR output;
     glfwCreateWindowSurface(instance, window, allocator, &output);
       #ifdef VULKAN_API_VERSION_1_4
     vk::detail::ObjectDestroy<vk::Instance, VULKAN_HPP_DEFAULT_DISPATCHER_TYPE> deleter(instance,
                                                                                         dispatch);
       #else
-    vk::ObjectDestroy<vk::Instance, VULKAN_HPP_DEFAULT_DISPATCHER_TYPE> deleter(instance,
-                                                                                dispatch);
+    vk::ObjectDestroy<vk::Instance, VULKAN_HPP_DEFAULT_DISPATCHER_TYPE> deleter(instance, dispatch);
       #endif
     return vk::UniqueSurfaceKHR(output, deleter);
   }
