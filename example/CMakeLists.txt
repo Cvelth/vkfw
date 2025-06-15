@@ -80,6 +80,6 @@ add_example(sharing)
 add_example(windows)
 
 # C++ module example, require C++23 (for import std;) and CMake 3.30+
-if(${VKFW_BUILD_CXX_MODULE} AND ${VKFW_BUILD_WITH_STD_MODULE})
+if(VKFW_BUILD_CXX_MODULE AND VKFW_BUILD_WITH_STD_MODULE)
     add_example(empty-module MODULE)
 endif()
