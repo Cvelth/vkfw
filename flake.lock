@@ -18,6 +18,22 @@
         "type": "github"
       }
     },
+    "gcc-trunk": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1752335883,
+        "narHash": "sha256-Gj0jEGCz3VQjJjvBOaBt2y4S4OTObagg6yL/eFWsw5M=",
+        "owner": "gcc-mirror",
+        "repo": "gcc",
+        "rev": "f3186568d09c02a6d8915e43c0f5d7df704dfa0d",
+        "type": "github"
+      },
+      "original": {
+        "owner": "gcc-mirror",
+        "repo": "gcc",
+        "type": "github"
+      }
+    },
     "glfw-source": {
       "flake": false,
       "locked": {
@@ -54,6 +70,7 @@
     "root": {
       "inputs": {
         "flake-utils": "flake-utils",
+        "gcc-trunk": "gcc-trunk",
         "glfw-source": "glfw-source",
         "nixpkgs": "nixpkgs"
       }

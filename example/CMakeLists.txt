@@ -9,7 +9,7 @@ find_package(Vulkan REQUIRED)
 # do is handle the case where FetchContent wasn't used because find_package succeeded.
 # Since all that we want is for GLFW to be cloned so we can access the deps folder, we're
 # going to use FetchContent_Populate instead.
-if(NOT glfw3_FOUND)
+if(VKFW_FETCH_DEPENDENCIES)
     include(FetchContent)
     FetchContent_Populate(
         glfw3
