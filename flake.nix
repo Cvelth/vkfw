@@ -22,7 +22,7 @@
     in {
       formatter = pkgs.alejandra;
 
-      devShells.default =
+      devShells.clang =
         pkgs.mkShell.override {
           stdenv = llvm.libcxxStdenv;
         } {
@@ -66,6 +66,49 @@
             "-L${pkgs.lib.makeLibraryPath [pkgs.vulkan-loader]}"
             "-L${pkgs.lib.makeLibraryPath [llvm.libcxx]}"
             "-L${pkgs.lib.makeLibraryPath [pkgs.glfw]}"
+          ];
+        };
+
+      devShells.gcc =
+        pkgs.mkShell.override {
+          stdenv = pkgs.gcc15Stdenv;
+        } {
+          buildInputs = [
+            pkgs.gcc15
+
+            pkgs.cmake
+            pkgs.ninja
+
+            pkgs.glfw
+            pkgs.vulkan-loader
+            pkgs.vulkan-headers
+            pkgs.vulkan-validation-layers
+            pkgs.vulkan-tools
+          ];
+
+          CC = "gcc";
+          CXX = "g++";
+          LD = "ld";
+
+          CXXFLAGS = [
+            "-std=c++23"
+            "-fmodules-ts"
+            "-pthread"
+
+            "-I${pkgs.lib.makeIncludePath [pkgs.glfw]}"
+            "-I${pkgs.lib.makeIncludePath [pkgs.vulkan-headers]}"
+            "-I${pkgs.lib.makeIncludePath [pkgs.glibc.dev]}"
+
+            "-I${inputs.glfw-source}/deps"
+          ];
+
+          CMAKE_CXX_STANDARD = "23";
+          CMAKE_EXPERIMENTAL_CXX_MODULE_DYNDEP = "1";
+
+          LDFLAGS = [
+            "-L${pkgs.lib.makeLibraryPath [pkgs.vulkan-loader]}"
+            "-L${pkgs.lib.makeLibraryPath [pkgs.glfw]}"
+            "-pthread"
           ];
         };
     });
