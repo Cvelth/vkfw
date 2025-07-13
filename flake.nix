@@ -49,24 +49,24 @@
 
           CXXFLAGS = [
             "--stdlib=libc++"
-            "-I${llvm.libcxx.dev}/include/c++/v1"
-            "-I${inputs.glfw-source}/deps"
-            "-I${pkgs.glfw}/include"
-            "-I${pkgs.vulkan-headers}/include"
             "-pthread"
+
+            "-I${pkgs.lib.makeIncludePath [pkgs.glibc.dev]}"
+            "-I${pkgs.lib.makeIncludePath [llvm.libcxx.dev]}/c++/v1"
+            "-I${pkgs.lib.makeIncludePath [pkgs.glfw]}"
+            "-I${pkgs.lib.makeIncludePath [pkgs.vulkan-headers]}"
+
+            "-I${inputs.glfw-source}/deps"
           ];
 
           LDFLAGS = [
             "--stdlib=libc++"
-            "-L${llvm.libcxx}/lib"
-            "-L${pkgs.glfw}/lib"
             "-pthread"
-          ];
 
-          CPATH = "${pkgs.glibc.dev}/include:$CPATH";
-          LD_LIBRARY_PATH = "${
-            pkgs.lib.makeLibraryPath [pkgs.vulkan-loader]
-          }:$LD_LIBRARY_PATH";
+            "-L${pkgs.lib.makeLibraryPath [pkgs.vulkan-loader]}"
+            "-L${pkgs.lib.makeLibraryPath [llvm.libcxx]}"
+            "-L${pkgs.lib.makeLibraryPath [pkgs.glfw]}"
+          ];
         };
     });
 }
