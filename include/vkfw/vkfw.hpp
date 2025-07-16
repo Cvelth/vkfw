@@ -1749,7 +1749,7 @@ namespace VKFW_NAMESPACE {
 #endif
 
   struct Nullopt {};
-  VKFW_CONSTEXPR Nullopt nullopt = {};
+  VKFW_CONSTEXPR VKFW_INLINE Nullopt nullopt = {};
   template <typename T> class Optional {
   public:
     using value_type = T;
