@@ -5129,7 +5129,7 @@ namespace VKFW_NAMESPACE {
                 typename = typename std::enable_if<AttributeTraits<attribute>::value>::type>
       VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type
       set(typename AttributeTraits<attribute>::type const &new_value) const {
-        return m_window.set(new_value);
+        return m_window.set<attribute>(new_value);
       }
 
       template <InputMode mode>
@@ -5141,7 +5141,7 @@ namespace VKFW_NAMESPACE {
       template <InputMode mode>
       VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type
       set(typename InputModeTraits<mode>::type const &new_value) const {
-        return m_window.set(new_value);
+        return m_window.set<mode>(new_value);
       }
 
   #ifdef VKFW_NO_STD_FUNCTION_CALLBACKS
