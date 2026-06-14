@@ -139,19 +139,7 @@ static_assert(GLFW_VERSION_MAJOR == VKFW_TARGET_GLFW_VERSION_MAJOR
               "\"glfw3.h\" version is not compatible with the \"vkfw.hpp\" version!");
 
 #ifndef VKFW_INLINE
-  #ifdef __clang__
-    #if __has_attribute(always_inline)
-      #define VKFW_INLINE __attribute__((always_inline)) __inline__
-    #else
-      #define VKFW_INLINE inline
-    #endif
-  #elif defined(__GNUC__)
-    #define VKFW_INLINE __attribute__((always_inline)) __inline__
-  #elif defined(_MSC_VER)
-    #define VKFW_INLINE inline
-  #else
-    #define VKFW_INLINE inline
-  #endif
+  #define VKFW_INLINE [[gnu::always_inline, clang::always_inline, msvc::forceinline]] inline
 #endif
 
 #ifdef __cpp_constexpr
