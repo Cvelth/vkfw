@@ -447,7 +447,7 @@ int main(int, char **) {
   } catch (std::system_error &err) {
     char error_message[] = "An error has occured: ";
     strcat(error_message, err.what());
-    fprintf(stderr, error_message);
+    fprintf(stderr, "%s", error_message);
     return -1;
   }
 
