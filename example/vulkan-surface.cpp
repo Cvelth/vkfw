@@ -13,17 +13,17 @@ int main() {
     vkfw::setErrorCallback(error_callback);
 
     auto vkfw_instance = vkfw::initUnique();
-    
+
     auto window = vkfw::createWindowUnique(640, 480, "Surface Test");
     window->callbacks()->on_key = [](vkfw::Window const &window, vkfw::Key key, int,
                                      vkfw::KeyAction action, vkfw::ModifierKeyFlags) {
       if (key == vkfw::Key::eEscape && action == vkfw::KeyAction::ePress)
         window.setShouldClose(true);
     };
-    
+
     auto vulkan_instance = vk::createInstanceUnique(vk::InstanceCreateInfo{});
     auto surface = vkfw::createWindowSurfaceUnique(*vulkan_instance, *window);
-    
+
     while (not window->shouldClose()) {
       vkfw::waitEvents();
     }

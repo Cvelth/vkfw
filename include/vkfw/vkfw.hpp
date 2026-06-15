@@ -1689,8 +1689,9 @@ namespace VKFW_NAMESPACE {
   }
 #ifndef VKFW_NO_SMART_HANDLE
   template <typename T>
-  VKFW_INLINE typename ResultValueType<UniqueHandle<T>>::type
-  createResultValueUnique(Result result, T &data, char const *message) {
+  VKFW_INLINE
+    typename ResultValueType<UniqueHandle<T>>::type createResultValueUnique(Result result, T &data,
+                                                                            char const *message) {
   #ifdef VKFW_NO_EXCEPTIONS
     ignore(message);
     VKFW_ASSERT_ON_RESULT(result == Result::VKFW_ENUMERATOR(Success));
@@ -1856,8 +1857,8 @@ namespace VKFW_NAMESPACE {
     bool operator!=(Monitor const &another) const VKFW_NOEXCEPT { return !operator==(another); }
   #endif
 
-    VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type getPos(int *xpos,
-                                                                                  int *ypos) const;
+    VKFW_NODISCARD_WHEN_NO_EXCEPTIONS
+    typename ResultValueType<void>::type getPos(int *xpos, int *ypos) const;
     VKFW_NODISCARD typename ResultValueType<std::tuple<int, int>>::type getPos() const;
     VKFW_NODISCARD typename ResultValueType<int>::type getPosX() const;
     VKFW_NODISCARD typename ResultValueType<int>::type getPosY() const;
@@ -1893,20 +1894,20 @@ namespace VKFW_NAMESPACE {
     VKFW_NODISCARD typename ResultValueType<char const *>::type getName() const;
   #endif
 
-    VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type
-    setUserPointer(void *pointer) const;
+    VKFW_NODISCARD_WHEN_NO_EXCEPTIONS
+    typename ResultValueType<void>::type setUserPointer(void *pointer) const;
     VKFW_NODISCARD typename ResultValueType<void *>::type getUserPointer() const;
 
     VKFW_NODISCARD typename ResultValueType<GLFWvidmode const *>::type getVideoMode() const;
   #ifdef VKFW_HAS_SPAN
-    VKFW_NODISCARD typename ResultValueType<std::span<GLFWvidmode const>>::type
-    getVideoModes() const;
+    VKFW_NODISCARD
+    typename ResultValueType<std::span<GLFWvidmode const>>::type getVideoModes() const;
   #else
     VKFW_NODISCARD typename ResultValueType<std::vector<GLFWvidmode>>::type getVideoModes() const;
   #endif
 
-    VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type
-    setGamma(float gamma) const;
+    VKFW_NODISCARD_WHEN_NO_EXCEPTIONS
+    typename ResultValueType<void>::type setGamma(float gamma) const;
     VKFW_NODISCARD typename ResultValueType<GLFWgammaramp const *>::type getGammaRamp() const;
     VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type
     setGammaRamp(GLFWgammaramp const *ramp) const;
@@ -2028,8 +2029,8 @@ namespace VKFW_NAMESPACE {
     setTitle(char const *title) const;
   #endif
 
-    VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type getPos(int *xpos,
-                                                                                  int *ypos) const;
+    VKFW_NODISCARD_WHEN_NO_EXCEPTIONS
+    typename ResultValueType<void>::type getPos(int *xpos, int *ypos) const;
     VKFW_NODISCARD typename ResultValueType<std::tuple<int, int>>::type getPos() const;
     VKFW_NODISCARD typename ResultValueType<int>::type getPosX() const;
     VKFW_NODISCARD typename ResultValueType<int>::type getPosY() const;
@@ -2100,11 +2101,11 @@ namespace VKFW_NAMESPACE {
                size_t refreshRate = 0) const;
 
   #ifdef VKFW_HAS_SPAN
-    VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type
-    setIcon(std::span<vkfw::Image> images) const;
+    VKFW_NODISCARD_WHEN_NO_EXCEPTIONS
+    typename ResultValueType<void>::type setIcon(std::span<vkfw::Image> images) const;
   #endif
-    VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type
-    setIcon(std::vector<vkfw::Image> images) const;
+    VKFW_NODISCARD_WHEN_NO_EXCEPTIONS
+    typename ResultValueType<void>::type setIcon(std::vector<vkfw::Image> images) const;
     VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type
     setIcon(size_t image_count, vkfw::Image *images) const;
 
@@ -2913,11 +2914,11 @@ namespace VKFW_NAMESPACE {
   VKFW_NODISCARD typename ResultValueType<bool>::type rawMouseMotionSupported();
 
   #ifdef VKFW_HAS_STRING_VIEW
-  VKFW_NODISCARD typename ResultValueType<std::string_view>::type getKeyName(Key key,
-                                                                             int32_t scancode = 0);
+  VKFW_NODISCARD
+  typename ResultValueType<std::string_view>::type getKeyName(Key key, int32_t scancode = 0);
   #else
-  VKFW_NODISCARD typename ResultValueType<char const *>::type getKeyName(Key key,
-                                                                         int32_t scancode = 0);
+  VKFW_NODISCARD
+  typename ResultValueType<char const *>::type getKeyName(Key key, int32_t scancode = 0);
   #endif
   VKFW_NODISCARD typename ResultValueType<int>::type getKeyScancode(Key key);
 #endif
@@ -2954,12 +2955,12 @@ namespace VKFW_NAMESPACE {
   uint64_t getTimerFrequency();
 #else
   #ifdef VKFW_HAS_STRING_VIEW
-  VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type
-  setClipboardString(std::string_view string);
+  VKFW_NODISCARD_WHEN_NO_EXCEPTIONS
+  typename ResultValueType<void>::type setClipboardString(std::string_view string);
   VKFW_NODISCARD typename ResultValueType<std::string_view>::type getClipboardString();
   #else
-  VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type
-  setClipboardString(char const *string);
+  VKFW_NODISCARD_WHEN_NO_EXCEPTIONS
+  typename ResultValueType<void>::type setClipboardString(char const *string);
   VKFW_NODISCARD typename ResultValueType<char const *>::type getClipboardString();
   #endif
 
@@ -3114,9 +3115,9 @@ namespace VKFW_NAMESPACE {
   }
     #endif
   #else
-  VKFW_NODISCARD VKFW_INLINE VkSurfaceKHR
-  createWindowSurface(VkInstance const &instance, Window const &window,
-                      VkAllocationCallbacks const *allocator = nullptr) {
+  VKFW_NODISCARD
+  VKFW_INLINE VkSurfaceKHR createWindowSurface(VkInstance const &instance, Window const &window,
+                                               VkAllocationCallbacks const *allocator = nullptr) {
     VkSurfaceKHR output;
     glfwCreateWindowSurface(instance, window, allocator, &output);
     return output;
@@ -3249,8 +3250,8 @@ public:
 // This one is only implementation of declared functions so we don't need to export.
 namespace VKFW_NAMESPACE {
 #ifndef VKFW_DISABLE_ENHANCED_MODE
-  VKFW_NODISCARD_WHEN_NO_EXCEPTIONS VKFW_INLINE typename ResultValueType<void>::type
-  Instance::destroy() {
+  VKFW_NODISCARD_WHEN_NO_EXCEPTIONS VKFW_INLINE
+    typename ResultValueType<void>::type Instance::destroy() {
     if (m_state) {
       glfwTerminate();
       m_state = false;
@@ -3362,8 +3363,8 @@ namespace VKFW_NAMESPACE {
     return getError();
   }
 #else
-  VKFW_NODISCARD_WHEN_NO_EXCEPTIONS VKFW_INLINE typename ResultValueType<void>::type
-  init(InitHints hints) {
+  VKFW_NODISCARD_WHEN_NO_EXCEPTIONS VKFW_INLINE
+    typename ResultValueType<void>::type init(InitHints hints) {
     Result result = setInitHints(hints);
     if (!check(result))
       return createResultValue(result, VKFW_NAMESPACE_STRING "::init");
@@ -3378,8 +3379,8 @@ namespace VKFW_NAMESPACE {
     return createResultValue(getError(), VKFW_NAMESPACE_STRING "::terminate");
   }
   #ifndef VKFW_NO_SMART_HANDLE
-  VKFW_NODISCARD VKFW_INLINE typename ResultValueType<VKFW_NAMESPACE::UniqueInstance>::type
-  initUnique(InitHints hints) {
+  VKFW_NODISCARD VKFW_INLINE
+    typename ResultValueType<VKFW_NAMESPACE::UniqueInstance>::type initUnique(InitHints hints) {
     Instance instance;
 
     Result result = setInitHints(hints);
@@ -3512,8 +3513,8 @@ namespace VKFW_NAMESPACE {
     glfwSetGammaRamp(monitor, ramp);
   }
 #else
-  VKFW_NODISCARD_WHEN_NO_EXCEPTIONS VKFW_INLINE typename ResultValueType<void>::type
-  Monitor::getPos(int *xpos, int *ypos) const {
+  VKFW_NODISCARD_WHEN_NO_EXCEPTIONS VKFW_INLINE
+    typename ResultValueType<void>::type Monitor::getPos(int *xpos, int *ypos) const {
     glfwGetMonitorPos(m_monitor, xpos, ypos);
     return createResultValue(getError(), VKFW_NAMESPACE_STRING "::Monitor::getPos");
   }
@@ -3704,8 +3705,8 @@ namespace VKFW_NAMESPACE {
   }
 
   #ifdef VKFW_HAS_STRING_VIEW
-  VKFW_NODISCARD VKFW_INLINE typename ResultValueType<std::string_view>::type
-  Monitor::getName() const {
+  VKFW_NODISCARD VKFW_INLINE
+    typename ResultValueType<std::string_view>::type Monitor::getName() const {
     char const *tmp = glfwGetMonitorName(m_monitor);
     std::string_view output;
     if (tmp)
@@ -3733,24 +3734,24 @@ namespace VKFW_NAMESPACE {
     return createResultValue(getError(), output, VKFW_NAMESPACE_STRING "::Monitor::getVideoMode");
   }
   #ifdef VKFW_HAS_SPAN
-  VKFW_NODISCARD VKFW_INLINE typename ResultValueType<std::span<GLFWvidmode const>>::type
-  Monitor::getVideoModes() const {
+  VKFW_NODISCARD VKFW_INLINE
+    typename ResultValueType<std::span<GLFWvidmode const>>::type Monitor::getVideoModes() const {
     int count;
     GLFWvidmode const *pointer = glfwGetVideoModes(m_monitor, &count);
     std::span<GLFWvidmode const> output(pointer, static_cast<size_t>(count));
     return createResultValue(getError(), output, VKFW_NAMESPACE_STRING "::Monitor::getVideoModes");
   }
   #else
-  VKFW_NODISCARD VKFW_INLINE typename ResultValueType<std::vector<GLFWvidmode>>::type
-  Monitor::getVideoModes() const {
+  VKFW_NODISCARD VKFW_INLINE
+    typename ResultValueType<std::vector<GLFWvidmode>>::type Monitor::getVideoModes() const {
     int count;
     GLFWvidmode const *pointer = glfwGetVideoModes(m_monitor, &count);
     std::vector<GLFWvidmode> output(pointer, pointer + static_cast<size_t>(count));
     return createResultValue(getError(), output, VKFW_NAMESPACE_STRING "::Monitor::getVideoModes");
   }
   #endif
-  VKFW_NODISCARD_WHEN_NO_EXCEPTIONS VKFW_INLINE typename ResultValueType<void>::type
-  Monitor::setGamma(float gamma) const {
+  VKFW_NODISCARD_WHEN_NO_EXCEPTIONS VKFW_INLINE
+    typename ResultValueType<void>::type Monitor::setGamma(float gamma) const {
     glfwSetGamma(m_monitor, gamma);
     return createResultValue(getError(), VKFW_NAMESPACE_STRING "::Monitor::setGamma");
   }
@@ -3881,9 +3882,11 @@ namespace VKFW_NAMESPACE {
     }
   }
   #endif
-  VKFW_NODISCARD VKFW_INLINE typename ResultValueType<Window>::type
-  createWindow(size_t width, size_t height, char const *title, WindowHints hints, Monitor monitor,
-               Window share, bool reset_hints) {
+  VKFW_NODISCARD VKFW_INLINE
+    typename ResultValueType<Window>::type createWindow(size_t width, size_t height,
+                                                        char const *title, WindowHints hints,
+                                                        Monitor monitor, Window share,
+                                                        bool reset_hints) {
     Window output;
     if (reset_hints) {
       Result result = defaultWindowHints();
@@ -4543,14 +4546,14 @@ namespace VKFW_NAMESPACE {
   }
 
   #ifdef VKFW_HAS_SPAN
-  VKFW_NODISCARD_WHEN_NO_EXCEPTIONS VKFW_INLINE typename ResultValueType<void>::type
-  Window::setIcon(std::span<vkfw::Image> images) const {
+  VKFW_NODISCARD_WHEN_NO_EXCEPTIONS VKFW_INLINE
+    typename ResultValueType<void>::type Window::setIcon(std::span<vkfw::Image> images) const {
     glfwSetWindowIcon(m_window, static_cast<int>(images.size()), images.data());
     return createResultValue(getError(), VKFW_NAMESPACE_STRING "::Window::setIcon");
   }
   #endif
-  VKFW_NODISCARD_WHEN_NO_EXCEPTIONS VKFW_INLINE typename ResultValueType<void>::type
-  Window::setIcon(std::vector<vkfw::Image> images) const {
+  VKFW_NODISCARD_WHEN_NO_EXCEPTIONS VKFW_INLINE
+    typename ResultValueType<void>::type Window::setIcon(std::vector<vkfw::Image> images) const {
     glfwSetWindowIcon(m_window, static_cast<int>(images.size()), images.data());
     return createResultValue(getError(), VKFW_NAMESPACE_STRING "::Window::setIcon");
   }
@@ -4687,15 +4690,15 @@ namespace VKFW_NAMESPACE {
   }
 
   #ifdef VKFW_HAS_STRING_VIEW
-  VKFW_NODISCARD VKFW_INLINE typename ResultValueType<std::string_view>::type
-  getKeyName(Key key, int32_t scancode) {
+  VKFW_NODISCARD VKFW_INLINE
+    typename ResultValueType<std::string_view>::type getKeyName(Key key, int32_t scancode) {
     char const *tmp = glfwGetKeyName(static_cast<int>(key), static_cast<int>(scancode));
     std::string_view output;
     if (tmp)
       output = tmp;
   #else
-  VKFW_NODISCARD VKFW_INLINE typename ResultValueType<char const *>::type
-  getKeyName(Key key, int32_t scancode) {
+  VKFW_NODISCARD VKFW_INLINE
+    typename ResultValueType<char const *>::type getKeyName(Key key, int32_t scancode) {
     char const *output = glfwGetKeyName(static_cast<int>(key), static_cast<int>(scancode));
   #endif
     return createResultValue(getError(), output, VKFW_NAMESPACE_STRING "::rawMouseMotionSupported");
@@ -4719,8 +4722,9 @@ namespace VKFW_NAMESPACE {
     return getError();
   }
 #else
-  VKFW_NODISCARD VKFW_INLINE typename ResultValueType<Cursor>::type
-  createCursor(vkfw::Image const &image, int xhot, int yhot) {
+  VKFW_NODISCARD VKFW_INLINE
+    typename ResultValueType<Cursor>::type createCursor(vkfw::Image const &image, int xhot,
+                                                        int yhot) {
     Cursor output = glfwCreateCursor(&image, xhot, yhot);
     return createResultValue(getError(), output, VKFW_NAMESPACE_STRING "::createCursor");
   }
@@ -4730,8 +4734,9 @@ namespace VKFW_NAMESPACE {
     return createResultValue(getError(), output, VKFW_NAMESPACE_STRING "::createStandardCursor");
   }
   #ifndef VKFW_NO_SMART_HANDLE
-  VKFW_NODISCARD VKFW_INLINE typename ResultValueType<UniqueCursor>::type
-  createCursorUnique(vkfw::Image const &image, int xhot, int yhot) {
+  VKFW_NODISCARD VKFW_INLINE
+    typename ResultValueType<UniqueCursor>::type createCursorUnique(vkfw::Image const &image,
+                                                                    int xhot, int yhot) {
     Cursor output = glfwCreateCursor(&image, xhot, yhot);
     return createResultValueUnique(getError(), output,
                                    VKFW_NAMESPACE_STRING "::createCursorUnique");
@@ -4767,8 +4772,8 @@ namespace VKFW_NAMESPACE {
   VKFW_INLINE uint64_t getTimerFrequency() { return glfwGetTimerFrequency(); }
 #else
   #ifdef VKFW_HAS_STRING_VIEW
-  VKFW_NODISCARD_WHEN_NO_EXCEPTIONS VKFW_INLINE typename ResultValueType<void>::type
-  setClipboardString(std::string_view string) {
+  VKFW_NODISCARD_WHEN_NO_EXCEPTIONS VKFW_INLINE
+    typename ResultValueType<void>::type setClipboardString(std::string_view string) {
     glfwSetClipboardString(nullptr, string.data());
     return createResultValue(getError(), VKFW_NAMESPACE_STRING "::setClipboardString");
   }
@@ -4780,8 +4785,8 @@ namespace VKFW_NAMESPACE {
     return createResultValue(getError(), output, VKFW_NAMESPACE_STRING "::getClipboardString");
   }
   #else
-  VKFW_NODISCARD_WHEN_NO_EXCEPTIONS VKFW_INLINE typename ResultValueType<void>::type
-  setClipboardString(char const *string) {
+  VKFW_NODISCARD_WHEN_NO_EXCEPTIONS VKFW_INLINE
+    typename ResultValueType<void>::type setClipboardString(char const *string) {
     glfwSetClipboardString(nullptr, string);
     return createResultValue(getError(), VKFW_NAMESPACE_STRING "::setClipboardString");
   }
@@ -4914,8 +4919,8 @@ namespace VKFW_NAMESPACE {
       }
   #endif
 
-      VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type
-      getPos(int *xpos, int *ypos) const {
+      VKFW_NODISCARD_WHEN_NO_EXCEPTIONS
+      typename ResultValueType<void>::type getPos(int *xpos, int *ypos) const {
         return m_window.getPos(xpos, ypos);
       }
       VKFW_NODISCARD typename ResultValueType<std::tuple<int, int>>::type getPos() const {
@@ -5068,13 +5073,13 @@ namespace VKFW_NAMESPACE {
       }
 
   #ifdef VKFW_HAS_SPAN
-      VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type
-      setIcon(std::span<vkfw::Image> images) const {
+      VKFW_NODISCARD_WHEN_NO_EXCEPTIONS
+      typename ResultValueType<void>::type setIcon(std::span<vkfw::Image> images) const {
         return m_window.setIcon(images);
       }
   #endif
-      VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type
-      setIcon(std::vector<vkfw::Image> images) const {
+      VKFW_NODISCARD_WHEN_NO_EXCEPTIONS
+      typename ResultValueType<void>::type setIcon(std::vector<vkfw::Image> images) const {
         return m_window.setIcon(images);
       }
       VKFW_NODISCARD_WHEN_NO_EXCEPTIONS typename ResultValueType<void>::type
